@@ -1,0 +1,25 @@
+{
+  "name": "dswb_2a_2c26_desarrollo-de-sistemas-web-back-end-",
+  "version": "1.0.0",
+  "description": "Repositorio del curso de BE del ISFT29 2A 2C 2026",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-/issues"
+  },
+  "homepage": "https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
