@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "nombre": "Lean",
+    "apellido": "Roan",
+    "edad": 27,
+    "email": "lean@test.com"
+  },
+  {
+    "id": 2,
+    "nombre": "Ada",
+    "apellido": "Lovelace",
+    "edad": 36,
+    "email": "ada@test.com"
+  },
+  {
+    "id": 3,
+    "nombre": "Mar�a",
+    "apellido": "Gonz�lez",
+    "edad": 28,
+    "email": "maria@test.com"
+  }
+]
