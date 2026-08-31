@@ -149,9 +149,8 @@ Para la aplicación móvil de los choferes (que requiere iteraciones rápidas y 
 
 Una vez que el servidor esté corriendo, podrás acceder a las diferentes secciones:
 
-- **Dashboard de Oficina:** `http://localhost:3000/`
-- **Simulador de Chofer:** `http://localhost:3000/simulador`
-- **Documentación Académica:** `http://localhost:3000/documentacion`
+- **URL inicio:** `http://localhost:3000/`
+- **Documentación 1er entrega:** `http://localhost:3000/documentacion`
 - **Endpoints de la API REST:** `http://localhost:3000/api` (para que podamos probar con Postman)
 
 ---
