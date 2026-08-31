@@ -1,0 +1,60 @@
+extends layout
+
+block content
+  h4.mb-3
+    i.fa-solid.fa-book-open-reader.me-2.text-info
+    | Documentación ISFT N° 29 - Backend 2026
+  
+  div.card.shadow-sm.border-0.mb-3
+    div.card-header.bg-primary.text-white
+      h6.mb-0 Primera Entrega: Desarrollo Web Backend
+    div.card-body.text-muted.small
+      p.card-text
+        | Proyecto del curso 2° A 2C2026, enfocado en Node.js, Express, Pug, middlewares y persistencia JSON. Incluye rutas dinámicas y POO. Se va a evalúar funcionalidad, calidad de código y documentación. Pruebas con Postman.
+      h6.text-primary.fw-bold Equipo Grupo N°1 "ExpertIA"
+      ul.list-unstyled.mb-0
+        li #[strong Alumno:] Maselli, Leandro
+        li #[strong Alumno:] Canteros, Javier
+        li #[strong Alumno:] Pelisare, Damian
+        li #[strong Alumno:] Quinteros, Maximiliano
+        li #[strong Alumno:] Gutierrez, Maria Cristina
+
+  div.card.shadow-sm.border-0.mb-3
+    div.card-header.bg-secondary.text-white
+      h6.mb-0 Caso de Negocio: FreshRoute B2B
+    div.card-body.small
+      p.mb-2
+        | Empresa de logística de comida refrigerada.
+      h6.text-secondary.fw-bold Problema
+      p.mb-2
+        | Desconexión oficina-choferes. Recorridos alterados, sanciones sin análisis. Cobros a 30 días con penalizaciones por retraso o cadena de frío rota. Hojas de ruta estáticas, sin trazabilidad real de ubicación/temperatura.
+      h6.text-secondary.fw-bold Tareas:
+      ul.mb-0
+        li Identificar tensiones, analizar estructura (Sistema Complejo), justificar Paradigma Organizacional.
+        li Diagramar proceso &quot;Planificación y Despacho de Rutas&quot;, identificar puntos de falla.
+        li Especificar Requerimientos No Funcionales (FURPS+) de Performance y Escalabilidad para telemetría/mapas.
+        li Proponer metodología DevOps y Scrum para la app de choferes.
+
+  div.card.shadow-sm.border-0
+    div.card-header.bg-info.text-white
+      h6.mb-0 Análisis y Propuestas Clave
+    div.card-body.small
+      h6.text-info.fw-bold Tensiones y Paradigma
+      p.mb-2
+        | Tensión por falta de comunicación y herramientas. Paradigma Burocrático y de Control Rígido.
+      h6.text-info.fw-bold Puntos de Falla
+      ul.mb-0
+        li Falta de datos en tiempo real (tráfico, urgencia).
+        li Desconexión operacional (visibilidad nula en ruta).
+        li Quiebre de cadena de frío no detectado.
+        li Falta de evidencia/auditoría en rechazos/retrasos.
+      h6.text-info.fw-bold Requerimientos No Funcionales (Casos de ejemplo)
+      ul.mb-0
+        li #[strong Performance:] Procesar telemetría de 25 vehículos cada 30s (<500ms). Dashboard carga <2s.
+        li #[strong Escalabilidad:] Soportar 100 vehículos; historial de telemetría de 1 año; integración con APIs de mapas.
+      h6.text-info.fw-bold Metodología: DevOps y Scrum
+      p.mb-2
+        | #[strong Scrum:] Desarrollo iterativo (Sprints de 1-2 semanas) para feedback rápido en app de choferes.
+        | #[strong DevOps:] CI/CD (Git, Jenkins/GitHub Actions) y monitoreo (Prometheus/Grafana) para entregas rápidas y estables.
+      h6.text-info.fw-bold Bibliografía
+      p.mb-0 Clean Code, docs de Node/Express/Pug, Bootstrap, Font Awesome, APIs REST, POO en JS.

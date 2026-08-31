@@ -13,7 +13,7 @@
     "url": "git+https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Maselli Leandro, Canteros Javier, Pelisare Damian, Quinteros Maximiliano, Gutierrez Maria Cristina",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
@@ -22,6 +22,7 @@
   "homepage": "https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-#readme",
   "dependencies": {
     "express": "^5.2.1",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "pug": "^3.0.4"
   }
 }
