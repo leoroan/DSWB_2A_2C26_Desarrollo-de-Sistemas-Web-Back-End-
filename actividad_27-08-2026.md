@@ -7,6 +7,7 @@ Repositorio del curso de BE del ISFT29 2A 2C 2026.
 ## 📅 Actividad: Persistencia de datos con JSON + CRUD (27/08/2026)
 
 ### Temas trabajados en esta clase
+
 - **Persistencia de datos en Node.js**
 - **Lectura de archivos JSON con `fs`**
 - **Escritura de archivos JSON desde controllers**
@@ -14,9 +15,11 @@ Repositorio del curso de BE del ISFT29 2A 2C 2026.
 - **Simulación de base de datos usando `personas.json`**
 
 ### 🎯 Objetivo
+
 Que el sistema **conserve la información incluso después de reiniciar el servidor**, implementando un CRUD completo cuyo estado se vuelque en un archivo JSON.
 
 ### 💻 Actividad práctica (CRUD)
+
 - ✅ Los datos se leen desde un archivo JSON.
 - ✅ Los registros nuevos se guardan en el archivo.
 - ✅ Las modificaciones impactan en la persistencia.
@@ -31,14 +34,14 @@ Ejecución única del proyecto (un solo punto de arranque):
 ```bash
 npm install        # solo la primera vez
 npm start          # node index.js
-npm run dev        # node --watch index.js (auto-reinicio en desarrollo)
+npm run dev        # nodemon index.js (auto-reinicio en desarrollo)
 ```
 
 Servidor disponible en `http://localhost:3000`.
 
 ---
 
-## 📦 Estructura del proyecto (patrón MVC con capa de persistencia)
+## 📦 Estructura del proyecto (patrón MVC con capa de persistencia (para darle un poco de "orden" al asunto))
 
 ```
 index.js                            ← único punto de arranque (entry point)
@@ -57,17 +60,18 @@ src/
 ## 🔌 Endpoints (API REST)
 
 | Método   | Ruta                | Descripción                       | Códigos       |
-|----------|---------------------|-----------------------------------|----------------|
-| `GET`    | `/`                 | Saludo raíz (conservación previa) | `200`          |
-| `GET`    | `/api/personas`     | Lista todas las personas          | `200`          |
-| `GET`    | `/api/personas/:id` | Obtiene una persona por id        | `200` / `404`  |
-| `POST`   | `/api/personas`     | Crea y persiste una persona       | `201` / `400`  |
-| `PUT`    | `/api/personas/:id` | Modifica y persiste los cambios   | `200` / `404`  |
-| `DELETE` | `/api/personas/:id` | Elimina de la estructura          | `204` / `404`  |
+| -------- | ------------------- | --------------------------------- | ------------- |
+| `GET`    | `/`                 | Saludo raíz (conservación previa) | `200`         |
+| `GET`    | `/api/personas`     | Lista todas las personas          | `200`         |
+| `GET`    | `/api/personas/:id` | Obtiene una persona por id        | `200` / `404` |
+| `POST`   | `/api/personas`     | Crea y persiste una persona       | `201` / `400` |
+| `PUT`    | `/api/personas/:id` | Modifica y persiste los cambios   | `200` / `404` |
+| `DELETE` | `/api/personas/:id` | Elimina de la estructura          | `204` / `404` |
 
 ### Ejemplos de uso
 
 **Crear una persona**
+
 ```bash
 curl -X POST http://localhost:3000/api/personas \
   -H "Content-Type: application/json" \
@@ -75,6 +79,7 @@ curl -X POST http://localhost:3000/api/personas \
 ```
 
 **Modificar una persona**
+
 ```bash
 curl -X PUT http://localhost:3000/api/personas/1 \
   -H "Content-Type: application/json" \
@@ -82,6 +87,7 @@ curl -X PUT http://localhost:3000/api/personas/1 \
 ```
 
 **Eliminar una persona**
+
 ```bash
 curl -X DELETE http://localhost:3000/api/personas/1
 ```
