@@ -3,6 +3,7 @@ const path = require("node:path"); // Importar path para manejar rutas de archiv
 const requestLogger = require("./src/middlewares/requestLogger");
 const errorHandler = require("./src/middlewares/errorHandler");
 const webRoutes = require("./src/routes/web.routes");
+const apiRoutes = require("./src/routes/api.routes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,17 +20,20 @@ app.use(requestLogger); // Nuestro logger de requests
 // Rutas web (manejo de vistas y formularios)
 app.use("/", webRoutes);
 
+// Rutas de API REST (para Postman, integraciones, etc.)
+app.use("/api", apiRoutes);
+
 // Middleware de manejo centralizado de errores
 app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Servidor FreshRoute B2B corriendo en http://localhost:${PORT}`);
-  console.log(`Accede al Dashboard de Oficina en: http://localhost:${PORT}/`);
+  // console.log(`Accede al Dashboard de Oficina en: http://localhost:${PORT}/`);
+  // console.log(
+  //   `Accede al Simulador de Chofer en: http://localhost:${PORT}/simulador`,
+  // );
   console.log(
-    `Accede al Simulador de Chofer en: http://localhost:${PORT}/simulador`,
-  );
-  console.log(
-    `Accede a la Documentación Académica en: http://localhost:${PORT}/documentacion`,
+    `Accede a la Documentación en: http://localhost:${PORT}/documentacion`,
   );
   console.log(
     `Los Endpoints de la API REST comienzan en: http://localhost:${PORT}/api`,
