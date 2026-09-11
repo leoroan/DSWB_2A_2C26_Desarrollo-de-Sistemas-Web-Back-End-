@@ -3,16 +3,18 @@ const Persona = require("../models/Persona");
 
 /**
  * Repositorio de personas.
- * Capa de acceso a datos: hoy simula la base de datos con personas.json.
- * Todos los objetos crudos del JSON se hidratan como instancias de la
- * clase Persona antes de devolverse. En una clase futura, este mismo
- * archivo puede cambiarse por una conexión a MongoDB sin que controllers
- * ni routes tengan que modificarse.
+ * Capa de acceso a datos: simula la base de datos con personas.json.
  */
 
 /** Convierte un objeto crudo del JSON en una instancia de Persona. */
 function mapearAPersona(datos) {
-  return new Persona(datos.id, datos.nombre, datos.apellido, datos.edad, datos.email);
+  return new Persona(
+    datos.id,
+    datos.nombre,
+    datos.apellido,
+    datos.edad,
+    datos.email,
+  );
 }
 
 /** @returns {Promise<Array<Persona>>} Todas las personas almacenadas. */
