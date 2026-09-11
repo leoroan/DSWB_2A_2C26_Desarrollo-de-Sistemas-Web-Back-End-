@@ -4,6 +4,13 @@ function mostrarDocumentacion(req, res) {
   });
 }
 
+function mostrarDashboard(req, res) {
+  res.render("dashboard", {
+    titulo: "Pagina inicial",
+  });
+}
+
 module.exports = {
+  mostrarDashboard,
   mostrarDocumentacion,
 };
