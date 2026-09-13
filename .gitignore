@@ -1,2 +1,5 @@
 node_modules/
-docs
+docs/*
+!docs/PEDIDOS.md
+!docs/FreshRoute.postman_collection.json
+!docs/generar-coleccion.js
