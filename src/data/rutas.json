@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "codigo": "RUT-2026-001",
+    "planificadorId": 31,
+    "choferId": 11,
+    "estado": "en curso",
+    "fechaPlanificacion": "2026-09-13T06:30:00-03:00",
+    "fechaEjecucion": "2026-09-13T07:15:00-03:00",
+    "observaciones": "Priorizar entregas refrigeradas.",
+    "vehiculoPatente": "AB123CD"
+  },
+  {
+    "id": 2,
+    "codigo": "RUT-2026-002",
+    "planificadorId": 32,
+    "choferId": 12,
+    "estado": "planificada",
+    "fechaPlanificacion": "2026-09-13T08:00:00-03:00",
+    "fechaEjecucion": null,
+    "observaciones": "Salida prevista desde el depósito central.",
+    "vehiculoPatente": "AC456EF"
+  }
+]
