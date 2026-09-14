@@ -1,0 +1,242 @@
+extends ../layout
+
+block content
+  // Breadcrumb
+  nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.shadow-sm.mb-4
+    div.container
+      a.navbar-brand(href="/remitos" style="font-size:1.1rem")
+        i.fa-solid.fa-arrow-left.me-2
+        | Volver a Remitos
+
+  // Header del Remito
+  div.row.mb-4
+    div.col-12
+      div.card.shadow-sm.border-0
+        div.card-header.bg-primary.text-white.d-flex.justify-content-between.align-items-center
+          h4.mb-0
+            i.fa-solid.fa-file-invoice.text-info.me-2
+            | Información del Remito
+          span.badge.bg-light.text-dark.border
+            i.fa-solid.fa-hashtag.me-1
+            | #{remito.id}
+        div.card-body
+          div.row.gutters-2
+            div.col-md-6.col-xl-3.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-calendar-circle-plus.me-1
+                | Número
+              div.fs-4.font-monospace.fw-bold
+                | REM-#{String(remito.id).padStart(4, '0')}
+            div.col-md-6.col-xl-3.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-solid.fa-truck-square.me-1
+                | Pedido
+              div.fs-4.font-monospace.fw-bold
+                if (remito.pedidoId)
+                  | #{remito.pedidoId}
+                else
+                  span.text-muted Sin pedido asociado
+            div.col-md-6.col-xl-3.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-solid.fa-handshake.me-1
+                | Cliente
+              div.fs-4.font-monospace
+                if (remito.cliente)
+                  | #{remito.cliente}
+                else
+                  span.text-muted No especificado
+            div.col-md-6.col-xl-3.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-calendar-circle-plus.me-1
+                | Fecha
+              div.fs-4.font-monospace
+                small.text-muted Fecha de emisión
+                | #{remito.fechaEmision}
+          div.row.gutters-2.mt-2
+            div.col-md-6.col-xl-3.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-calendar-circle-exclamation.me-1
+                | Fecha de Vencimiento
+              div.fs-4.font-monospace
+                | #{remito.fechaVencimiento}
+            div.col-md-6.col-xl-3.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-solid.fa-scale-balanced.me-1
+                | Monto Total
+              div.fs-4.font-monospace.fw-bold.text-success
+                | $#{remito.montoTotal.toFixed(2)}
+            div.col-md-6.col-xl-3.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-building-circle-check.me-1
+                | Estado
+              div
+                if (remito.estado === 'firmado')
+                  span.badge.badge-success.fs-6
+                    i.fa-solid.fa-check-circle.me-1
+                    | Firmado
+                else if (remito.estado === 'pendiente')
+                  span.badge.badge-warning.fs-6
+                    i.fa-solid.fa-clock.me-1
+                    | Pendiente
+                else if (remito.estado === 'vencido')
+                  span.badge.badge-danger.fs-6
+                    i.fa-solid.fa-exclamation-triangle.me-1
+                    | Vencido
+                else
+
+  // Datos de la Entrega
+  div.row.mb-4
+    div.col-12
+      div.card.shadow-sm.border-0
+        div.card-header.bg-info.text-white
+          h5.mb-0
+            i.fa-solid.fa-truck-fast.me-2
+            | Datos de la Entrega
+        div.card-body
+          div.row.gutters-2
+            div.col-md-6.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-circle-check.me-1
+                | ¿Firmado?
+              div.fs-5
+                if (remito.firmadoPor)
+                  span.badge.bg-success
+                    i.fa-solid.fa-check-circle.me-1
+                    | Sí
+                  | Firmado por: 
+                  strong #{remito.firmadoPor}
+                else
+                  span.badge.bg-warning
+                    i.fa-regular.fa-file-signature.me-1
+                    | No firmado
+            div.col-md-6.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-calendar-circle-exclamation.me-1
+                | ¿Vencido?
+              div.fs-5
+                if (remito.estaVencido())
+                  span.badge.bg-danger
+                    i.fa-solid.fa-triangle-exclamation.me-1
+                    | Sí – Vencido
+                else
+                  span.badge.bg-success
+                    i.fa-solid.fa-check-circle.me-1
+                    | Vigente
+            div.col-12.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-file-lines.me-1
+                | ¿Es válido?
+              div.fs-5
+                if (remito.esValido())
+                  span.badge.bg-success
+                    i.fa-solid.fa-check-circle.me-1
+                    | Sí
+                else
+                  span.badge.bg-danger
+                    i.fa-solid.fa-circle-exclamation.me-1
+                    | No
+
+  // Firma
+  div.row.mb-4
+    div.col-12
+      div.card.shadow-sm.border-0
+        div.card-header.bg-light.text-dark.border-bottom
+          h5.mb-0
+            i.fa-solid.fa-pen-or-fountain.me-2
+            | Firma
+        div.card-body
+          div.row.gutters-2
+            div.col-12
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-user.me-1
+                | Firmado por
+              div.fs-4.font-monospace
+                if (remito.firmadoPor)
+                  | #{remito.firmadoPor}
+                else
+                  span.text-muted.fa-regular.fa-user-slash Sin firmante
+              hr.border-secondary.my-3
+              div
+                if (remito.firmadoPor)
+                  span.badge.bg-info.text-dark
+                    i.fa-regular.fa-clock.me-1
+                    | Firmado el #{new Date().toLocaleDateString('es-AR')}
+                else
+                  button.btn.btn-outline-primary.btn-sm(type="button")
+                    i.fa-regular.fa-hand-rock.me-1
+                    | Firmar remito
+
+  // Observaciones
+  div.row.mb-4
+    div.col-12
+      div.card.shadow-sm.border-0
+        div.card-header.bg-light.text-dark.border-bottom
+          h5.mb-0
+            i.fa-solid.fa-note-sticky.me-2
+            | Observaciones
+        div.card-body
+          if (remito.observaciones)
+            div.bg-light.p-3.rounded.border
+              p.mb-0.small.text-muted
+                | #{remito.observaciones}
+          else
+            div.bg-light.p-3.rounded.border.text-center.text-muted
+              i.fa-regular.fa-face-smile.fa-2x.mb-2
+              p.small No hay observaciones registradas.
+
+  // Penalización
+  div.row.mb-4
+    div.col-12
+      div.card.shadow-sm.border-0
+        div.card-header.bg-light.text-dark.border-bottom
+          h5.mb-0
+            i.fa-solid.fa-triangle-exclamation.me-2
+            | Penalización
+        div.card-body
+          div.row.gutters-2
+            div.col-md-6.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-circle-dollar.me-1
+                | Monto de Penalización
+              div.fs-4.font-monospace.fw-bold
+                if (remito.penalizacionAplicada && remito.penalizacionAplicada > 0)
+                  span.badge.bg-danger
+                    | $#{remito.penalizacionAplicada.toFixed(2)}
+                else
+                  span.text-success.fa-regular.fa-circle-check
+                  | Sin penalización aplicada
+            div.col-md-6.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-chart-line.me-1
+                | Monto Total (con penalización)
+              div.fs-4.font-monospace.fw-bold.text-success
+                | $#{remito.montoTotal.toFixed(2)}
+            div.col-12.mb-3
+              div.form-label.font-weight-bold.text-muted.small
+                i.fa-regular.fa-circle-check.me-1
+                | ¿Penalización aplicada?
+              div.fs-5
+                if (remito.penalizacionAplicada && remito.penalizacionAplicada > 0)
+                  span.badge.bg-danger
+                    i.fa-solid.fa-circle-exclamation.me-1
+                    | Sí – $#{remito.penalizacionAplicada.toFixed(2)}
+                else
+                  span.badge.bg-success
+                    i.fa-solid.fa-check-circle.me-1
+                    | No
+
+  // Acciones
+  div.row.mb-4
+    div.col-12
+      div.card.shadow-sm.border-0
+        div.card-body.text-center.py-4
+          div.btn-group.btn-group-lg
+            a.btn.btn-outline-primary(href="/remitos/" + remito.id + "/editar")
+              i.fa-solid.fa-pen-to-square.me-2
+              | Editar
+          div.btn-group.btn-group-lg
+            a.btn.btn-outline-danger(href="/remitos/" + remito.id + "/eliminar")
+              i.fa-solid.fa-trash-can.me-2
+              | Eliminar
+
+
