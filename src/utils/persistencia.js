@@ -42,10 +42,25 @@ async function escribirArchivoJson(nombreArchivo, datos) {
   await fs.writeFile(ruta, JSON.stringify(datos, null, 2), "utf-8");
 }
 
+// Lector genérico para archivos JSON de estructura objeto (ej: FreshRoute.json)
+async function leerJsonObjeto(nombreArchivo) {
+  const ruta = path.join(__dirname, "..", "data", nombreArchivo);
+  try {
+    const contenido = await fs.readFile(ruta, "utf-8");
+    const datos = JSON.parse(contenido);
+    return datos && typeof datos === "object" && !Array.isArray(datos)
+      ? datos
+      : {};
+  } catch {
+    return {}; // Si no existe o tiene error, retorna objeto vacío
+  }
+}
+
 module.exports = {
   leerJson,
   escribirJson,
   rutaArchivo,
   leerArchivoJson,
-  escribirArchivoJson
+  escribirArchivoJson,
+  leerJsonObjeto
 };
