@@ -2,7 +2,7 @@ const Cliente = require("../models/Cliente");
 const {
     leerArchivoJson,
     escribirArchivoJson
-} = require("../utils/apersistencia");
+} = require("../utils/persistencia");
 
 const ARCHIVO = "clientes.json";
 
@@ -24,7 +24,7 @@ async function obtenerTodas() {
 async function obtenerPorId(id) {
     const clientes = await obtenerTodas();
 
-    return clientes.find(cliente => cliente.id === id);
+    return clientes.find(cliente => String(cliente.id) === String(id));
 }
 
 async function crear(cliente) {
@@ -40,7 +40,7 @@ async function crear(cliente) {
 async function actualizar(id, datosActualizados) {
     const datos = await leerArchivoJson(ARCHIVO);
 
-    const indice = datos.findIndex(cliente => cliente.id === id);
+    const indice = datos.findIndex(cliente => String(cliente.id) === String(id));
 
     if (indice === -1) {
         return null;
@@ -60,7 +60,7 @@ async function actualizar(id, datosActualizados) {
 async function eliminar(id) {
     const datos = await leerArchivoJson(ARCHIVO);
 
-    const indice = datos.findIndex(cliente => cliente.id === id);
+    const indice = datos.findIndex(cliente => String(cliente.id) === String(id));
 
     if (indice === -1) {
         return false;
