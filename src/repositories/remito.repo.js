@@ -164,4 +164,20 @@ async function eliminar(id) {
   return true;
 }
 
-module.exports = { obtenerTodas, obtenerPorId, crear, actualizar, eliminar };
+/**
+ * Devuelve pedidos y clientes para formularios (select de pedido al crear).
+ * @returns {Promise<{pedidos: Array, clientes: Array}>}
+ */
+async function obtenerPedidos() {
+  const freshRoute = await leerFreshRoute();
+  return { pedidos: freshRoute.pedidos, clientes: freshRoute.clientes };
+}
+
+module.exports = {
+  obtenerTodas,
+  obtenerPorId,
+  crear,
+  actualizar,
+  eliminar,
+  obtenerPedidos,
+};

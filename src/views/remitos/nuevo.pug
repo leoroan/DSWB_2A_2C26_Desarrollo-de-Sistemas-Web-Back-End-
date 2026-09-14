@@ -1,0 +1,122 @@
+extends ../layout
+
+block content
+  // Header
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h3.fw-bold.text-dark
+      i.fa-solid.fa-file-circle-plus.text-info.me-2
+      | Nuevo Remito
+    a.btn.btn-outline-secondary.btn-sm(href="/remitos")
+      i.fa-solid.fa-arrow-left.me-1
+      | Volver
+
+  if (typeof errores !== "undefined" && errores.length > 0)
+    div.alert.alert-danger
+      strong
+        i.fa-solid.fa-circle-exclamation.me-1
+        | Se encontraron errores:
+      ul.mb-0
+        each error in errores
+          li #{error}
+
+  div.row.justify-content-center
+    div.col-lg-8
+      div.card.shadow-sm.border-0
+        div.card-header.bg-primary.text-white
+          h6.mb-0
+            i.fa-solid.fa-pen.me-2
+            | Datos del Remito
+        div.card-body
+          form(method="POST" action="/remitos")
+            div.row
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  i.fa-solid.fa-cart-shopping.me-1.text-secondary
+                  | Pedido
+                  span.text-danger *
+                select.form-select(name="pedidoId" required)
+                  option(value="") Seleccione un pedido...
+                  each pedido in pedidos
+                    - const cliente = clientes.find((c) => c.id === pedido.clienteId);
+                    option(
+                      value=pedido.id
+                      selected=(typeof form !== "undefined" && Number(form.pedidoId) === pedido.id)
+                    ) #{"Pedido #" + pedido.id + " - " + (cliente ? cliente.nombre : "Sin cliente") + " (" + pedido.estado + ")"}
+
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  i.fa-solid.fa-circle-half-stroke.me-1.text-secondary
+                  | Estado
+                  span.text-danger *
+                select.form-select(name="estado" required)
+                  - const estados = ["pendiente", "firmado", "entregado", "vencido"];
+                  each est in estados
+                    option(
+                      value=est
+                      selected=(typeof form !== "undefined" && form.estado === est)
+                    ) #{est.charAt(0).toUpperCase() + est.slice(1)}
+
+              div.col-md-4.mb-3
+                label.form-label.fw-bold
+                  i.fa-solid.fa-calendar-day.me-1.text-secondary
+                  | Fecha de Emisión
+                  span.text-danger *
+                input.form-control(
+                  type="date"
+                  name="fechaEmision"
+                  required
+                  value=(typeof form !== "undefined" ? form.fechaEmision : "")
+                )
+
+              div.col-md-4.mb-3
+                label.form-label.fw-bold
+                  i.fa-solid.fa-calendar-week.me-1.text-secondary
+                  | Fecha de Vencimiento
+                  span.text-danger *
+                input.form-control(
+                  type="date"
+                  name="fechaVencimiento"
+                  required
+                  value=(typeof form !== "undefined" ? form.fechaVencimiento : "")
+                )
+
+              div.col-md-4.mb-3
+                label.form-label.fw-bold
+                  i.fa-solid.fa-dollar-sign.me-1.text-secondary
+                  | Monto Total ($)
+                  span.text-danger *
+                input.form-control(
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  name="montoTotal"
+                  required
+                  value=(typeof form !== "undefined" ? form.montoTotal : "")
+                )
+
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  i.fa-solid.fa-pen-nib.me-1.text-secondary
+                  | Firmado Por
+                input.form-control(
+                  type="text"
+                  name="firmadoPor"
+                  placeholder="Nombre de quien firma (opcional)"
+                  value=(typeof form !== "undefined" ? form.firmadoPor : "")
+                )
+
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  i.fa-solid.fa-note-sticky.me-1.text-secondary
+                  | Observaciones
+                textarea.form-control(
+                  name="observaciones"
+                  rows="3"
+                  placeholder="Observaciones (opcional)"
+                ) #{typeof form !== "undefined" ? form.observaciones || "" : ""}
+
+            div.text-end
+              a.btn.btn-outline-secondary.me-2(href="/remitos") Cancelar
+              button.btn.btn-primary(type="submit")
+                i.fa-solid.fa-floppy-disk.me-1
+                | Guardar Remito

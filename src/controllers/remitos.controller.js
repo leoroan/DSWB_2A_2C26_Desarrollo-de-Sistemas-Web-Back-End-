@@ -34,6 +34,65 @@ async function indexWeb(req, res) {
   res.render("remitos/index", { titulo: "Remitos", remitos });
 }
 
+/** GET /remitos/nuevo → formulario de creación (nuevo.pug). */
+async function nuevoWeb(req, res) {
+  const { pedidos, clientes } = await repo.obtenerPedidos();
+  res.render("remitos/nuevo", {
+    titulo: "Nuevo Remito",
+    pedidos,
+    clientes,
+  });
+}
+
+/**
+ * POST /remitos → procesa el formulario de creación (web).
+ * Convierte los tipos, delega en repo.crear y redirige al index.
+ */
+async function crearWeb(req, res) {
+  const {
+    pedidoId,
+    fechaEmision,
+    fechaVencimiento,
+    montoTotal,
+    estado,
+    firmadoPor,
+    observaciones,
+  } = req.body;
+
+  // Validaciones mínimas para el formulario web
+  const errores = [];
+  if (!pedidoId) errores.push("El pedido es obligatorio");
+  if (!fechaEmision) errores.push("La fecha de emisión es obligatoria");
+  if (!fechaVencimiento) errores.push("La fecha de vencimiento es obligatoria");
+  if (montoTotal === undefined || montoTotal === "" || Number.isNaN(Number(montoTotal)))
+    errores.push("El monto total debe ser un número válido");
+  if (!estado) errores.push("El estado es obligatorio");
+
+  if (errores.length > 0) {
+    const { pedidos, clientes } = await repo.obtenerPedidos();
+    return res.status(400).render("remitos/nuevo", {
+      titulo: "Nuevo Remito",
+      pedidos,
+      clientes,
+      errores,
+      form: req.body, // para re-poblar el formulario
+    });
+  }
+
+  await repo.crear({
+    pedidoId: Number(pedidoId),
+    fechaEmision,
+    fechaVencimiento,
+    montoTotal: Number(montoTotal),
+    estado,
+    firmadoPor: firmadoPor || null,
+    observaciones: observaciones || null,
+    penalizacionAplicada: 0,
+  });
+
+  res.redirect("/remitos");
+}
+
 /** GET /remitos/:id → detalle del remito (detail.pug). */
 async function detailWeb(req, res) {
   const id = Number(req.params.id);
@@ -269,6 +328,8 @@ async function cambiarEstado(req, res) {
 
 module.exports = {
   indexWeb,
+  nuevoWeb,
+  crearWeb,
   detailWeb,
   listar,
   detalle,

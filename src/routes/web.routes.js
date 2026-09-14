@@ -11,6 +11,8 @@ router.get("/documentacion", controller.mostrarDocumentacion);
 
 // Remitos — vistas web (Pug)
 router.get("/remitos", remitosController.indexWeb);
+router.get("/remitos/nuevo", remitosController.nuevoWeb); // antes de /:id
+router.post("/remitos", remitosController.crearWeb);
 router.get("/remitos/:id", remitosController.detailWeb);
 
 module.exports = router;
