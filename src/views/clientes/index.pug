@@ -1,0 +1,50 @@
+extends ../layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1.mb-1 Clientes
+      p.text-muted.mb-0 Gestión de clientes de FreshRoute B2B.
+
+    a.btn.btn-primary(href="/clientes/nuevo")
+      i.fa-solid.fa-plus.me-2
+      | Nuevo cliente
+
+  if clientes && clientes.length
+    div.table-responsive
+      table.table.table-striped.table-hover.align-middle
+        thead.table-dark
+          tr
+            th ID
+            th Nombre
+            th Tipo
+            th Email
+            th Teléfono
+            th Domicilio de entrega
+            th Estado
+            th Fecha de alta
+            th Acciones
+
+        tbody
+          each cliente in clientes
+            tr
+              td= cliente.id
+              td= cliente.nombre
+              td= cliente.tipo
+              td= cliente.email
+              td= cliente.telefono
+              td= cliente.domicilioDeEntrega
+              td
+                if cliente.estado === "Activo"
+                  span.badge.bg-success= cliente.estado
+                else
+                  span.badge.bg-secondary= cliente.estado
+              td= cliente.fechaAlta
+              td
+                a.btn.btn-sm.btn-outline-primary(href=`/clientes/${cliente.id}/editar`)
+                  i.fa-solid.fa-pen.me-1
+                  | Editar
+  else
+    div.alert.alert-info
+      i.fa-solid.fa-circle-info.me-2
+      | No hay clientes registrados.
