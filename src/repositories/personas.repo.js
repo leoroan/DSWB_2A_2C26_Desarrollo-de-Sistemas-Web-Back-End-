@@ -84,20 +84,3 @@ async function eliminar(id) {
 }
 
 module.exports = { obtenerTodas, obtenerPorId, crear, actualizar, eliminar };
-
-/**
- * Elimina una persona de la estructura almacenada.
- * @param {number} id
- * @returns {Promise<boolean>} true si se eliminó, false si no existía.
- */
-async function eliminar(id) {
-  const personas = await leerJson();
-  const indice = personas.findIndex((p) => p.id === id);
-  if (indice === -1) return false;
-
-  personas.splice(indice, 1);
-  await escribirJson(personas);
-  return true;
-}
-
-module.exports = { obtenerTodas, obtenerPorId, crear, actualizar, eliminar };
