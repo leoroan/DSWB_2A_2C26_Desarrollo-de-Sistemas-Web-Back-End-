@@ -1,0 +1,46 @@
+extends ../layout
+
+block content
+  .container.mt-4
+    h2 Detalle de Telemetría
+    h4 Vehículo: #{vehiculo.patente} - #{vehiculo.tipo}
+
+    .row.mt-4
+      .col-md-4
+        .card
+          .card-body
+            h5.card-title Estado Actual
+            p.card-text 
+              strong Temperatura: 
+              | #{historial.length ? historial[historial.length - 1].temperatura + '°C' : 'N/A'}
+            p.card-text 
+              strong Velocidad: 
+              | #{historial.length ? historial[historial.length - 1].velocidad + ' km/h' : 'N/A'}
+            p.card-text 
+              strong Motor: 
+              | #{historial.length ? historial[historial.length - 1].estadoMotor : 'N/A'}
+
+      .col-md-8
+        h5 Historial de Actualizaciones
+        table.table.table-sm.mt-2
+          thead
+            tr
+              th Fecha/Hora
+              th Ubicación (Lat, Lng)
+              th Temp.
+              th Vel.
+          tbody
+            each registro in historial
+              tr
+                td= new Date(registro.timestamp).toLocaleString()
+                td #{registro.latitud}, #{registro.longitud}
+                td 
+                  //- Marcamos en rojo si la temperatura se sale del rango
+                  if registro.temperatura < vehiculo.temperaturaMin || registro.temperatura > vehiculo.temperaturaMax
+                    span.text-danger.fw-bold #{registro.temperatura}°C (¡Alerta!)
+                  else
+                    span #{registro.temperatura}°C
+                td #{registro.velocidad} km/h
+            else
+              tr
+                td(colspan="4").text-center No hay registros de telemetría para este vehículo.
