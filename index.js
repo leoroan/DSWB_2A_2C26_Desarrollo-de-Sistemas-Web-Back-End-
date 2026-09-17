@@ -1,10 +1,11 @@
 const express = require("express");
-const path = require("node:path"); // Importar path para manejar rutas de archivos
+const path = require("node:path");
 const requestLogger = require("./src/middlewares/requestLogger");
 const errorHandler = require("./src/middlewares/errorHandler");
 const webRoutes = require("./src/routes/web.routes");
 const apiRoutes = require("./src/routes/api.routes");
-
+const vehiculosRoutes = require("./src/routes/vehiculos.routes");
+const telemetriaRoutes = require("./src/routes/telemetria.routes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -19,6 +20,9 @@ app.use(requestLogger); // Nuestro logger de requests
 
 // Rutas web (manejo de vistas y formularios)
 app.use("/", webRoutes);
+app.use("/vehiculos", vehiculosRoutes);
+app.use("/telemetria", telemetriaRoutes);
+
 
 // Rutas de API REST (para Postman, integraciones, etc.)
 app.use("/api", apiRoutes);

@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+  .container.mt-4
+    h2 Flota de Vehículos
+    p Listado de unidades disponibles y sus estados.
+    
+    table.table.table-striped.mt-3
+      thead
+        tr
+          th Patente
+          th Tipo
+          th Capacidad
+          th Rango Temp.
+          th Chofer Asignado
+          th Estado
+          th Acciones
+      tbody
+        each vehiculo in vehiculos
+          tr
+            td= vehiculo.patente
+            td= vehiculo.tipo
+            td= vehiculo.capacidad
+            td #{vehiculo.temperaturaMin}°C a #{vehiculo.temperaturaMax}°C
+            td= vehiculo.choferAsignadoId ? vehiculo.choferAsignadoId : 'Sin asignar'
+            td
+              span.badge(class=vehiculo.estado === 'Disponible' ? 'bg-success' : 'bg-warning')= vehiculo.estado
+            td
+              a.btn.btn-sm.btn-primary(href=`/telemetria/${vehiculo.id}`) Ver Telemetría
+        else
+          tr
+            td(colspan="7").text-center No hay vehículos registrados en la flota.
