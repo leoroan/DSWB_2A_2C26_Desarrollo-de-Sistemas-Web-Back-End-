@@ -1,51 +1,474 @@
 {
   "secuencias": {
-    "pedidos": 2,
-    "items": 2,
-    "productos": 2
+    "pedidos": 15,
+    "items": 32,
+    "productos": 7
   },
   "pedidos": [
     {
+      "id": 1,
+      "clienteId": 1783329300000,
+      "fechaPedido": "2026-09-15",
+      "estado": "entregado",
+      "fechaEntregaSolicitada": "2026-09-16",
+      "observaciones": "Entregar en recepción antes de las 8:00."
+    },
+    {
       "id": 2,
-      "clienteId": 1,
-      "fechaPedido": "2026-09-12",
+      "clienteId": 1785234000000,
+      "fechaPedido": "2026-09-15",
+      "estado": "cancelado",
+      "fechaEntregaSolicitada": "2026-09-16",
+      "observaciones": "Entrega rechazada por temperatura fuera de rango; se cancela el pedido y se acredita el saldo."
+    },
+    {
+      "id": 3,
+      "clienteId": 1787145000000,
+      "fechaPedido": "2026-09-15",
+      "estado": "entregado",
+      "fechaEntregaSolicitada": "2026-09-16",
+      "observaciones": "Entrega 65 minutos fuera de la ventana horaria; corresponde penalización contractual."
+    },
+    {
+      "id": 4,
+      "clienteId": 1784642700000,
+      "fechaPedido": "2026-09-15",
+      "estado": "entregado",
+      "fechaEntregaSolicitada": "2026-09-16",
+      "observaciones": "Entregar en la playa de descarga sobre Av. Maipú."
+    },
+    {
+      "id": 5,
+      "clienteId": 1786441800000,
+      "fechaPedido": "2026-09-15",
+      "estado": "entregado",
+      "fechaEntregaSolicitada": "2026-09-16",
+      "observaciones": "Ingresar por el acceso de servicio."
+    },
+    {
+      "id": 6,
+      "clienteId": 1788350400000,
+      "fechaPedido": "2026-09-15",
+      "estado": "entregado",
+      "fechaEntregaSolicitada": "2026-09-16",
+      "observaciones": "Última entrega del pack de agua saborizada antes de la baja del producto."
+    },
+    {
+      "id": 7,
+      "clienteId": 1788864300000,
+      "fechaPedido": "2026-07-22",
+      "estado": "entregado",
+      "fechaEntregaSolicitada": "2026-07-24",
+      "observaciones": "Cliente dado de baja en septiembre; el remito quedó impago."
+    },
+    {
+      "id": 8,
+      "clienteId": 1783942800000,
+      "fechaPedido": "2026-09-16",
+      "estado": "entregado",
+      "fechaEntregaSolicitada": "2026-09-17",
+      "observaciones": "Entregar antes de las 8:00."
+    },
+    {
+      "id": 9,
+      "clienteId": 1787145000000,
+      "fechaPedido": "2026-09-16",
+      "estado": "entregado",
+      "fechaEntregaSolicitada": "2026-09-17",
+      "observaciones": "Sin picante en las viandas vegetarianas."
+    },
+    {
+      "id": 10,
+      "clienteId": 1787671500000,
+      "fechaPedido": "2026-09-16",
+      "estado": "en_reparto",
+      "fechaEntregaSolicitada": "2026-09-17",
+      "observaciones": "Entregar en el depósito del restaurante."
+    },
+    {
+      "id": 11,
+      "clienteId": 1783329300000,
+      "fechaPedido": "2026-09-16",
+      "estado": "confirmado",
+      "fechaEntregaSolicitada": "2026-09-18",
+      "observaciones": "Confirmar cantidad final de viandas."
+    },
+    {
+      "id": 12,
+      "clienteId": 1785774900000,
+      "fechaPedido": "2026-09-17",
+      "estado": "confirmado",
+      "fechaEntregaSolicitada": "2026-09-18",
+      "observaciones": "Incluir bandejas de insumos refrigerados."
+    },
+    {
+      "id": 13,
+      "clienteId": 1786441800000,
+      "fechaPedido": "2026-09-17",
+      "estado": "en_preparacion",
+      "fechaEntregaSolicitada": "2026-09-18",
+      "observaciones": ""
+    },
+    {
+      "id": 14,
+      "clienteId": 1787671500000,
+      "fechaPedido": "2026-09-17",
       "estado": "pendiente",
-      "fechaEntregaSolicitada": "2026-09-14",
-      "observaciones": "Entregar en recepción si o si"
+      "fechaEntregaSolicitada": "2026-09-19",
+      "observaciones": "Pedido adicional para el fin de semana."
+    },
+    {
+      "id": 15,
+      "clienteId": 1788350400000,
+      "fechaPedido": "2026-09-16",
+      "estado": "cancelado",
+      "fechaEntregaSolicitada": "2026-09-17",
+      "observaciones": "El cliente canceló la entrega porque cerró la cocina por mantenimiento."
     }
   ],
   "items": [
     {
+      "id": 1,
+      "pedidoId": 1,
+      "productoId": 1,
+      "cantidad": 12,
+      "observaciones": "Sin sal"
+    },
+    {
       "id": 2,
+      "pedidoId": 1,
+      "productoId": 2,
+      "cantidad": 6,
+      "observaciones": ""
+    },
+    {
+      "id": 3,
+      "pedidoId": 1,
+      "productoId": 6,
+      "cantidad": 12,
+      "observaciones": "Porciones individuales"
+    },
+    {
+      "id": 4,
       "pedidoId": 2,
+      "productoId": 5,
+      "cantidad": 4,
+      "observaciones": "Mantener cadena de frío"
+    },
+    {
+      "id": 5,
+      "pedidoId": 2,
+      "productoId": 4,
+      "cantidad": 8,
+      "observaciones": ""
+    },
+    {
+      "id": 6,
+      "pedidoId": 3,
+      "productoId": 3,
+      "cantidad": 10,
+      "observaciones": ""
+    },
+    {
+      "id": 7,
+      "pedidoId": 3,
+      "productoId": 2,
+      "cantidad": 5,
+      "observaciones": "Sin picante"
+    },
+    {
+      "id": 8,
+      "pedidoId": 4,
+      "productoId": 1,
+      "cantidad": 15,
+      "observaciones": ""
+    },
+    {
+      "id": 9,
+      "pedidoId": 4,
+      "productoId": 4,
+      "cantidad": 10,
+      "observaciones": ""
+    },
+    {
+      "id": 10,
+      "pedidoId": 4,
+      "productoId": 6,
+      "cantidad": 15,
+      "observaciones": ""
+    },
+    {
+      "id": 11,
+      "pedidoId": 5,
+      "productoId": 3,
+      "cantidad": 8,
+      "observaciones": "Punto de cocción completo"
+    },
+    {
+      "id": 12,
+      "pedidoId": 5,
+      "productoId": 2,
+      "cantidad": 4,
+      "observaciones": ""
+    },
+    {
+      "id": 13,
+      "pedidoId": 6,
+      "productoId": 1,
+      "cantidad": 20,
+      "observaciones": ""
+    },
+    {
+      "id": 14,
+      "pedidoId": 6,
+      "productoId": 6,
+      "cantidad": 20,
+      "observaciones": ""
+    },
+    {
+      "id": 15,
+      "pedidoId": 6,
+      "productoId": 7,
+      "cantidad": 6,
+      "observaciones": "Producto discontinuado"
+    },
+    {
+      "id": 16,
+      "pedidoId": 7,
+      "productoId": 1,
+      "cantidad": 6,
+      "observaciones": ""
+    },
+    {
+      "id": 17,
+      "pedidoId": 7,
+      "productoId": 4,
+      "cantidad": 6,
+      "observaciones": ""
+    },
+    {
+      "id": 18,
+      "pedidoId": 8,
+      "productoId": 1,
+      "cantidad": 10,
+      "observaciones": ""
+    },
+    {
+      "id": 19,
+      "pedidoId": 8,
+      "productoId": 6,
+      "cantidad": 10,
+      "observaciones": ""
+    },
+    {
+      "id": 20,
+      "pedidoId": 9,
+      "productoId": 2,
+      "cantidad": 8,
+      "observaciones": "Sin picante"
+    },
+    {
+      "id": 21,
+      "pedidoId": 9,
+      "productoId": 4,
+      "cantidad": 6,
+      "observaciones": ""
+    },
+    {
+      "id": 22,
+      "pedidoId": 10,
+      "productoId": 3,
+      "cantidad": 12,
+      "observaciones": ""
+    },
+    {
+      "id": 23,
+      "pedidoId": 10,
+      "productoId": 5,
+      "cantidad": 3,
+      "observaciones": "Mantener cadena de frío"
+    },
+    {
+      "id": 24,
+      "pedidoId": 11,
+      "productoId": 1,
+      "cantidad": 14,
+      "observaciones": ""
+    },
+    {
+      "id": 25,
+      "pedidoId": 11,
+      "productoId": 2,
+      "cantidad": 7,
+      "observaciones": ""
+    },
+    {
+      "id": 26,
+      "pedidoId": 12,
+      "productoId": 1,
+      "cantidad": 18,
+      "observaciones": ""
+    },
+    {
+      "id": 27,
+      "pedidoId": 12,
+      "productoId": 6,
+      "cantidad": 18,
+      "observaciones": ""
+    },
+    {
+      "id": 28,
+      "pedidoId": 13,
+      "productoId": 3,
+      "cantidad": 9,
+      "observaciones": ""
+    },
+    {
+      "id": 29,
+      "pedidoId": 13,
+      "productoId": 4,
+      "cantidad": 9,
+      "observaciones": ""
+    },
+    {
+      "id": 30,
+      "pedidoId": 14,
+      "productoId": 3,
+      "cantidad": 16,
+      "observaciones": ""
+    },
+    {
+      "id": 31,
+      "pedidoId": 14,
+      "productoId": 5,
+      "cantidad": 2,
+      "observaciones": ""
+    },
+    {
+      "id": 32,
+      "pedidoId": 15,
       "productoId": 1,
       "cantidad": 5,
-      "observaciones": "Sin sal"
+      "observaciones": ""
     }
   ],
   "productos": [
     {
       "id": 1,
-      "nombre": "Vianda de pollo",
+      "nombre": "Vianda de pollo al horno",
       "categoria": "Viandas",
       "precio": 7500,
       "estado": "activo"
+    },
+    {
+      "id": 2,
+      "nombre": "Vianda vegetariana",
+      "categoria": "Viandas",
+      "precio": 6800,
+      "estado": "activo"
+    },
+    {
+      "id": 3,
+      "nombre": "Vianda de carne al horno",
+      "categoria": "Viandas",
+      "precio": 7900,
+      "estado": "activo"
+    },
+    {
+      "id": 4,
+      "nombre": "Ensalada César con pollo",
+      "categoria": "Ensaladas",
+      "precio": 6200,
+      "estado": "activo"
+    },
+    {
+      "id": 5,
+      "nombre": "Bandeja de insumos refrigerados",
+      "categoria": "Insumos",
+      "precio": 12500,
+      "estado": "activo"
+    },
+    {
+      "id": 6,
+      "nombre": "Postre casero (porción)",
+      "categoria": "Postres",
+      "precio": 2500,
+      "estado": "activo"
+    },
+    {
+      "id": 7,
+      "nombre": "Agua saborizada 500 ml (pack x6)",
+      "categoria": "Bebidas",
+      "precio": 4500,
+      "estado": "inactivo"
     }
   ],
   "rutas": [
     {
       "id": 1,
-      "nombre": "Ruta Centro"
+      "nombre": "Ruta Centro (RUT-2026-001)"
     },
     {
       "id": 2,
-      "nombre": "Ruta Norte"
+      "nombre": "Ruta Norte (RUT-2026-002)"
+    },
+    {
+      "id": 3,
+      "nombre": "Ruta Centro AM (RUT-2026-003)"
+    },
+    {
+      "id": 4,
+      "nombre": "Ruta Norte PM (RUT-2026-004)"
     }
   ],
   "asignaciones": [
     {
+      "pedidoId": 1,
+      "rutaId": 1
+    },
+    {
       "pedidoId": 2,
+      "rutaId": 1
+    },
+    {
+      "pedidoId": 3,
+      "rutaId": 1
+    },
+    {
+      "pedidoId": 4,
       "rutaId": 2
+    },
+    {
+      "pedidoId": 5,
+      "rutaId": 2
+    },
+    {
+      "pedidoId": 6,
+      "rutaId": 2
+    },
+    {
+      "pedidoId": 8,
+      "rutaId": 3
+    },
+    {
+      "pedidoId": 9,
+      "rutaId": 3
+    },
+    {
+      "pedidoId": 10,
+      "rutaId": 3
+    },
+    {
+      "pedidoId": 11,
+      "rutaId": 4
+    },
+    {
+      "pedidoId": 12,
+      "rutaId": 4
+    },
+    {
+      "pedidoId": 13,
+      "rutaId": 4
     }
   ]
 }

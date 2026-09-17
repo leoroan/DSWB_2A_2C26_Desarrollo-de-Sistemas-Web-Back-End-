@@ -1,1 +1,68 @@
-[]
+[
+  {
+    "id": 1,
+    "pedidoId": 7,
+    "fechaEmision": "2026-07-24",
+    "fechaVencimiento": "2026-08-23",
+    "montoTotal": 82200,
+    "estado": "vencido",
+    "firmadoPor": "Julián Ríos (Cocina Saludable Belgrano)",
+    "observaciones": "Remito firmado en tiempo y forma; el pago no se registró dentro del plazo de 30 días.",
+    "penalizacionAplicada": 0
+  },
+  {
+    "id": 2,
+    "pedidoId": 1,
+    "fechaEmision": "2026-09-16",
+    "fechaVencimiento": "2026-10-16",
+    "montoTotal": 160800,
+    "estado": "firmado",
+    "firmadoPor": "Marta Gimenez (Don Pepe)",
+    "observaciones": "Entrega conforme dentro de la ventana horaria acordada.",
+    "penalizacionAplicada": 0
+  },
+  {
+    "id": 3,
+    "pedidoId": 3,
+    "fechaEmision": "2026-09-16",
+    "fechaVencimiento": "2026-10-16",
+    "montoTotal": 131000,
+    "estado": "firmado",
+    "firmadoPor": "Luciana Ferreyra (Comedor Tecnológico Palermo)",
+    "observaciones": "Se aplicó la penalización por entrega 65 minutos fuera de la ventana horaria.",
+    "penalizacionAplicada": 18000
+  },
+  {
+    "id": 4,
+    "pedidoId": 4,
+    "fechaEmision": "2026-09-16",
+    "fechaVencimiento": "2026-10-16",
+    "montoTotal": 212000,
+    "estado": "firmado",
+    "firmadoPor": "Ricardo Salas (Comedor Industrial Maipú)",
+    "observaciones": "Entrega conforme. Pago diferido a 30 días según contrato.",
+    "penalizacionAplicada": 0
+  },
+  {
+    "id": 5,
+    "pedidoId": 5,
+    "fechaEmision": "2026-09-16",
+    "fechaVencimiento": "2026-10-16",
+    "montoTotal": 90400,
+    "estado": "firmado",
+    "firmadoPor": "Silvia Ocampo (Restaurante El Ombú)",
+    "observaciones": "Entrega conforme en el acceso de servicio.",
+    "penalizacionAplicada": 0
+  },
+  {
+    "id": 6,
+    "pedidoId": 6,
+    "fechaEmision": "2026-09-16",
+    "fechaVencimiento": "2026-10-16",
+    "montoTotal": 227000,
+    "estado": "pendiente",
+    "firmadoPor": null,
+    "observaciones": "Pendiente de firma: la copia firmada se retira en la próxima visita.",
+    "penalizacionAplicada": 0
+  }
+]

@@ -1,7 +1,10 @@
-const { leerJson, escribirJson } = require("../utils/persistencia");
+const {
+  leerArchivoJson,
+  escribirArchivoJson,
+} = require("../utils/persistencia");
 const Vehiculo = require("../models/Vehiculo");
 
-const ARCHIVO = "vehiculos"; 
+const ARCHIVO = "vehiculos.json";
 
 function mapearAVehiculo(datos) {
   return new Vehiculo(
@@ -12,35 +15,35 @@ function mapearAVehiculo(datos) {
 }
 
 async function obtenerTodos() {
-  const vehiculos = await leerJson(ARCHIVO);
+  const vehiculos = await leerArchivoJson(ARCHIVO);
   return vehiculos.map(mapearAVehiculo);
 }
 
 async function obtenerPorId(id) {
   const vehiculos = await obtenerTodos();
-  return vehiculos.find((v) => v.id === id) || null;
+  return vehiculos.find((v) => String(v.id) === String(id)) || null;
 }
 
 async function crear(datos) {
-  const vehiculos = await leerJson(ARCHIVO);
+  const vehiculos = await leerArchivoJson(ARCHIVO);
   const siguienteId = vehiculos.length
     ? Math.max(...vehiculos.map((v) => v.id)) + 1
     : 1;
 
   const nuevo = mapearAVehiculo({ id: siguienteId, ...datos });
   vehiculos.push(nuevo);
-  await escribirJson(ARCHIVO, vehiculos);
+  await escribirArchivoJson(ARCHIVO, vehiculos);
   return nuevo;
 }
 
 async function actualizar(id, cambios) {
-  const vehiculos = await leerJson(ARCHIVO);
-  const indice = vehiculos.findIndex((v) => v.id === id);
+  const vehiculos = await leerArchivoJson(ARCHIVO);
+  const indice = vehiculos.findIndex((v) => String(v.id) === String(id));
   if (indice === -1) return null;
 
   const actualizado = mapearAVehiculo({ ...vehiculos[indice], ...cambios, id });
   vehiculos[indice] = actualizado;
-  await escribirJson(ARCHIVO, vehiculos);
+  await escribirArchivoJson(ARCHIVO, vehiculos);
   return actualizado;
 }
 

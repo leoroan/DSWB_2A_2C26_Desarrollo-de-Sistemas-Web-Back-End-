@@ -4,8 +4,6 @@ const requestLogger = require("./src/middlewares/requestLogger");
 const errorHandler = require("./src/middlewares/errorHandler");
 const webRoutes = require("./src/routes/web.routes");
 const apiRoutes = require("./src/routes/api.routes");
-const vehiculosRoutes = require("./src/routes/vehiculos.routes");
-const telemetriaRoutes = require("./src/routes/telemetria.routes");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -18,11 +16,9 @@ app.use(express.json()); // Para parsear el body de requests JSON
 app.use(express.urlencoded({ extended: true })); // Para parsear el body de forms HTML
 app.use(requestLogger); // Nuestro logger de requests
 
-// Rutas web (manejo de vistas y formularios)
+// Rutas web
+// Incluye dashboard, pedidos, remitos, clientes, rutas, vehículos y telemetría.
 app.use("/", webRoutes);
-app.use("/vehiculos", vehiculosRoutes);
-app.use("/telemetria", telemetriaRoutes);
-
 
 // Rutas de API REST (para Postman, integraciones, etc.)
 app.use("/api", apiRoutes);
@@ -39,18 +35,21 @@ app.use((req, res, next) => {
 // Middleware de manejo centralizado de errores
 app.use(errorHandler);
 
-if (require.main === module) app.listen(PORT, () => {
-  console.log(`Servidor FreshRoute B2B corriendo en http://localhost:${PORT}`);
-  // console.log(`Accede al Dashboard de Oficina en: http://localhost:${PORT}/`);
-  // console.log(
-  //   `Accede al Simulador de Chofer en: http://localhost:${PORT}/simulador`,
-  // );
-  console.log(
-    `Accede a la Documentación en: http://localhost:${PORT}/documentacion`,
-  );
-  console.log(
-    `Los Endpoints de la API REST comienzan en: http://localhost:${PORT}/api`,
-  );
-});
+if (require.main === module)
+  app.listen(PORT, () => {
+    console.log(
+      `Servidor FreshRoute B2B corriendo en http://localhost:${PORT}`,
+    );
+    // console.log(`Accede al Dashboard de Oficina en: http://localhost:${PORT}/`);
+    // console.log(
+    //   `Accede al Simulador de Chofer en: http://localhost:${PORT}/simulador`,
+    // );
+    console.log(
+      `Accede a la Documentación en: http://localhost:${PORT}/documentacion`,
+    );
+    console.log(
+      `Los Endpoints de la API REST comienzan en: http://localhost:${PORT}/api`,
+    );
+  });
 
 module.exports = app;

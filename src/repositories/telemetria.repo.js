@@ -1,7 +1,10 @@
-const { leerJson, escribirJson } = require("../utils/persistencia");
+const {
+  leerArchivoJson,
+  escribirArchivoJson,
+} = require("../utils/persistencia");
 const RegistroTelemetria = require("../models/RegistroTelemetria");
 
-const ARCHIVO = "telemetria"; 
+const ARCHIVO = "telemetria.json";
 
 function mapearATelemetria(datos) {
   return new RegistroTelemetria(
@@ -11,12 +14,12 @@ function mapearATelemetria(datos) {
 }
 
 async function obtenerTodos() {
-  const registros = await leerJson(ARCHIVO);
+  const registros = await leerArchivoJson(ARCHIVO);
   return registros.map(mapearATelemetria);
 }
 
 async function crear(datos) {
-  const registros = await leerJson(ARCHIVO);
+  const registros = await leerArchivoJson(ARCHIVO);
   const siguienteId = registros.length
     ? Math.max(...registros.map((r) => r.id)) + 1
     : 1;
@@ -26,14 +29,14 @@ async function crear(datos) {
 
   const nuevo = mapearATelemetria({ id: siguienteId, ...datos });
   registros.push(nuevo);
-  await escribirJson(ARCHIVO, registros);
+  await escribirArchivoJson(ARCHIVO, registros);
   return nuevo;
 }
 
 // método extra para la vista de detalle
 async function obtenerPorVehiculo(vehiculoId) {
   const registros = await obtenerTodos();
-  return registros.filter(r => r.vehiculoId === parseInt(vehiculoId));
+  return registros.filter((r) => String(r.vehiculoId) === String(vehiculoId));
 }
 
 module.exports = { obtenerTodos, crear, obtenerPorVehiculo };

@@ -1,12 +1,102 @@
 [
   {
-    "id": "1789644405668",
+    "id": "1783329300000",
     "nombre": "Don Pepe",
     "tipo": "Comedor",
-    "email": "pepe@comedorpepe.com",
-    "telefono": "22134344343",
-    "domicilioDeEntrega": "calle Falsa, 123",
+    "email": "recepcion@comedordonpepe.com.ar",
+    "telefono": "1145237801",
+    "domicilioDeEntrega": "Av. Corrientes 1450, CABA",
     "estado": "Activo",
-    "fechaAlta": "2026-09-17T11:26:45.668Z"
+    "fechaAlta": "2026-07-06T09:15:00.000Z"
+  },
+  {
+    "id": "1783942800000",
+    "nombre": "La Trattoria del Puerto",
+    "tipo": "Restaurante",
+    "email": "compras@trattoriadelpuerto.com.ar",
+    "telefono": "1147812290",
+    "domicilioDeEntrega": "Av. Caseros 320, CABA",
+    "estado": "Activo",
+    "fechaAlta": "2026-07-13T11:40:00.000Z"
+  },
+  {
+    "id": "1784642700000",
+    "nombre": "Comedor Industrial Maipú",
+    "tipo": "Comedor",
+    "email": "cocina@comedormaipu.com.ar",
+    "telefono": "1147063312",
+    "domicilioDeEntrega": "Av. Maipú 850, Vicente López",
+    "estado": "Activo",
+    "fechaAlta": "2026-07-21T14:05:00.000Z"
+  },
+  {
+    "id": "1785234000000",
+    "nombre": "Sabor Porteño",
+    "tipo": "Restaurante",
+    "email": "pedidos@saborporteno.com.ar",
+    "telefono": "1145984477",
+    "domicilioDeEntrega": "Av. Belgrano 2210, CABA",
+    "estado": "Activo",
+    "fechaAlta": "2026-07-28T10:20:00.000Z"
+  },
+  {
+    "id": "1785774900000",
+    "nombre": "Viandas del Sur",
+    "tipo": "Comedor",
+    "email": "abastecimiento@viandasdelsur.com.ar",
+    "telefono": "1167342098",
+    "domicilioDeEntrega": "Av. Rivadavia 5320, CABA",
+    "estado": "Activo",
+    "fechaAlta": "2026-08-03T16:35:00.000Z"
+  },
+  {
+    "id": "1786441800000",
+    "nombre": "Restaurante El Ombú",
+    "tipo": "Restaurante",
+    "email": "gerencia@elombu.com.ar",
+    "telefono": "1145529013",
+    "domicilioDeEntrega": "Av. Cabildo 1890, CABA",
+    "estado": "Activo",
+    "fechaAlta": "2026-08-11T09:50:00.000Z"
+  },
+  {
+    "id": "1787145000000",
+    "nombre": "Comedor Tecnológico Palermo",
+    "tipo": "Comedor",
+    "email": "catering@comedortecnologicopalermo.com.ar",
+    "telefono": "1158093421",
+    "domicilioDeEntrega": "Av. Santa Fe 3720, CABA",
+    "estado": "Activo",
+    "fechaAlta": "2026-08-19T13:10:00.000Z"
+  },
+  {
+    "id": "1787671500000",
+    "nombre": "Bodegón La Ribera",
+    "tipo": "Restaurante",
+    "email": "reservas@bodegonalaribera.com.ar",
+    "telefono": "1146317755",
+    "domicilioDeEntrega": "Av. del Libertador 6200, CABA",
+    "estado": "Activo",
+    "fechaAlta": "2026-08-25T15:25:00.000Z"
+  },
+  {
+    "id": "1788350400000",
+    "nombre": "Comedor Norte",
+    "tipo": "Comedor",
+    "email": "logistica@comedornorte.com.ar",
+    "telefono": "1147882260",
+    "domicilioDeEntrega": "Av. San Martín 2350, Florida",
+    "estado": "Activo",
+    "fechaAlta": "2026-09-02T12:00:00.000Z"
+  },
+  {
+    "id": "1788864300000",
+    "nombre": "Cocina Saludable Belgrano",
+    "tipo": "Restaurante",
+    "email": "contacto@cocinasaludable.com.ar",
+    "telefono": "1145902284",
+    "domicilioDeEntrega": "Av. Cabildo 2450, CABA",
+    "estado": "Inactivo",
+    "fechaAlta": "2026-09-08T10:45:00.000Z"
   }
 ]

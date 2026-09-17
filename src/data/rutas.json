@@ -4,10 +4,10 @@
     "codigo": "RUT-2026-001",
     "planificadorId": 31,
     "choferId": 11,
-    "estado": "en curso",
-    "fechaPlanificacion": "2026-09-13T06:30:00-03:00",
-    "fechaEjecucion": "2026-09-13T07:15:00-03:00",
-    "observaciones": "Priorizar entregas refrigeradas.",
+    "estado": "finalizada",
+    "fechaPlanificacion": "2026-09-15T19:30:00-03:00",
+    "fechaEjecucion": "2026-09-16T06:45:00-03:00",
+    "observaciones": "Jornada cerrada del 16/09. Se priorizaron las entregas refrigeradas antes de las 10:00.",
     "vehiculoPatente": "AB123CD"
   },
   {
@@ -15,10 +15,32 @@
     "codigo": "RUT-2026-002",
     "planificadorId": 32,
     "choferId": 12,
-    "estado": "planificada",
-    "fechaPlanificacion": "2026-09-13T08:00:00-03:00",
-    "fechaEjecucion": null,
-    "observaciones": "Salida prevista desde el depósito central.",
+    "estado": "finalizada",
+    "fechaPlanificacion": "2026-09-15T20:00:00-03:00",
+    "fechaEjecucion": "2026-09-16T07:00:00-03:00",
+    "observaciones": "Jornada cerrada del 16/09 en zona norte, sin incidentes.",
     "vehiculoPatente": "AC456EF"
+  },
+  {
+    "id": 3,
+    "codigo": "RUT-2026-003",
+    "planificadorId": 31,
+    "choferId": 11,
+    "estado": "en curso",
+    "fechaPlanificacion": "2026-09-16T20:15:00-03:00",
+    "fechaEjecucion": "2026-09-17T07:00:00-03:00",
+    "observaciones": "Recorrido en curso: priorizar entregas refrigeradas; ventana crítica antes de las 12:00.",
+    "vehiculoPatente": "AB123CD"
+  },
+  {
+    "id": 4,
+    "codigo": "RUT-2026-004",
+    "planificadorId": 32,
+    "choferId": 13,
+    "estado": "planificada",
+    "fechaPlanificacion": "2026-09-17T09:00:00-03:00",
+    "fechaEjecucion": null,
+    "observaciones": "Salida prevista desde el depósito central a las 07:00 del 18/09.",
+    "vehiculoPatente": "AE345KL"
   }
 ]
