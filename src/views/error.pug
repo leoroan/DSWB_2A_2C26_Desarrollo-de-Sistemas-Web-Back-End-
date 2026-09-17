@@ -1,6 +1,22 @@
 extends layout
 
 block content
-  h1= titulo
-  p.alert.alert-danger= mensaje
-  a.btn.btn-secondary(href='/pedidos') Volver a pedidos
+  div.container.my-5.text-center
+    div.row.justify-content-center
+      div.col-md-8
+        div.card.shadow-sm.border-0
+          div.card-header.bg-danger.text-white
+            h4.mb-0
+              i.fa-solid.fa-circle-exclamation.me-2
+              | Error
+
+          div.card-body
+            h2.text-danger ¡Algo salió mal!
+            p.text-muted
+              if mensaje
+                | #{mensaje}
+              else
+                | Ha ocurrido un error inesperado.
+            a.btn.btn-outline-primary(href="/")
+              i.fa-solid.fa-house.me-2
+              | Volver al inicio

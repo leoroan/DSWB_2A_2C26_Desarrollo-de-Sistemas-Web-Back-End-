@@ -23,6 +23,15 @@ app.use("/", webRoutes);
 // Rutas de API REST (para Postman, integraciones, etc.)
 app.use("/api", apiRoutes);
 
+// Manejador 404 — captura cualquier ruta que no coincida
+app.use((req, res, next) => {
+  const err = new Error(
+    `Recurso no encontrado: ${req.method} ${req.originalUrl}`,
+  );
+  err.status = 404;
+  next(err);
+});
+
 // Middleware de manejo centralizado de errores
 app.use(errorHandler);
 

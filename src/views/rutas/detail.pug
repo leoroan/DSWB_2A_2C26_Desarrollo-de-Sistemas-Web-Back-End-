@@ -1,0 +1,63 @@
+extends ../layout
+
+block content
+  a.btn.btn-link.ps-0.mb-3(href="/rutas")
+    i.fa-solid.fa-arrow-left.me-2
+    | Volver a rutas
+
+  div.d-flex.justify-content-between.align-items-start.mb-4
+    div
+      h1.mb-1= ruta.codigo
+      p.text-muted.mb-0= ruta.observaciones || "Sin observaciones"
+    span.badge.fs-6(class=ruta.estado === "en curso" ? "text-bg-success" : "text-bg-secondary")= ruta.estado
+
+  div.row.g-3.mb-4
+    div.col-md-3
+      div.card.h-100.shadow-sm
+        div.card-body
+          h2.h6.text-muted Planificador
+          p.fs-5.mb-0= ruta.planificadorId
+    div.col-md-3
+      div.card.h-100.shadow-sm
+        div.card-body
+          h2.h6.text-muted Chofer
+          p.fs-5.mb-0= ruta.choferId
+    div.col-md-3
+      div.card.h-100.shadow-sm
+        div.card-body
+          h2.h6.text-muted Vehículo
+          p.fs-5.mb-0= ruta.vehiculoPatente || "No asignado"
+    div.col-md-3
+      div.card.h-100.shadow-sm
+        div.card-body
+          h2.h6.text-muted Fecha de ejecución
+          p.fs-6.mb-0= ruta.fechaEjecucion ? new Date(ruta.fechaEjecucion).toLocaleString("es-AR") : "Pendiente"
+
+  h2.h4.mb-3 Paradas de la ruta
+  if ruta.paradas.length
+    div.table-responsive
+      table.table.table-bordered.align-middle.bg-white.shadow-sm
+        thead.table-light
+          tr
+            th Orden
+            th Cliente
+            th Dirección
+            th Programada
+            th Estado
+            th Temperatura
+            th Observaciones
+        tbody
+          each parada in ruta.paradas
+            tr
+              td.fw-bold= parada.orden
+              td= parada.clienteId
+              td
+                div= parada.direccion
+                small.text-muted= `${parada.latitud}, ${parada.longitud}`
+              td= new Date(parada.fechaProgramada).toLocaleString("es-AR")
+              td
+                span.badge(class=parada.estado === "entregada" ? "text-bg-success" : "text-bg-warning")= parada.estado
+              td= parada.temperaturaAlMomento === null ? "Pendiente" : `${parada.temperaturaAlMomento} °C`
+              td= parada.observaciones || parada.motivoRechazo || "-"
+  else
+    div.alert.alert-info La ruta no tiene paradas asignadas.

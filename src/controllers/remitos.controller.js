@@ -99,7 +99,10 @@ async function detailWeb(req, res) {
   const remito = await repo.obtenerPorId(id);
 
   if (!remito) {
-    return res.status(404).json({ message: "Remito no encontrado" });
+    return res.status(404).render("error", {
+      titulo: "Remito no encontrado",
+      mensaje: "El remito solicitado no existe.",
+    });
   }
 
   res.render("remitos/detail", {
