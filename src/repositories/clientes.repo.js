@@ -1,15 +1,17 @@
 const Cliente = require("../models/Cliente");
 const {
-    leerArchivoJson,
-    escribirArchivoJson
+  leerArchivoJson,
+  escribirArchivoJson,
 } = require("../utils/persistencia");
 
 const ARCHIVO = "clientes.json";
 
 async function obtenerTodas() {
-    const datos = await leerArchivoJson(ARCHIVO);
+  const datos = await leerArchivoJson(ARCHIVO);
 
-    return datos.map(cliente => new Cliente(
+  return datos.map(
+    (cliente) =>
+      new Cliente(
         cliente.id,
         cliente.nombre,
         cliente.tipo,
@@ -17,66 +19,71 @@ async function obtenerTodas() {
         cliente.telefono,
         cliente.domicilioDeEntrega,
         cliente.estado,
-        cliente.fechaAlta
-    ));
+        cliente.fechaAlta,
+      ),
+  );
 }
 
 async function obtenerPorId(id) {
-    const clientes = await obtenerTodas();
+  const clientes = await obtenerTodas();
 
-    return clientes.find(cliente => String(cliente.id) === String(id));
+  return clientes.find((cliente) => String(cliente.id) === String(id));
 }
 
 async function crear(cliente) {
-    const datos = await leerArchivoJson(ARCHIVO);
+  const datos = await leerArchivoJson(ARCHIVO);
 
-    datos.push(cliente);
+  datos.push(cliente);
 
-    await escribirArchivoJson(ARCHIVO, datos);
+  await escribirArchivoJson(ARCHIVO, datos);
 
-    return cliente;
+  return cliente;
 }
 
 async function actualizar(id, datosActualizados) {
-    const datos = await leerArchivoJson(ARCHIVO);
+  const datos = await leerArchivoJson(ARCHIVO);
 
-    const indice = datos.findIndex(cliente => String(cliente.id) === String(id));
+  const indice = datos.findIndex(
+    (cliente) => String(cliente.id) === String(id),
+  );
 
-    if (indice === -1) {
-        return null;
-    }
+  if (indice === -1) {
+    return null;
+  }
 
-    datos[indice] = {
-        ...datos[indice],
-        ...datosActualizados,
-        id
-    };
+  datos[indice] = {
+    ...datos[indice],
+    ...datosActualizados,
+    id,
+  };
 
-    await escribirArchivoJson(ARCHIVO, datos);
+  await escribirArchivoJson(ARCHIVO, datos);
 
-    return datos[indice];
+  return datos[indice];
 }
 
 async function eliminar(id) {
-    const datos = await leerArchivoJson(ARCHIVO);
+  const datos = await leerArchivoJson(ARCHIVO);
 
-    const indice = datos.findIndex(cliente => String(cliente.id) === String(id));
+  const indice = datos.findIndex(
+    (cliente) => String(cliente.id) === String(id),
+  );
 
-    if (indice === -1) {
-        return false;
-    }
+  if (indice === -1) {
+    return false;
+  }
 
-    datos.splice(indice, 1);
+  datos.splice(indice, 1);
 
-    await escribirArchivoJson(ARCHIVO, datos);
+  await escribirArchivoJson(ARCHIVO, datos);
 
-    return true;
+  return true;
 }
 
 module.exports = {
-    obtenerTodas,
-    obtenerPorId,
-    crear,
-    actualizar,
-    eliminar
+  obtenerTodas,
+  obtenerPorId,
+  crear,
+  actualizar,
+  eliminar,
 };

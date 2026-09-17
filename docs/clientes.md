@@ -158,7 +158,7 @@ El módulo está organizado en capas:
 - **Servicio:** `src/services/clientes.service.js`
 - **Controlador API:** `src/controllers/clientes.controller.js`
 - **Rutas API:** `src/routes/clientes.routes.js`
-- **Controlador Web:** `src/controllers/clientes.web.controller.js`
+- **Controlador Web:** *unificado con Controlador API* (`src/controllers/clientes.controller.js`)
 - **Rutas Web:** `src/routes/clientes.web.routes.js`
 - **Vistas:** `src/views/clientes/`
 

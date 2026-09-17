@@ -1,4 +1,6 @@
-class Cliente {
+const Persona = require("./Persona");
+
+class Cliente extends Persona {
     constructor(
         id,
         nombre,
@@ -7,12 +9,13 @@ class Cliente {
         telefono,
         domicilioDeEntrega,
         estado,
-        fechaAlta
+        fechaAlta,
+        apellido = null,
+        edad = null
     ) {
-        this.id = id;
-        this.nombre = nombre;
+        super(id, nombre, apellido, edad, email);
+
         this.tipo = tipo;
-        this.email = email;
         this.telefono = telefono;
         this.domicilioDeEntrega = domicilioDeEntrega;
         this.estado = estado;
@@ -27,8 +30,10 @@ class Cliente {
         return {
             id: this.id,
             nombre: this.nombre,
-            tipo: this.tipo,
+            apellido: this.apellido,
+            edad: this.edad,
             email: this.email,
+            tipo: this.tipo,
             telefono: this.telefono,
             domicilioDeEntrega: this.domicilioDeEntrega,
             estado: this.estado,

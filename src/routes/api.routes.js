@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const personasRouter = require("./personas.routes");
 const remitosRouter = require("./remitos.routes");
-
-// CRUD de personas (persistencia en src/data/personas.json)
-router.use("/personas", personasRouter);
+const clientesRouter = require("./clientes.routes");
 
 // CRUD de remitos + acciones de la clase Remito
 router.use("/remitos", remitosRouter);
+
+// CRUD de clientes
+router.use("/clientes", clientesRouter);
 
 module.exports = router;
