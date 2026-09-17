@@ -1,5 +1,12 @@
 # FreshRoute B2B - Distribución Inteligente (ISFT N° 29 - Backend 2026)
 
+## Módulo de pedidos
+
+Disponible en `/pedidos`, con API REST de pedidos, ítems, productos y asignación a rutas.
+Ver [endpoints, ejemplos y pasos de prueba](docs/PEDIDOS.md) e importar la
+[colección de Postman](docs/FreshRoute.postman_collection.json).
+Pruebas de integración: `node --test`.
+
 Este repositorio contiene la primera entrega para la asignatura de Desarrollo Web Backend del "ISFT n°29", curso 2° A 2C2026. El proyecto implementa una aplicación web utilizando Node.js y Express, siguiendo una estructura organizada de carpetas con persistencia de datos en archivos JSON. Se han aplicado conceptos de Programación Orientada a Objetos (POO), rutas dinámicas, middlewares y el motor de plantillas Pug.
 
 ---

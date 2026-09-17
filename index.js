@@ -27,10 +27,19 @@ app.use("/telemetria", telemetriaRoutes);
 // Rutas de API REST (para Postman, integraciones, etc.)
 app.use("/api", apiRoutes);
 
+// Manejador 404 — captura cualquier ruta que no coincida
+app.use((req, res, next) => {
+  const err = new Error(
+    `Recurso no encontrado: ${req.method} ${req.originalUrl}`,
+  );
+  err.status = 404;
+  next(err);
+});
+
 // Middleware de manejo centralizado de errores
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+if (require.main === module) app.listen(PORT, () => {
   console.log(`Servidor FreshRoute B2B corriendo en http://localhost:${PORT}`);
   // console.log(`Accede al Dashboard de Oficina en: http://localhost:${PORT}/`);
   // console.log(
@@ -43,3 +52,5 @@ app.listen(PORT, () => {
     `Los Endpoints de la API REST comienzan en: http://localhost:${PORT}/api`,
   );
 });
+
+module.exports = app;

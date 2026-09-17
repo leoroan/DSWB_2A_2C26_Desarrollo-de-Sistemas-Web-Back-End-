@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1789644405668",
+    "nombre": "Don Pepe",
+    "tipo": "Comedor",
+    "email": "pepe@comedorpepe.com",
+    "telefono": "22134344343",
+    "domicilioDeEntrega": "calle Falsa, 123",
+    "estado": "Activo",
+    "fechaAlta": "2026-09-17T11:26:45.668Z"
+  }
+]

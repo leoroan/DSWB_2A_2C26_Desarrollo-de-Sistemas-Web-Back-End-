@@ -1,48 +1,44 @@
 const {
-  leerJsonObjeto,
+  leerArchivoJson,
   escribirArchivoJson,
+  leerJsonObjeto,
 } = require("../utils/persistencia");
 const Remito = require("../models/Remito");
 
 /**
  * Repositorio de remitos.
- * Capa de acceso a datos: los remitos viven dentro de la estructura
- * integral de FreshRoute.json (cadena: Cliente → Pedido → Ruta → Paradas
- * → Chofer/Vehículo → Telemetría → Entrega → Remito).
+ * Cada modelo tiene su propio archivo JSON independiente en data/.
+ * Los remitos viven en data/remitos.json (array plano).
+ * Para resolver relaciones (pedido, cliente, entrega) se leen los
+ * archivos correspondientes: pedidos.json, clientes.json, entregas.json.
  */
-const ARCHIVO = "FreshRoute.json";
+const ARCHIVO = "remitos.json";
 
-/** Estructura por defecto de FreshRoute (por si falta alguna colección). */
-function estructuraBase() {
-  return {
-    clientes: [],
-    pedidos: [],
-    rutas: [],
-    choferes: [],
-    vehiculos: [],
-    telemetrias: [],
-    entregas: [],
-    remitos: [],
-  };
-}
-
-/** Lee FreshRoute.json completo, garantizando la estructura base. */
-async function leerFreshRoute() {
-  const datos = await leerJsonObjeto(ARCHIVO);
-  return { ...estructuraBase(), ...datos };
-}
-
-/** Guarda FreshRoute.json completo. */
-async function guardarFreshRoute(datos) {
-  await escribirArchivoJson(ARCHIVO, datos);
+/**
+ * Lee los pedidos de data/pedidos.json, que es un objeto con secciones
+ * ("pedidos", "items", ...) y no un array plano.
+ * @returns {Promise<Array>} La lista de pedidos.
+ */
+async function leerPedidos() {
+  const datos = await leerJsonObjeto("pedidos.json");
+  return datos.pedidos || [];
 }
 
 /**
- * Convierte un objeto crudo del JSON en una instancia de Remito.
- * Además resuelve el "contexto" de la cadena (cliente, pedido, entrega)
- * y lo adjunta como propiedades extra para las vistas.
+ * Lee los pedidos y clientes para formularios.
+ * Resuelve desde sus archivos independientes (si existen).
+ * @returns {Promise<{pedidos: Array, clientes: Array}>}
  */
-function mapearARemito(datos, freshRoute) {
+async function obtenerPedidos() {
+  const pedidos = await leerPedidos();
+  const clientes = await leerArchivoJson("clientes.json");
+  return { pedidos, clientes };
+}
+
+/** Convierte un objeto crudo del JSON en una instancia de Remito,
+ * resolviendo el contexto de la cadena (cliente, pedido, entrega)
+ * para las vistas. */
+function mapearARemito(datos, pedidos, clientes, entregas) {
   const remito = new Remito(
     datos.id,
     datos.pedidoId,
@@ -56,17 +52,17 @@ function mapearARemito(datos, freshRoute) {
   );
 
   // Resolución de la cadena logística: Remito → Pedido → Cliente
-  const pedido = freshRoute.pedidos.find((p) => p.id === datos.pedidoId);
+  const pedido = pedidos.find((p) => p.id === datos.pedidoId);
   remito.pedido = pedido || null;
 
   const cliente = pedido
-    ? freshRoute.clientes.find((c) => c.id === pedido.clienteId)
+    ? clientes.find((c) => String(c.id) === String(pedido.clienteId))
     : null;
   remito.cliente = cliente ? cliente.nombre : null;
 
   // Remito → Entrega (si existe)
   remito.entrega =
-    freshRoute.entregas.find((e) => e.pedidoId === datos.pedidoId) || null;
+    entregas.find((e) => e.pedidoId === datos.pedidoId) || null;
 
   return remito;
 }
@@ -75,8 +71,13 @@ function mapearARemito(datos, freshRoute) {
  * @returns {Promise<Array<Remito>>} Todos los remitos almacenados.
  */
 async function obtenerTodas() {
-  const freshRoute = await leerFreshRoute();
-  return freshRoute.remitos.map((r) => mapearARemito(r, freshRoute));
+  const remitos = await leerArchivoJson(ARCHIVO);
+  const [pedidos, clientes, entregas] = await Promise.all([
+    leerPedidos(),
+    leerArchivoJson("clientes.json"),
+    leerArchivoJson("entregas.json"),
+  ]);
+  return remitos.map((r) => mapearARemito(r, pedidos, clientes, entregas));
 }
 
 /**
@@ -94,27 +95,33 @@ async function obtenerPorId(id) {
  * @returns {Promise<Remito>} El remito recién creado.
  */
 async function crear(datos) {
-  const freshRoute = await leerFreshRoute();
-  const siguienteId = freshRoute.remitos.length
-    ? Math.max(...freshRoute.remitos.map((r) => r.id)) + 1
+  const remitos = await leerArchivoJson(ARCHIVO);
+  const siguienteId = remitos.length
+    ? Math.max(...remitos.map((r) => r.id)) + 1
     : 1;
 
-  const nuevo = mapearARemito({ id: siguienteId, ...datos }, freshRoute);
-  freshRoute.remitos.push({
-    id: nuevo.id,
-    pedidoId: nuevo.pedidoId,
-    fechaEmision: nuevo.fechaEmision,
-    fechaVencimiento: nuevo.fechaVencimiento,
-    montoTotal: nuevo.montoTotal,
-    estado: nuevo.estado,
-    firmadoPor: nuevo.firmadoPor,
-    observaciones: nuevo.observaciones,
-    penalizacionAplicada: nuevo.penalizacionAplicada,
-  });
+  const nuevoObjeto = {
+    id: siguienteId,
+    pedidoId: datos.pedidoId,
+    fechaEmision: datos.fechaEmision,
+    fechaVencimiento: datos.fechaVencimiento,
+    montoTotal: datos.montoTotal,
+    estado: datos.estado,
+    firmadoPor: datos.firmadoPor,
+    observaciones: datos.observaciones,
+    penalizacionAplicada: datos.penalizacionAplicada,
+  };
 
-  // Persistimos en el archivo: el cambio sobrevive al reinicio del servidor.
-  await guardarFreshRoute(freshRoute);
-  return nuevo;
+  remitos.push(nuevoObjeto);
+  await escribirArchivoJson(ARCHIVO, remitos);
+
+  // Hidratar para devolver la instancia completa con contexto
+  const [pedidos, clientes, entregas] = await Promise.all([
+    leerPedidos(),
+    leerArchivoJson("clientes.json"),
+    leerArchivoJson("entregas.json"),
+  ]);
+  return mapearARemito(nuevoObjeto, pedidos, clientes, entregas);
 }
 
 /**
@@ -124,53 +131,40 @@ async function crear(datos) {
  * @returns {Promise<Remito|null>} El remito actualizado o null si no existe.
  */
 async function actualizar(id, cambios) {
-  const freshRoute = await leerFreshRoute();
-  const indice = freshRoute.remitos.findIndex((r) => r.id === id);
+  const remitos = await leerArchivoJson(ARCHIVO);
+  const indice = remitos.findIndex((r) => r.id === id);
   if (indice === -1) return null;
 
-  const actualizado = mapearARemito(
-    { ...freshRoute.remitos[indice], ...cambios, id },
-    freshRoute,
-  );
-
-  // Guardamos solo los campos propios del remito (sin el contexto adjuntado)
-  freshRoute.remitos[indice] = {
+  remitos[indice] = {
+    ...remitos[indice],
+    ...cambios,
     id,
-    pedidoId: actualizado.pedidoId,
-    fechaEmision: actualizado.fechaEmision,
-    fechaVencimiento: actualizado.fechaVencimiento,
-    montoTotal: actualizado.montoTotal,
-    estado: actualizado.estado,
-    firmadoPor: actualizado.firmadoPor,
-    observaciones: actualizado.observaciones,
-    penalizacionAplicada: actualizado.penalizacionAplicada,
   };
-  await guardarFreshRoute(freshRoute);
-  return actualizado;
+
+  await escribirArchivoJson(ARCHIVO, remitos);
+
+  // Leer contexto para devolver instancia hidratada
+  const [pedidos, clientes, entregas] = await Promise.all([
+    leerPedidos(),
+    leerArchivoJson("clientes.json"),
+    leerArchivoJson("entregas.json"),
+  ]);
+  return mapearARemito(remitos[indice], pedidos, clientes, entregas);
 }
 
 /**
- * Elimina un remito de la estructura almacenada.
+ * Elimina un remito del archivo independiente.
  * @param {number} id
  * @returns {Promise<boolean>} true si se eliminó, false si no existía.
  */
 async function eliminar(id) {
-  const freshRoute = await leerFreshRoute();
-  const indice = freshRoute.remitos.findIndex((r) => r.id === id);
+  const remitos = await leerArchivoJson(ARCHIVO);
+  const indice = remitos.findIndex((r) => r.id === id);
   if (indice === -1) return false;
 
-  freshRoute.remitos.splice(indice, 1);
-  await guardarFreshRoute(freshRoute);
+  remitos.splice(indice, 1);
+  await escribirArchivoJson(ARCHIVO, remitos);
   return true;
-}
-
-/**
- * Devuelve pedidos y clientes para formularios (select de pedido al crear).
- * @returns {Promise<{pedidos: Array, clientes: Array}>}
- */
-async function obtenerPedidos() {
-  const freshRoute = await leerFreshRoute();
-  return { pedidos: freshRoute.pedidos, clientes: freshRoute.clientes };
 }
 
 module.exports = {

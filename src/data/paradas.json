@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "rutaId": 1,
+    "clienteId": 101,
+    "direccion": "Av. Corrientes 1450, CABA",
+    "orden": 1,
+    "estado": "entregada",
+    "latitud": -34.6037,
+    "longitud": -58.3816,
+    "fechaProgramada": "2026-09-13T08:00:00-03:00",
+    "fechaReal": "2026-09-13T08:08:00-03:00",
+    "observaciones": "Recepción conforme.",
+    "motivoRechazo": null,
+    "temperaturaAlMomento": 3.8
+  },
+  {
+    "id": 2,
+    "rutaId": 1,
+    "clienteId": 102,
+    "direccion": "Av. Caseros 320, CABA",
+    "orden": 2,
+    "estado": "pendiente",
+    "latitud": -34.6363,
+    "longitud": -58.4012,
+    "fechaProgramada": "2026-09-13T09:00:00-03:00",
+    "fechaReal": null,
+    "observaciones": "",
+    "motivoRechazo": null,
+    "temperaturaAlMomento": null
+  },
+  {
+    "id": 3,
+    "rutaId": 2,
+    "clienteId": 103,
+    "direccion": "Av. Maipú 850, Vicente López",
+    "orden": 1,
+    "estado": "pendiente",
+    "latitud": -34.5295,
+    "longitud": -58.4782,
+    "fechaProgramada": "2026-09-13T10:00:00-03:00",
+    "fechaReal": null,
+    "observaciones": "Validar horario de recepción.",
+    "motivoRechazo": null,
+    "temperaturaAlMomento": null
+  }
+]

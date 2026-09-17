@@ -1,0 +1,89 @@
+extends ../layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1.mb-1= cliente ? "Editar cliente" : "Nuevo cliente"
+      p.text-muted.mb-0
+        = cliente ? "Modificar los datos del cliente." : "Registrar un nuevo cliente."
+
+    a.btn.btn-outline-secondary(href="/clientes")
+      i.fa-solid.fa-arrow-left.me-2
+      | Volver
+
+  form(method="POST", action=cliente ? `/clientes/${cliente.id}/editar` : "/clientes")
+    div.row.g-3
+
+      div.col-md-6
+        label.form-label(for="nombre") Nombre
+        input.form-control(
+          type="text"
+          id="nombre"
+          name="nombre"
+          value=cliente ? cliente.nombre : ""
+          required
+        )
+
+      div.col-md-6
+        label.form-label(for="tipo") Tipo
+        select.form-select(id="tipo" name="tipo" required)
+          option(value="") Seleccionar tipo
+          option(
+            value="Restaurante"
+            selected=cliente && cliente.tipo === "Restaurante"
+          ) Restaurante
+          option(
+            value="Comedor"
+            selected=cliente && cliente.tipo === "Comedor"
+          ) Comedor
+
+      div.col-md-6
+        label.form-label(for="email") Email
+        input.form-control(
+          type="email"
+          id="email"
+          name="email"
+          value=cliente ? cliente.email : ""
+          required
+        )
+
+      div.col-md-6
+        label.form-label(for="telefono") Teléfono
+        input.form-control(
+          type="text"
+          id="telefono"
+          name="telefono"
+          value=cliente ? cliente.telefono : ""
+          required
+        )
+
+      div.col-12
+        label.form-label(for="domicilioDeEntrega") Domicilio de entrega
+        input.form-control(
+          type="text"
+          id="domicilioDeEntrega"
+          name="domicilioDeEntrega"
+          value=cliente ? cliente.domicilioDeEntrega : ""
+          required
+        )
+
+      if cliente
+        div.col-md-6
+          label.form-label(for="estado") Estado
+          select.form-select(id="estado" name="estado")
+            option(
+              value="Activo"
+              selected=cliente.estado === "Activo"
+            ) Activo
+            option(
+              value="Inactivo"
+              selected=cliente.estado === "Inactivo"
+            ) Inactivo
+
+      div.col-12.mt-4
+        button.btn.btn-primary(type="submit")
+          i.fa-solid.fa-floppy-disk.me-2
+          = cliente ? "Guardar cambios" : "Crear cliente"
+
+        a.btn.btn-outline-secondary.ms-2(href="/clientes")
+          | Cancelar

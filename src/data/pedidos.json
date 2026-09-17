@@ -1,0 +1,51 @@
+{
+  "secuencias": {
+    "pedidos": 2,
+    "items": 2,
+    "productos": 2
+  },
+  "pedidos": [
+    {
+      "id": 2,
+      "clienteId": 1,
+      "fechaPedido": "2026-09-12",
+      "estado": "pendiente",
+      "fechaEntregaSolicitada": "2026-09-14",
+      "observaciones": "Entregar en recepción si o si"
+    }
+  ],
+  "items": [
+    {
+      "id": 2,
+      "pedidoId": 2,
+      "productoId": 1,
+      "cantidad": 5,
+      "observaciones": "Sin sal"
+    }
+  ],
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Vianda de pollo",
+      "categoria": "Viandas",
+      "precio": 7500,
+      "estado": "activo"
+    }
+  ],
+  "rutas": [
+    {
+      "id": 1,
+      "nombre": "Ruta Centro"
+    },
+    {
+      "id": 2,
+      "nombre": "Ruta Norte"
+    }
+  ],
+  "asignaciones": [
+    {
+      "pedidoId": 2,
+      "rutaId": 2
+    }
+  ]
+}
