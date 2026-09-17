@@ -1,18 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/dashboard.controller");
-<<<<<<< HEAD
-const rutasController = require("../controllers/rutas.controller");
-=======
 const remitosController = require("../controllers/remitos.controller");
->>>>>>> main
 const clientesController = require("../controllers/clientes.controller");
+const rutasController = require("../controllers/rutas.controller");
 
 // Dashboard principal — página de entrada
 router.get("/", controller.mostrarDashboard);
 
 // Documentación
 router.get("/documentacion", controller.mostrarDocumentacion);
+
+// Rutas planificadas — vistas web (Pug)
 router.get("/rutas", rutasController.mostrarListado);
 router.get("/rutas/:id", rutasController.mostrarDetalle);
 
