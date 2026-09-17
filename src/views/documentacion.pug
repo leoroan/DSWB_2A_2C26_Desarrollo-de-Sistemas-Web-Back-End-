@@ -35,7 +35,7 @@ block content
         li Especificar Requerimientos No Funcionales (FURPS+) de Performance y Escalabilidad para telemetría/mapas.
         li Proponer metodología DevOps y Scrum para la app de choferes.
 
-  div.card.shadow-sm.border-0
+  div.card.shadow-sm.border-0.mb-3
     div.card-header.bg-info.text-white
       h6.mb-0 Análisis y Propuestas Clave
     div.card-body.small
@@ -58,3 +58,124 @@ block content
         | #[strong DevOps:] CI/CD (Git, Jenkins/GitHub Actions) y monitoreo (Prometheus/Grafana) para entregas rápidas y estables.
       h6.text-info.fw-bold Bibliografía
       p.mb-0 Clean Code, docs de Node/Express/Pug, Bootstrap, Font Awesome, APIs REST, POO en JS.
+
+  div.card.shadow-sm.border-0.mb-3
+    div.card-header.bg-success.text-white
+      h6.mb-0 Vistas implementadas (Pug + Express)
+    div.card-body.small
+      p.mb-2
+        | Cada módulo del sistema se sirve como una vista independiente que renderiza datos reales de los JSON. Definición breve y acceso directo:
+      div.table-responsive
+        table.table.table-sm.table-striped.align-middle.mb-0
+          thead.table-dark
+            tr
+              th Vista (Pug)
+              th Ruta
+              th Qué muestra
+          tbody
+            tr
+              td
+                code dashboard.pug
+              td
+                a(href="/") GET /
+              td Página de entrada y bienvenida al panel.
+            tr
+              td
+                code pedidos/index.pug
+              td
+                a(href="/pedidos") GET /pedidos
+              td Listado de pedidos con cliente, fechas, estado y acceso al detalle.
+            tr
+              td
+                code pedidos/detail.pug
+              td
+                a(href="/pedidos/3") GET /pedidos/:id
+              td Datos del cliente, ítems del pedido y formulario de asignación de ruta.
+            tr
+              td
+                code clientes/index.pug
+              td
+                a(href="/clientes") GET /clientes
+              td Tabla de clientes con tipo, contacto, estado y acceso a edición.
+            tr
+              td
+                code clientes/form.pug
+              td
+                a(href="/clientes/nuevo") GET /clientes/nuevo
+                |  · 
+                a(href="/clientes/1787145000000/editar") GET /clientes/:id/editar
+              td Alta y edición de un cliente con validación del formulario.
+            tr
+              td
+                code rutas/index.pug
+              td
+                a(href="/rutas") GET /rutas
+              td Rutas con chofer, vehículo, cantidad de paradas y estado.
+            tr
+              td
+                code rutas/detail.pug
+              td
+                a(href="/rutas/1") GET /rutas/:id
+              td Cabecera del recorrido y tabla de paradas (horario, estado, temperatura).
+            tr
+              td
+                code vehiculos/index.pug
+              td
+                a(href="/vehiculos") GET /vehiculos
+              td Flota con tipo, capacidad, rango térmico y acceso a la telemetría.
+            tr
+              td
+                code telemetria/detail.pug
+              td
+                a(href="/telemetria/1") GET /telemetria/:id
+              td Último estado e historial del vehículo; alerta si sale del rango térmico.
+            tr
+              td
+                code remitos/index.pug
+              td
+                a(href="/remitos") GET /remitos
+              td Remitos con estado, firma y penalización aplicada.
+            tr
+              td
+                code remitos/nuevo.pug
+              td
+                a(href="/remitos/nuevo") GET /remitos/nuevo
+              td Formulario de emisión de remito con errores de validación visibles.
+            tr
+              td
+                code remitos/detail.pug
+              td
+                a(href="/remitos/3") GET /remitos/:id
+              td Ficha del remito: montos, firma, observaciones y penalización.
+            tr
+              td
+                code error.pug
+              td.text-muted 404
+              td Página de error para el recurso o id inexistente.
+
+  div.card.shadow-sm.border-0
+    div.card-header.bg-warning.text-dark
+      h6.mb-0 Caso guiado: Pedido #3 – Comedor Tecnológico Palermo
+    div.card-body.small
+      p.mb-2
+        | Un pedido entregado con 65 minutos de demora y penalización, seguido de punta a punta con los enlaces. Cada vista aporta una parte del mismo estado.
+      div.d-flex.flex-wrap.align-items-center.gap-2.mb-3
+        a.badge.text-bg-dark.text-decoration-none(href="/clientes/1787145000000/editar") Cliente
+        i.fa-solid.fa-arrow-right.text-muted
+        a.badge.text-bg-primary.text-decoration-none(href="/pedidos/3") Pedido #3
+        i.fa-solid.fa-arrow-right.text-muted
+        a.badge.text-bg-success.text-decoration-none(href="/rutas/1") Ruta RUT-2026-001
+        i.fa-solid.fa-arrow-right.text-muted
+        a.badge.text-bg-info.text-dark.text-decoration-none(href="/telemetria/1") Vehículo AB123CD
+        i.fa-solid.fa-arrow-right.text-muted
+        a.badge.text-bg-danger.text-decoration-none(href="/remitos/3") Remito #3
+
+      ol.mb-2.ps-3
+        li #[strong Cliente:] #[a(href="/clientes/1787145000000/editar") /clientes/1787145000000/editar] — Comedor Tecnológico Palermo, Activo, entrega en Av. Santa Fe 3720 (CABA).
+        li #[strong Pedido:] #[a(href="/pedidos/3") /pedidos/3] — estado #[span.badge.text-bg-secondary entregado], pedido del 15/09 con entrega solicitada el 16/09 y observación de penalización por retraso.
+        li #[strong Ruta:] #[a(href="/rutas/1") /rutas/1] — RUT-2026-001, chofer 11 y vehículo AB123CD; la parada de orden 3 (cliente 1787145000000) está #[span.badge.text-bg-success entregada] con 4,4 °C y la observación "entrega 65 minutos fuera de la ventana horaria" (programada 10:30). En la misma ruta, la parada del cliente 1785234000000 figura #[span.badge.text-bg-warning rechazada] con 9,6 °C.
+        li #[strong Flota y telemetría:] #[a(href="/vehiculos") /vehiculos] → #[a(href="/telemetria/1") /telemetria/1] — historial del AB123CD el 16/09; a las 09:07 registra 9,6 °C, fuera del rango 2–8 °C, sobre otra parada de la misma ruta.
+        li #[strong Remito:] #[a(href="/remitos/3") /remitos/3] — firmado por $131.000 con penalización de $18.000 y la observación del retraso.
+
+      p.mb-0.text-muted
+        | Resultado: el estado del pedido queda respaldado por la parada de la ruta y por el remito firmado, mientras que la telemetría documenta la incidencia de frío de esa jornada. Se puede retomar el caso desde cualquier vista del sitio.
