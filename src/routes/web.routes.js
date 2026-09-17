@@ -11,6 +11,12 @@ router.get("/", controller.mostrarDashboard);
 // Documentación
 router.get("/documentacion", controller.mostrarDocumentacion);
 
+const pedidos = require('../controllers/pedidos.controller');
+const { validarId, validarCuerpo } = require('../middlewares/validarPedido');
+router.param('id', validarId);
+router.get('/pedidos', pedidos.indexWeb);
+router.get('/pedidos/:id', pedidos.detailWeb);
+router.post('/pedidos/:id/ruta', validarCuerpo, pedidos.asignarRutaWeb);
 // Rutas planificadas — vistas web (Pug)
 router.get("/rutas", rutasController.mostrarListado);
 router.get("/rutas/:id", rutasController.mostrarDetalle);

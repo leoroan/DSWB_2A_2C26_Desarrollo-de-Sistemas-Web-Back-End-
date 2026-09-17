@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 // Middleware de manejo centralizado de errores
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+if (require.main === module) app.listen(PORT, () => {
   console.log(`Servidor FreshRoute B2B corriendo en http://localhost:${PORT}`);
   // console.log(`Accede al Dashboard de Oficina en: http://localhost:${PORT}/`);
   // console.log(
@@ -48,3 +48,5 @@ app.listen(PORT, () => {
     `Los Endpoints de la API REST comienzan en: http://localhost:${PORT}/api`,
   );
 });
+
+module.exports = app;
