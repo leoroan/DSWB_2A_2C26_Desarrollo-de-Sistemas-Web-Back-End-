@@ -1,0 +1,40 @@
+extends ../layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1.mb-1 Rutas planificadas
+      p.text-muted.mb-0 Seguimiento operativo de recorridos y entregas.
+    a.btn.btn-outline-primary(href="/api/rutas" target="_blank")
+      i.fa-solid.fa-code.me-2
+      | Ver API
+
+  if rutas.length
+    div.table-responsive
+      table.table.table-hover.align-middle.bg-white.shadow-sm
+        thead.table-dark
+          tr
+            th Ruta
+            th Fecha de planificación
+            th Chofer
+            th Vehículo
+            th Paradas
+            th Estado
+            th.text-end Acción
+        tbody
+          each ruta in rutas
+            tr
+              td
+                strong= ruta.codigo
+              td= new Date(ruta.fechaPlanificacion).toLocaleString("es-AR")
+              td= ruta.choferId
+              td= ruta.vehiculoPatente || "No asignado"
+              td= ruta.cantidadParadas
+              td
+                span.badge(class=ruta.estado === "en curso" ? "text-bg-success" : "text-bg-secondary")= ruta.estado
+              td.text-end
+                a.btn.btn-sm.btn-primary(href=`/rutas/${ruta.id}` aria-label=`Ver detalle de ${ruta.codigo}`)
+                  i.fa-solid.fa-eye.me-1
+                  | Detalle
+  else
+    div.alert.alert-info No hay rutas cargadas.
