@@ -1,133 +1,418 @@
-const fs = require('node:fs/promises');
-const path = require('node:path');
-const Pedido = require('../models/Pedido');
-const ItemPedido = require('../models/ItemPedido');
-const Producto = require('../models/Producto');
-const personas = require('./personas.repo');
-const { exigir } = require('../utils/validaciones');
+const {
+  leerJsonObjeto,
+  escribirArchivoJson,
+} = require("../utils/persistencia");
+const Pedido = require("../models/Pedido");
+const ItemPedido = require("../models/ItemPedido");
+const Producto = require("../models/Producto");
+const clientesRepo = require("./clientes.repo");
+const { exigir } = require("../utils/validaciones");
 
-// Un archivo permite guardar pedido, ítems y asignación en una sola escritura.
-class PedidosRepository {
-  constructor(archivo = path.join(__dirname, '../data/pedidos.json')) {
-    this.archivo = archivo;
-    this.cola = Promise.resolve();
-  }
+/**
+ * Repositorio de pedidos.
+ * Pedidos, ítems, productos, catálogo de rutas y asignaciones comparten
+ * data/pedidos.json (objeto con secciones + secuencias), por eso se lee con
+ * leerJsonObjeto() y se escribe con escribirArchivoJson().
+ * Los clientes se resuelven con clientes.repo (Cliente extiende de Persona).
+ */
+const ARCHIVO = "pedidos.json";
 
-  async leer() {
-    return JSON.parse(await fs.readFile(this.archivo, 'utf8'));
-  }
+/** Secciones mínimas del archivo, para tolerar un JSON incompleto o inexistente. */
+const BASE = {
+  secuencias: { pedidos: 0, items: 0, productos: 0 },
+  pedidos: [],
+  items: [],
+  productos: [],
+  rutas: [],
+  asignaciones: [],
+};
 
-  modificar(operacion) {
-    // Serializa las modificaciones dentro de este proceso para evitar perder cambios.
-    const resultado = this.cola.then(async () => {
-      const db = await this.leer();
-      const valor = await operacion(db);
-      await fs.writeFile(`${this.archivo}.tmp`, JSON.stringify(db, null, 2), 'utf8');
-      await fs.rename(`${this.archivo}.tmp`, this.archivo);
-      return valor;
-    });
-    this.cola = resultado.catch(() => {});
-    return resultado;
-  }
+// Las escrituras se encadenan porque todas las secciones comparten el archivo.
+let cola = Promise.resolve();
 
-  buscar(lista, id, nombre) {
-    const entidad = lista.find(e => e.id === id);
-    exigir(entidad, `${nombre} no encontrado`, 404);
-    return entidad;
-  }
+/**
+ * @returns {Promise<Object>} El archivo completo, con todas sus secciones.
+ */
+async function leer() {
+  const datos = await leerJsonObjeto(ARCHIVO);
 
-  siguienteId(db, entidad) {
-    return ++db.secuencias[entidad];
-  }
-
-  async listar() {
-    const db = await this.leer();
-    const clientes = await personas.obtenerTodas();
-    return db.pedidos.map(p => ({ ...p, cliente: clientes.find(c => c.id === p.clienteId) || null }));
-  }
-
-  async detalle(id) {
-    const db = await this.leer();
-    const pedido = this.buscar(db.pedidos, id, 'Pedido');
-    const asignacion = db.asignaciones.find(a => a.pedidoId === id);
-    return {
-      ...pedido,
-      cliente: await personas.obtenerPorId(pedido.clienteId),
-      items: db.items.filter(i => i.pedidoId === id).map(i => ({ ...i,
-        producto: db.productos.find(p => p.id === i.productoId) })),
-      ruta: asignacion ? db.rutas.find(r => r.id === asignacion.rutaId) : null,
-    };
-  }
-
-  guardarPedido(id, datos) {
-    return this.modificar(async db => {
-      const anterior = id ? this.buscar(db.pedidos, id, 'Pedido') : {};
-      const pedido = new Pedido({ ...anterior, ...datos, id: id || this.siguienteId(db, 'pedidos') });
-      exigir(await personas.obtenerPorId(pedido.clienteId), 'El cliente indicado no existe');
-      if (id) db.pedidos[db.pedidos.indexOf(anterior)] = pedido;
-      else db.pedidos.push(pedido);
-      return pedido;
-    });
-  }
-
-  eliminarPedido(id) {
-    return this.modificar(db => {
-      this.buscar(db.pedidos, id, 'Pedido');
-      db.pedidos = db.pedidos.filter(p => p.id !== id);
-      db.items = db.items.filter(i => i.pedidoId !== id);
-      db.asignaciones = db.asignaciones.filter(a => a.pedidoId !== id);
-    });
-  }
-
-  guardarProducto(id, datos) {
-    return this.modificar(db => {
-      const anterior = id ? this.buscar(db.productos, id, 'Producto') : {};
-      const producto = new Producto({ ...anterior, ...datos, id: id || this.siguienteId(db, 'productos') });
-      if (id) db.productos[db.productos.indexOf(anterior)] = producto;
-      else db.productos.push(producto);
-      return producto;
-    });
-  }
-
-  eliminarProducto(id) {
-    return this.modificar(db => {
-      this.buscar(db.productos, id, 'Producto');
-      exigir(!db.items.some(i => i.productoId === id), 'El producto está asociado a un pedido; puede desactivarlo', 409);
-      db.productos = db.productos.filter(p => p.id !== id);
-    });
-  }
-
-  guardarItem(pedidoId, id, datos) {
-    return this.modificar(db => {
-      this.buscar(db.pedidos, pedidoId, 'Pedido');
-      const anterior = id ? this.buscar(db.items.filter(i => i.pedidoId === pedidoId), id, 'Ítem') : {};
-      const item = new ItemPedido({ ...anterior, ...datos, pedidoId, id: id || this.siguienteId(db, 'items') });
-      const producto = this.buscar(db.productos, item.productoId, 'Producto');
-      exigir(producto.estado === 'activo', 'El producto está inactivo', 409);
-      if (id) db.items[db.items.indexOf(anterior)] = item;
-      else db.items.push(item);
-      return item;
-    });
-  }
-
-  eliminarItem(pedidoId, id) {
-    return this.modificar(db => {
-      this.buscar(db.pedidos, pedidoId, 'Pedido');
-      const item = this.buscar(db.items.filter(i => i.pedidoId === pedidoId), id, 'Ítem');
-      db.items.splice(db.items.indexOf(item), 1);
-    });
-  }
-
-  asignarRuta(pedidoId, rutaId) {
-    return this.modificar(db => {
-      this.buscar(db.pedidos, pedidoId, 'Pedido');
-      if (rutaId !== null) this.buscar(db.rutas, rutaId, 'Ruta');
-      db.asignaciones = db.asignaciones.filter(a => a.pedidoId !== pedidoId);
-      if (rutaId !== null) db.asignaciones.push({ pedidoId, rutaId });
-      return { pedidoId, rutaId };
-    });
-  }
+  return {
+    secuencias: { ...BASE.secuencias, ...(datos.secuencias || {}) },
+    pedidos: datos.pedidos || [],
+    items: datos.items || [],
+    productos: datos.productos || [],
+    rutas: datos.rutas || [],
+    asignaciones: datos.asignaciones || [],
+  };
 }
 
-module.exports = new PedidosRepository();
-module.exports.PedidosRepository = PedidosRepository;
+/**
+ * Lee, aplica la operación y guarda el archivo, sin superponer escrituras.
+ * @param {(db: Object) => any} operacion
+ * @returns {Promise<any>} El valor que devuelva la operación.
+ */
+function modificar(operacion) {
+  const resultado = cola.then(async () => {
+    const db = await leer();
+    const valor = await operacion(db);
+    await escribirArchivoJson(ARCHIVO, db);
+    return valor;
+  });
+  cola = resultado.catch(() => {});
+  return resultado;
+}
+
+/**
+ * Busca una entidad por id dentro de una sección.
+ * @throws {Error} 404 si no existe.
+ */
+function exigirEncontrado(lista, id, nombre) {
+  const entidad = lista.find((e) => e.id === id);
+  exigir(entidad, `${nombre} no encontrado`, 404);
+  return entidad;
+}
+
+/** @returns {number} El próximo id de una sección. */
+function siguienteId(db, seccion) {
+  db.secuencias[seccion] += 1;
+  return db.secuencias[seccion];
+}
+
+/**
+ * Homogeneiza el id de cliente al entero que usa Pedido: el módulo de clientes
+ * los genera con Date.now() (string), así que se normalizan para poder
+ * compararlos y validarlos.
+ */
+function normalizarClienteId(valor) {
+  const numero = Number(valor);
+  return Number.isSafeInteger(numero) && numero > 0 ? numero : valor;
+}
+
+/** Convierte un pedido almacenado en instancia de Pedido, con su cliente resuelto. */
+function mapearAPedido(datos, cliente = null) {
+  return Object.assign(new Pedido(datos), { cliente: cliente || null });
+}
+
+/** Convierte un ítem almacenado en instancia de ItemPedido, con su producto. */
+function mapearAItem(datos, productos) {
+  const item = new ItemPedido(datos);
+  const producto = productos.find((p) => p.id === item.productoId) || null;
+  return Object.assign(item, { producto });
+}
+
+/** Convierte un producto almacenado en instancia de Producto. */
+function mapearAProducto(datos) {
+  return new Producto(datos);
+}
+
+// ============================================================================
+// PEDIDOS
+// ============================================================================
+
+/**
+ * @returns {Promise<Array<Pedido>>} Pedidos con su cliente (null si ya no existe).
+ */
+async function obtenerTodas() {
+  const db = await leer();
+  const clientes = await clientesRepo.obtenerTodas();
+  const clienteDe = (id) =>
+    clientes.find((c) => String(c.id) === String(id)) || null;
+
+  return db.pedidos.map((pedido) =>
+    mapearAPedido(pedido, clienteDe(pedido.clienteId)),
+  );
+}
+
+/**
+ * @param {number} id
+ * @returns {Promise<Object|null>} Pedido con cliente, ítems (con producto) y
+ * ruta asignada; null si no existe.
+ */
+async function obtenerPorId(id) {
+  const db = await leer();
+  const datos = db.pedidos.find((p) => p.id === id);
+  if (!datos) return null;
+
+  const cliente = await clientesRepo.obtenerPorId(datos.clienteId);
+  const asignacion = db.asignaciones.find((a) => a.pedidoId === id);
+
+  return {
+    ...mapearAPedido(datos, cliente),
+    items: db.items
+      .filter((i) => i.pedidoId === id)
+      .map((i) => mapearAItem(i, db.productos)),
+    ruta: asignacion
+      ? db.rutas.find((r) => r.id === asignacion.rutaId) || null
+      : null,
+  };
+}
+
+/**
+ * Crea un pedido nuevo; el id lo asigna el repositorio.
+ * @param {Object} datos
+ * @returns {Promise<Pedido>} El pedido creado.
+ */
+function crear(datos) {
+  return modificar(async (db) => {
+    const clienteId = normalizarClienteId(datos.clienteId);
+    exigir(
+      await clientesRepo.obtenerPorId(clienteId),
+      "El cliente indicado no existe",
+      404,
+    );
+
+    const pedido = new Pedido({
+      ...datos,
+      clienteId,
+      id: siguienteId(db, "pedidos"),
+    });
+    db.pedidos.push(pedido);
+    return pedido;
+  });
+}
+
+/**
+ * Actualiza los campos enviados, conservando los omitidos.
+ * @param {number} id
+ * @param {Object} datos
+ * @returns {Promise<Pedido|null>} El pedido actualizado o null si no existe.
+ */
+function actualizar(id, datos) {
+  return modificar(async (db) => {
+    const anterior = db.pedidos.find((p) => p.id === id);
+    if (!anterior) return null;
+
+    const clienteId = normalizarClienteId(
+      datos.clienteId === undefined ? anterior.clienteId : datos.clienteId,
+    );
+    exigir(
+      await clientesRepo.obtenerPorId(clienteId),
+      "El cliente indicado no existe",
+      404,
+    );
+
+    const pedido = new Pedido({ ...anterior, ...datos, clienteId, id });
+    db.pedidos[db.pedidos.indexOf(anterior)] = pedido;
+    return pedido;
+  });
+}
+
+/**
+ * Elimina un pedido junto con sus ítems y su asignación de ruta.
+ * @param {number} id
+ * @returns {Promise<boolean>} true si se eliminó, false si no existía.
+ */
+function eliminar(id) {
+  return modificar((db) => {
+    if (!db.pedidos.some((p) => p.id === id)) return false;
+
+    db.pedidos = db.pedidos.filter((p) => p.id !== id);
+    db.items = db.items.filter((i) => i.pedidoId !== id);
+    db.asignaciones = db.asignaciones.filter((a) => a.pedidoId !== id);
+    return true;
+  });
+}
+
+// ============================================================================
+// ÍTEMS DE PEDIDO
+// ============================================================================
+
+/** @throws {Error} 404 si el producto no existe, 409 si está inactivo. */
+function exigirProductoActivo(db, productoId) {
+  const producto = exigirEncontrado(db.productos, productoId, "Producto");
+  exigir(producto.estado === "activo", "El producto está inactivo", 409);
+  return producto;
+}
+
+/**
+ * @param {number} pedidoId
+ * @returns {Promise<Array<ItemPedido>>} Ítems del pedido, con su producto.
+ */
+async function obtenerItems(pedidoId) {
+  const db = await leer();
+  exigirEncontrado(db.pedidos, pedidoId, "Pedido");
+
+  return db.items
+    .filter((i) => i.pedidoId === pedidoId)
+    .map((i) => mapearAItem(i, db.productos));
+}
+
+/**
+ * Agrega un ítem a un pedido; solo admite productos activos.
+ * @param {number} pedidoId
+ * @param {Object} datos
+ * @returns {Promise<ItemPedido>} El ítem creado.
+ */
+function crearItem(pedidoId, datos) {
+  return modificar((db) => {
+    exigirEncontrado(db.pedidos, pedidoId, "Pedido");
+
+    const item = new ItemPedido({
+      ...datos,
+      pedidoId,
+      id: siguienteId(db, "items"),
+    });
+    exigirProductoActivo(db, item.productoId);
+    db.items.push(item);
+    return item;
+  });
+}
+
+/**
+ * Actualiza los campos enviados de un ítem del pedido.
+ * @param {number} pedidoId
+ * @param {number} itemId
+ * @param {Object} datos
+ * @returns {Promise<ItemPedido>} El ítem actualizado.
+ */
+function actualizarItem(pedidoId, itemId, datos) {
+  return modificar((db) => {
+    exigirEncontrado(db.pedidos, pedidoId, "Pedido");
+    const anterior = exigirEncontrado(
+      db.items.filter((i) => i.pedidoId === pedidoId),
+      itemId,
+      "Ítem",
+    );
+
+    const item = new ItemPedido({ ...anterior, ...datos, pedidoId, id: itemId });
+    exigirProductoActivo(db, item.productoId);
+    db.items[db.items.indexOf(anterior)] = item;
+    return item;
+  });
+}
+
+/**
+ * @param {number} pedidoId
+ * @param {number} itemId
+ * @returns {Promise<boolean>} true si se eliminó, false si no existía.
+ */
+function eliminarItem(pedidoId, itemId) {
+  return modificar((db) => {
+    exigirEncontrado(db.pedidos, pedidoId, "Pedido");
+    const item = db.items.find((i) => i.pedidoId === pedidoId && i.id === itemId);
+    if (!item) return false;
+
+    db.items.splice(db.items.indexOf(item), 1);
+    return true;
+  });
+}
+
+// ============================================================================
+// PRODUCTOS
+// ============================================================================
+
+/** @returns {Promise<Array<Producto>>} Todos los productos almacenados. */
+async function obtenerProductos() {
+  const db = await leer();
+  return db.productos.map(mapearAProducto);
+}
+
+/**
+ * @param {number} id
+ * @returns {Promise<Producto|null>} El producto con ese id o null si no existe.
+ */
+async function obtenerProductoPorId(id) {
+  const db = await leer();
+  const datos = db.productos.find((p) => p.id === id);
+  return datos ? mapearAProducto(datos) : null;
+}
+
+/**
+ * @param {Object} datos
+ * @returns {Promise<Producto>} El producto creado.
+ */
+function crearProducto(datos) {
+  return modificar((db) => {
+    const producto = new Producto({ ...datos, id: siguienteId(db, "productos") });
+    db.productos.push(producto);
+    return producto;
+  });
+}
+
+/**
+ * @param {number} id
+ * @param {Object} datos
+ * @returns {Promise<Producto|null>} El producto actualizado o null si no existe.
+ */
+function actualizarProducto(id, datos) {
+  return modificar((db) => {
+    const anterior = db.productos.find((p) => p.id === id);
+    if (!anterior) return null;
+
+    const producto = new Producto({ ...anterior, ...datos, id });
+    db.productos[db.productos.indexOf(anterior)] = producto;
+    return producto;
+  });
+}
+
+/**
+ * Elimina un producto sin ítems asociados.
+ * @param {number} id
+ * @returns {Promise<boolean>} true si se eliminó, false si no existía.
+ * @throws {Error} 409 si el producto está asociado a un pedido.
+ */
+function eliminarProducto(id) {
+  return modificar((db) => {
+    const indice = db.productos.findIndex((p) => p.id === id);
+    if (indice === -1) return false;
+
+    exigir(
+      !db.items.some((i) => i.productoId === id),
+      "El producto está asociado a un pedido; puede desactivarlo",
+      409,
+    );
+    db.productos.splice(indice, 1);
+    return true;
+  });
+}
+
+// ============================================================================
+// RUTAS Y ASIGNACIONES
+// ============================================================================
+
+/** @returns {Promise<Array>} Catálogo de rutas disponible para asignar pedidos. */
+async function obtenerRutas() {
+  const db = await leer();
+  return db.rutas;
+}
+
+/**
+ * Asigna una ruta a un pedido, o la quita enviando rutaId null.
+ * @param {number} pedidoId
+ * @param {number|null} rutaId
+ * @returns {Promise<{pedidoId: number, rutaId: number|null}>} La asignación guardada.
+ */
+function asignarRuta(pedidoId, rutaId) {
+  return modificar((db) => {
+    exigirEncontrado(db.pedidos, pedidoId, "Pedido");
+    if (rutaId !== null) exigirEncontrado(db.rutas, rutaId, "Ruta");
+
+    db.asignaciones = db.asignaciones.filter((a) => a.pedidoId !== pedidoId);
+    if (rutaId !== null) db.asignaciones.push({ pedidoId, rutaId });
+    return { pedidoId, rutaId };
+  });
+}
+
+module.exports = {
+  leer,
+  // Pedidos
+  obtenerTodas,
+  obtenerPorId,
+  crear,
+  actualizar,
+  eliminar,
+  // Ítems
+  obtenerItems,
+  crearItem,
+  actualizarItem,
+  eliminarItem,
+  // Productos
+  obtenerProductos,
+  obtenerProductoPorId,
+  crearProducto,
+  actualizarProducto,
+  eliminarProducto,
+  // Rutas y asignaciones
+  obtenerRutas,
+  asignarRuta,
+};

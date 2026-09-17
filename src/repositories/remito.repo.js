@@ -1,6 +1,7 @@
 const {
   leerArchivoJson,
   escribirArchivoJson,
+  leerJsonObjeto,
 } = require("../utils/persistencia");
 const Remito = require("../models/Remito");
 
@@ -14,12 +15,22 @@ const Remito = require("../models/Remito");
 const ARCHIVO = "remitos.json";
 
 /**
+ * Lee los pedidos de data/pedidos.json, que es un objeto con secciones
+ * ("pedidos", "items", ...) y no un array plano.
+ * @returns {Promise<Array>} La lista de pedidos.
+ */
+async function leerPedidos() {
+  const datos = await leerJsonObjeto("pedidos.json");
+  return datos.pedidos || [];
+}
+
+/**
  * Lee los pedidos y clientes para formularios.
  * Resuelve desde sus archivos independientes (si existen).
  * @returns {Promise<{pedidos: Array, clientes: Array}>}
  */
 async function obtenerPedidos() {
-  const pedidos = await leerArchivoJson("pedidos.json");
+  const pedidos = await leerPedidos();
   const clientes = await leerArchivoJson("clientes.json");
   return { pedidos, clientes };
 }
@@ -45,7 +56,7 @@ function mapearARemito(datos, pedidos, clientes, entregas) {
   remito.pedido = pedido || null;
 
   const cliente = pedido
-    ? clientes.find((c) => c.id === pedido.clienteId)
+    ? clientes.find((c) => String(c.id) === String(pedido.clienteId))
     : null;
   remito.cliente = cliente ? cliente.nombre : null;
 
@@ -62,7 +73,7 @@ function mapearARemito(datos, pedidos, clientes, entregas) {
 async function obtenerTodas() {
   const remitos = await leerArchivoJson(ARCHIVO);
   const [pedidos, clientes, entregas] = await Promise.all([
-    leerArchivoJson("pedidos.json"),
+    leerPedidos(),
     leerArchivoJson("clientes.json"),
     leerArchivoJson("entregas.json"),
   ]);
@@ -106,7 +117,7 @@ async function crear(datos) {
 
   // Hidratar para devolver la instancia completa con contexto
   const [pedidos, clientes, entregas] = await Promise.all([
-    leerArchivoJson("pedidos.json"),
+    leerPedidos(),
     leerArchivoJson("clientes.json"),
     leerArchivoJson("entregas.json"),
   ]);
@@ -134,7 +145,7 @@ async function actualizar(id, cambios) {
 
   // Leer contexto para devolver instancia hidratada
   const [pedidos, clientes, entregas] = await Promise.all([
-    leerArchivoJson("pedidos.json"),
+    leerPedidos(),
     leerArchivoJson("clientes.json"),
     leerArchivoJson("entregas.json"),
   ]);
