@@ -60,9 +60,20 @@
     "fechaEmision": "2026-09-16",
     "fechaVencimiento": "2026-10-16",
     "montoTotal": 227000,
-    "estado": "pendiente",
-    "firmadoPor": null,
+    "estado": "firmado",
+    "firmadoPor": "Lean",
     "observaciones": "Pendiente de firma: la copia firmada se retira en la próxima visita.",
+    "penalizacionAplicada": 0
+  },
+  {
+    "id": 7,
+    "pedidoId": 15,
+    "fechaEmision": "2026-09-19",
+    "fechaVencimiento": "2026-10-19",
+    "montoTotal": 1500.5,
+    "estado": "pendiente",
+    "firmadoPor": "Juan Pérez",
+    "observaciones": "Factura generada automáticamente",
     "penalizacionAplicada": 0
   }
 ]
