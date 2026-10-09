@@ -1,9 +1,9 @@
-const express = require("express");
-const controller = require("../controllers/rutas.controller");
+import express from "express";
+import controller from "../controllers/rutas.controller.js";
 
 const router = express.Router();
 
 router.get("/", controller.listar);
 router.get("/:id", controller.detalle);
 
-module.exports = router;
+export default router;

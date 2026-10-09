@@ -1,15 +1,17 @@
-const express = require("express");
-const path = require("node:path");
-const requestLogger = require("./src/middlewares/requestLogger");
-const errorHandler = require("./src/middlewares/errorHandler");
-const webRoutes = require("./src/routes/web.routes");
-const apiRoutes = require("./src/routes/api.routes");
+import express from "express";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import requestLogger from "./src/middlewares/requestLogger.js";
+import errorHandler from "./src/middlewares/errorHandler.js";
+import webRoutes from "./src/routes/web.routes.js";
+import apiRoutes from "./src/routes/api.routes.js";
+import { conectarDB, cerrarDB } from "./src/config/database.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configuración del motor de plantillas Pug
 app.set("view engine", "pug");
-app.set("views", path.join(__dirname, "src", "views"));
+app.set("views", path.join(import.meta.dirname, "src", "views"));
 
 // Middlewares globales
 app.use(express.json()); // Para parsear el body de requests JSON
@@ -35,21 +37,42 @@ app.use((req, res, next) => {
 // Middleware de manejo centralizado de errores
 app.use(errorHandler);
 
-if (require.main === module)
-  app.listen(PORT, () => {
-    console.log(
-      `Servidor FreshRoute B2B corriendo en http://localhost:${PORT}`,
-    );
-    // console.log(`Accede al Dashboard de Oficina en: http://localhost:${PORT}/`);
-    // console.log(
-    //   `Accede al Simulador de Chofer en: http://localhost:${PORT}/simulador`,
-    // );
-    console.log(
-      `Accede a la Documentación en: http://localhost:${PORT}/documentacion`,
-    );
-    console.log(
-      `Los Endpoints de la API REST comienzan en: http://localhost:${PORT}/api`,
-    );
-  });
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+  // Conecta a MongoDB antes de levantar el servidor. Si falla, se informa el
+  // error y se detiene el proceso (la app depende de la base de datos).
+  conectarDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(
+          `Servidor FreshRoute B2B corriendo en http://localhost:${PORT}`,
+        );
+        console.log(
+          `Accede a la Documentación en: http://localhost:${PORT}/documentacion`,
+        );
+        console.log(
+          `Los Endpoints de la API REST comienzan en: http://localhost:${PORT}/api`,
+        );
+      });
+    })
+    .catch((err) => {
+      console.error(
+        "[MongoDB] No se pudo iniciar la aplicación por un error de conexión:",
+        err.message,
+      );
+      process.exit(1);
+    });
 
-module.exports = app;
+  // Cierre ordenado.
+  const apagar = async (signal) => {
+    console.log(`\nRecibida señal ${signal}. Cerrando servidor...`);
+    await cerrarDB();
+    process.exit(0);
+  };
+  process.on("SIGINT", () => apagar("SIGINT"));
+  process.on("SIGTERM", () => apagar("SIGTERM"));
+}
+
+export default app;

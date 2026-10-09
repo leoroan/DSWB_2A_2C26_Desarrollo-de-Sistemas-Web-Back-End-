@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import controller from "../controllers/clientes.controller.js";
+
 const router = express.Router();
-const controller = require("../controllers/clientes.controller");
 
 router.get("/", controller.obtenerTodos);
 router.get("/:id", controller.obtenerPorId);
@@ -8,4 +9,4 @@ router.post("/", controller.crear);
 router.put("/:id", controller.actualizar);
 router.delete("/:id", controller.eliminar);
 
-module.exports = router;
+export default router;

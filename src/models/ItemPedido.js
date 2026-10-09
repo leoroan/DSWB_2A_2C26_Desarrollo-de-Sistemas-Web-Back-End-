@@ -1,4 +1,4 @@
-const { exigir, idValido } = require("../utils/validaciones");
+import { exigir, idValido } from "../utils/validaciones.js";
 
 class ItemPedido {
   constructor({ id, pedidoId, productoId, cantidad, observaciones = "" }) {
@@ -10,4 +10,4 @@ class ItemPedido {
   }
 }
 
-module.exports = ItemPedido;
+export default ItemPedido;

@@ -1,46 +1,52 @@
-const { leerJson, escribirJson } = require("../utils/persistencia");
-const Chofer = require("../models/Chofer");
+import { modelos, siguienteId } from "../database/models/index.js";
+import { limpio } from "../config/database.js";
+import Chofer from "../models/Chofer.js";
 
-const ARCHIVO = "choferes";
+/**
+ * Repositorio de choferes (MongoDB).
+ * La versión con JSON leía data/personas.json; ahora se usa la colección
+ * "choferes", conservando la misma interfaz.
+ */
+const ChoferModel = modelos.Chofer;
 
-function mapearAChofer(datos) {
+function mapearAChofer(doc) {
+  const d = limpio(doc);
   return new Chofer(
-    datos.id, datos.nombre, datos.apellido, datos.edad, datos.email,
-    datos.fechaAlta, datos.estado, datos.licencia, datos.vehiculoId
+    d.id,
+    d.nombre,
+    d.apellido,
+    d.edad,
+    d.email,
+    d.fechaAlta,
+    d.estado,
+    d.licencia,
+    d.vehiculoId,
   );
 }
 
 async function obtenerTodos() {
-  const choferes = await leerJson(ARCHIVO);
-  return choferes.map(mapearAChofer);
+  const docs = await ChoferModel.find().lean();
+  return docs.map(mapearAChofer);
 }
 
 async function obtenerPorId(id) {
-  const choferes = await obtenerTodos();
-  return choferes.find((c) => c.id === id) || null;
+  const docs = await ChoferModel.find().lean();
+  return docs.map(mapearAChofer).find((c) => c.id === id) || null;
 }
 
 async function crear(datos) {
-  const choferes = await leerJson(ARCHIVO);
-  const siguienteId = choferes.length
-    ? Math.max(...choferes.map((c) => c.id)) + 1
-    : 1;
-
-  const nuevo = mapearAChofer({ id: siguienteId, ...datos });
-  choferes.push(nuevo);
-  await escribirJson(ARCHIVO, choferes);
-  return nuevo;
+  const nuevo = { ...datos, id: await siguienteId("choferes") };
+  await ChoferModel.create(nuevo);
+  return mapearAChofer(nuevo);
 }
 
 async function actualizar(id, cambios) {
-  const choferes = await leerJson(ARCHIVO);
-  const indice = choferes.findIndex((c) => c.id === id);
-  if (indice === -1) return null;
-
-  const actualizado = mapearAChofer({ ...choferes[indice], ...cambios, id });
-  choferes[indice] = actualizado;
-  await escribirJson(ARCHIVO, choferes);
-  return actualizado;
+  const doc = await ChoferModel.findOneAndUpdate(
+    { id },
+    { $set: { ...cambios, id } },
+    { new: true },
+  ).lean();
+  return doc ? mapearAChofer(doc) : null;
 }
 
-module.exports = { obtenerTodos, obtenerPorId, crear, actualizar };
+export default { obtenerTodos, obtenerPorId, crear, actualizar };

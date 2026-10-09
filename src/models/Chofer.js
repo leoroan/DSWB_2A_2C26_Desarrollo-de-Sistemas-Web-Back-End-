@@ -1,4 +1,4 @@
-const Empleado = require("./Empleado");
+import Empleado from "./Empleado.js";
 
 class Chofer extends Empleado {
   constructor(id, nombre, apellido, edad, email, fechaAlta, estado, licencia, vehiculoId) {
@@ -19,4 +19,4 @@ class Chofer extends Empleado {
   }
 }
 
-module.exports = Chofer;
+export default Chofer;

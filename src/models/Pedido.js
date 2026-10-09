@@ -1,4 +1,4 @@
-const { exigir, idValido, fechaValida } = require('../utils/validaciones');
+import { exigir, idValido, fechaValida } from "../utils/validaciones.js";
 
 class Pedido {
   static estados = ['pendiente', 'confirmado', 'en_preparacion', 'en_reparto', 'entregado', 'cancelado'];
@@ -15,4 +15,4 @@ class Pedido {
   }
 }
 
-module.exports = Pedido;
+export default Pedido;

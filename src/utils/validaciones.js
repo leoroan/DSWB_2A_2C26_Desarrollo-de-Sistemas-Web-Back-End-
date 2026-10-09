@@ -16,4 +16,4 @@ function fechaValida(valor) {
     && new Date(valor).toISOString().slice(0, 10) === valor;
 }
 
-module.exports = { exigir, idValido, texto, fechaValida };
+export { exigir, idValido, texto, fechaValida };

@@ -1,5 +1,5 @@
-const repo = require("../repositories/remito.repo");
-const Remito = require("../models/Remito");
+import repo from "../repositories/remito.repo.js";
+import Remito from "../models/Remito.js";
 
 /**
  * Controlador de remitos.
@@ -335,7 +335,7 @@ async function cambiarEstado(req, res) {
   res.json(actualizado);
 }
 
-module.exports = {
+export default {
   indexWeb,
   nuevoWeb,
   crearWeb,

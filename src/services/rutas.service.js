@@ -1,5 +1,5 @@
-const rutasRepo = require("../repositories/rutas.repo");
-const paradasRepo = require("../repositories/paradas.repo");
+import rutasRepo from "../repositories/rutas.repo.js";
+import paradasRepo from "../repositories/paradas.repo.js";
 
 async function listarRutas() {
   const rutas = await rutasRepo.obtenerTodas();
@@ -19,4 +19,4 @@ async function obtenerDetalle(id) {
   return { ...ruta, paradas, cantidadParadas: paradas.length };
 }
 
-module.exports = { listarRutas, obtenerDetalle };
+export default { listarRutas, obtenerDetalle };

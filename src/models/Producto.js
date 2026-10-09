@@ -1,4 +1,4 @@
-const { exigir, texto } = require('../utils/validaciones');
+import { exigir, texto } from "../utils/validaciones.js";
 
 class Producto {
   constructor({ id, nombre, categoria, precio, estado = 'activo' }) {
@@ -10,4 +10,4 @@ class Producto {
   }
 }
 
-module.exports = Producto;
+export default Producto;

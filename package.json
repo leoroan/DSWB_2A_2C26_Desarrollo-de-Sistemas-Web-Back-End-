@@ -6,7 +6,9 @@
   "scripts": {
     "test": "node --test",
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "seed": "node src/database/seed.js",
+    "seed:reset": "node src/database/seed.js --reset"
   },
   "repository": {
     "type": "git",
@@ -15,14 +17,19 @@
   "keywords": [],
   "author": "Maselli Leandro, Canteros Javier, Pelisare Damian, Quinteros Maximiliano, Gutierrez Maria Cristina",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-/issues"
   },
   "homepage": "https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-#readme",
   "dependencies": {
+    "dotenv": "^18.0.6",
     "express": "^5.2.1",
+    "mongoose": "^9.11.1",
     "nodemon": "^3.1.14",
     "pug": "^3.0.4"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.3.0"
   }
 }

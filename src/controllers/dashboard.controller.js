@@ -10,7 +10,7 @@ function mostrarDashboard(req, res) {
   });
 }
 
-module.exports = {
+export default {
   mostrarDashboard,
   mostrarDocumentacion,
 };

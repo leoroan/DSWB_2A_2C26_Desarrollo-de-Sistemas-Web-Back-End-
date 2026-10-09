@@ -8,4 +8,4 @@ class Persona {
 	}
 }
 
-module.exports = Persona;
+export default Persona;

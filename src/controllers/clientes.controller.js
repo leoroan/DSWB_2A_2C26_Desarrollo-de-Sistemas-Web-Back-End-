@@ -1,4 +1,4 @@
-const clientesService = require("../services/clientes.service");
+import clientesService from "../services/clientes.service.js";
 
 // ============================================================================
 // RUTAS WEB — Vistas Pug
@@ -135,7 +135,7 @@ async function eliminar(req, res, next) {
   }
 }
 
-module.exports = {
+export default {
   // Web
   indexWeb,
   nuevoWeb,

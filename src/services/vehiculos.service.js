@@ -1,4 +1,4 @@
-const vehiculoRepo = require("../repositories/vehiculos.repo");
+import vehiculoRepo from "../repositories/vehiculos.repo.js";
 
 async function listarVehiculos() {
   return await vehiculoRepo.obtenerTodos();
@@ -25,4 +25,4 @@ async function asignarChoferAVehiculo(vehiculoId, choferId) {
   return await vehiculoRepo.actualizar(vehiculoId, vehiculo);
 }
 
-module.exports = { listarVehiculos, obtenerDetalleVehiculo, registrarVehiculo, asignarChoferAVehiculo };
+export default { listarVehiculos, obtenerDetalleVehiculo, registrarVehiculo, asignarChoferAVehiculo };

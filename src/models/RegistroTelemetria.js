@@ -16,4 +16,4 @@ class RegistroTelemetria {
   }
 }
 
-module.exports = RegistroTelemetria;
+export default RegistroTelemetria;

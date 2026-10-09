@@ -1,42 +1,47 @@
-const {
-  leerArchivoJson,
-  escribirArchivoJson,
-} = require("../utils/persistencia");
-const RegistroTelemetria = require("../models/RegistroTelemetria");
+import { modelos, siguienteId } from "../database/models/index.js";
+import { limpio } from "../config/database.js";
+import RegistroTelemetria from "../models/RegistroTelemetria.js";
 
-const ARCHIVO = "telemetria.json";
+/**
+ * Repositorio de telemetría (MongoDB). Reemplaza data/telemetria.json
+ * conservando la misma interfaz.
+ */
+const TelemetriaModel = modelos.RegistroTelemetria;
 
-function mapearATelemetria(datos) {
+function mapearATelemetria(doc) {
+  const d = limpio(doc);
   return new RegistroTelemetria(
-    datos.id, datos.vehiculoId, datos.timestamp, datos.latitud,
-    datos.longitud, datos.temperatura, datos.velocidad, datos.estadoMotor
+    d.id,
+    d.vehiculoId,
+    d.timestamp,
+    d.latitud,
+    d.longitud,
+    d.temperatura,
+    d.velocidad,
+    d.estadoMotor,
   );
 }
 
 async function obtenerTodos() {
-  const registros = await leerArchivoJson(ARCHIVO);
-  return registros.map(mapearATelemetria);
+  const docs = await TelemetriaModel.find().lean();
+  return docs.map(mapearATelemetria);
 }
 
 async function crear(datos) {
-  const registros = await leerArchivoJson(ARCHIVO);
-  const siguienteId = registros.length
-    ? Math.max(...registros.map((r) => r.id)) + 1
-    : 1;
-
   // fecha y hora actual automáticamente
   datos.timestamp = new Date().toISOString();
 
-  const nuevo = mapearATelemetria({ id: siguienteId, ...datos });
-  registros.push(nuevo);
-  await escribirArchivoJson(ARCHIVO, registros);
-  return nuevo;
+  const nuevo = { ...datos, id: await siguienteId("telemetria") };
+  await TelemetriaModel.create(nuevo);
+  return mapearATelemetria(nuevo);
 }
 
-// método extra para la vista de detalle
+/** Método extra para la vista de detalle. */
 async function obtenerPorVehiculo(vehiculoId) {
-  const registros = await obtenerTodos();
-  return registros.filter((r) => String(r.vehiculoId) === String(vehiculoId));
+  const docs = await TelemetriaModel.find().lean();
+  return docs
+    .map(mapearATelemetria)
+    .filter((r) => String(r.vehiculoId) === String(vehiculoId));
 }
 
-module.exports = { obtenerTodos, crear, obtenerPorVehiculo };
+export default { obtenerTodos, crear, obtenerPorVehiculo };

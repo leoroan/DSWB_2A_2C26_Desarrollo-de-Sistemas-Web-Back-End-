@@ -1,50 +1,51 @@
-const {
-  leerArchivoJson,
-  escribirArchivoJson,
-} = require("../utils/persistencia");
-const Vehiculo = require("../models/Vehiculo");
+import { modelos, siguienteId } from "../database/models/index.js";
+import { limpio } from "../config/database.js";
+import Vehiculo from "../models/Vehiculo.js";
 
-const ARCHIVO = "vehiculos.json";
+/**
+ * Repositorio de vehículos (MongoDB). Reemplaza data/vehiculos.json
+ * conservando la misma interfaz.
+ */
+const VehiculoModel = modelos.Vehiculo;
 
-function mapearAVehiculo(datos) {
+function mapearAVehiculo(doc) {
+  const d = limpio(doc);
   return new Vehiculo(
-    datos.id, datos.patente, datos.tipo, datos.capacidad,
-    datos.temperaturaMin, datos.temperaturaMax, datos.estado,
-    datos.choferAsignadoId, datos.ultimaActualizacionTelemetria
+    d.id,
+    d.patente,
+    d.tipo,
+    d.capacidad,
+    d.temperaturaMin,
+    d.temperaturaMax,
+    d.estado,
+    d.choferAsignadoId,
+    d.ultimaActualizacionTelemetria,
   );
 }
 
 async function obtenerTodos() {
-  const vehiculos = await leerArchivoJson(ARCHIVO);
-  return vehiculos.map(mapearAVehiculo);
+  const docs = await VehiculoModel.find().lean();
+  return docs.map(mapearAVehiculo);
 }
 
 async function obtenerPorId(id) {
-  const vehiculos = await obtenerTodos();
-  return vehiculos.find((v) => String(v.id) === String(id)) || null;
+  const docs = await VehiculoModel.find().lean();
+  return docs.map(mapearAVehiculo).find((v) => String(v.id) === String(id)) || null;
 }
 
 async function crear(datos) {
-  const vehiculos = await leerArchivoJson(ARCHIVO);
-  const siguienteId = vehiculos.length
-    ? Math.max(...vehiculos.map((v) => v.id)) + 1
-    : 1;
-
-  const nuevo = mapearAVehiculo({ id: siguienteId, ...datos });
-  vehiculos.push(nuevo);
-  await escribirArchivoJson(ARCHIVO, vehiculos);
-  return nuevo;
+  const nuevo = { ...datos, id: await siguienteId("vehiculos") };
+  await VehiculoModel.create(nuevo);
+  return mapearAVehiculo(nuevo);
 }
 
 async function actualizar(id, cambios) {
-  const vehiculos = await leerArchivoJson(ARCHIVO);
-  const indice = vehiculos.findIndex((v) => String(v.id) === String(id));
-  if (indice === -1) return null;
-
-  const actualizado = mapearAVehiculo({ ...vehiculos[indice], ...cambios, id });
-  vehiculos[indice] = actualizado;
-  await escribirArchivoJson(ARCHIVO, vehiculos);
-  return actualizado;
+  const doc = await VehiculoModel.findOneAndUpdate(
+    { id },
+    { $set: { ...cambios, id } },
+    { new: true },
+  ).lean();
+  return doc ? mapearAVehiculo(doc) : null;
 }
 
-module.exports = { obtenerTodos, obtenerPorId, crear, actualizar };
+export default { obtenerTodos, obtenerPorId, crear, actualizar };

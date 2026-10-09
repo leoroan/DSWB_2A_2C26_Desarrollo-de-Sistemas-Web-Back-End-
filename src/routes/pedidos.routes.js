@@ -1,6 +1,8 @@
-const router = require("express").Router();
-const pedidoController = require("../controllers/pedidos.controller");
-const { validarId, validarCuerpo } = require("../middlewares/validarPedido");
+import express from "express";
+import * as pedidoController from "../controllers/pedidos.controller.js";
+import { validarId, validarCuerpo } from "../middlewares/validarPedido.js";
+
+const router = express.Router();
 
 router.param("id", validarId);
 router.param("itemId", validarId);
@@ -15,4 +17,4 @@ router.put("/:id/items/:itemId", validarCuerpo, pedidoController.guardarItem);
 router.delete("/:id/items/:itemId", pedidoController.eliminarItem);
 router.patch("/:id/ruta", validarCuerpo, pedidoController.asignarRuta);
 
-module.exports = router;
+export default router;

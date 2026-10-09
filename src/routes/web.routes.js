@@ -1,13 +1,14 @@
-const express = require("express");
+import express from "express";
+import controller from "../controllers/dashboard.controller.js";
+import remitosController from "../controllers/remitos.controller.js";
+import clientesController from "../controllers/clientes.controller.js";
+import rutasController from "../controllers/rutas.controller.js";
+import vehiculosController from "../controllers/vehiculo.controller.js";
+import telemetriaController from "../controllers/telemetria.controller.js";
+import * as pedidos from "../controllers/pedidos.controller.js";
+import { validarId, validarCuerpo } from "../middlewares/validarPedido.js";
+
 const router = express.Router();
-const controller = require("../controllers/dashboard.controller");
-const remitosController = require("../controllers/remitos.controller");
-const clientesController = require("../controllers/clientes.controller");
-const rutasController = require("../controllers/rutas.controller");
-const vehiculosController = require("../controllers/vehiculo.controller");
-const telemetriaController = require("../controllers/telemetria.controller");
-const pedidos = require("../controllers/pedidos.controller");
-const { validarId, validarCuerpo } = require("../middlewares/validarPedido");
 
 // Dashboard principal — página de entrada
 router.get("/", controller.mostrarDashboard);
@@ -43,4 +44,4 @@ router.get("/vehiculos", vehiculosController.renderIndex);
 // Telemetría — detalle por vehículo (vistas web Pug)
 router.get("/telemetria/:id", telemetriaController.renderDetail);
 
-module.exports = router;
+export default router;

@@ -5,3 +5,10 @@ docs/*
 !docs/generar-coleccion.js
 docs
 notas.md
+
+# Variables de entorno y secretos (MongoDB Atlas)
+.env
+.env.local
+*.env
+!.env.example
+

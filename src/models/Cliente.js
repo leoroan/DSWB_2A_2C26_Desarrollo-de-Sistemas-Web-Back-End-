@@ -1,4 +1,4 @@
-const Persona = require("./Persona");
+import Persona from "./Persona.js";
 
 class Cliente extends Persona {
     constructor(
@@ -42,4 +42,4 @@ class Cliente extends Persona {
     }
 }
 
-module.exports = Cliente;
+export default Cliente;

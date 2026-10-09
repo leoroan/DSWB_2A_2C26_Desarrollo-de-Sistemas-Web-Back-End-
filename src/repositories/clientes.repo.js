@@ -1,89 +1,65 @@
-const Cliente = require("../models/Cliente");
-const {
-  leerArchivoJson,
-  escribirArchivoJson,
-} = require("../utils/persistencia");
+import { modelos } from "../database/models/index.js";
+import { limpio } from "../config/database.js";
+import Cliente from "../models/Cliente.js";
 
-const ARCHIVO = "clientes.json";
+/**
+ * Repositorio de clientes (MongoDB).
+ * Reemplaza la lectura/escritura de data/clientes.json conservando la misma
+ * interfaz y la misma forma de los datos, para no alterar el comportamiento
+ * de la API ni de las vistas.
+ */
+const ClienteModel = modelos.Cliente;
 
-async function obtenerTodas() {
-  const datos = await leerArchivoJson(ARCHIVO);
-
-  return datos.map(
-    (cliente) =>
-      new Cliente(
-        cliente.id,
-        cliente.nombre,
-        cliente.tipo,
-        cliente.email,
-        cliente.telefono,
-        cliente.domicilioDeEntrega,
-        cliente.estado,
-        cliente.fechaAlta,
-      ),
+/** Convierte un documento plano de Mongo en una instancia de la clase Cliente. */
+function mapearACliente(doc) {
+  return new Cliente(
+    doc.id,
+    doc.nombre,
+    doc.tipo,
+    doc.email,
+    doc.telefono,
+    doc.domicilioDeEntrega,
+    doc.estado,
+    doc.fechaAlta,
+    doc.apellido,
+    doc.edad,
   );
 }
 
-async function obtenerPorId(id) {
-  const clientes = await obtenerTodas();
+async function obtenerTodas() {
+  const docs = await ClienteModel.find().lean();
+  return docs.map(mapearACliente);
+}
 
-  return clientes.find((cliente) => String(cliente.id) === String(id));
+async function obtenerPorId(id) {
+  // Se compara por String para tolerar que el id llegue como número o string,
+  // igual que hacía la versión con JSON.
+  const docs = await ClienteModel.find().lean();
+  return docs
+    .map(mapearACliente)
+    .find((cliente) => String(cliente.id) === String(id));
 }
 
 async function crear(cliente) {
-  const datos = await leerArchivoJson(ARCHIVO);
-
-  datos.push(cliente);
-
-  await escribirArchivoJson(ARCHIVO, datos);
-
+  await ClienteModel.create(cliente);
+  // Se devuelve el mismo objeto recibido (idempotente con la versión JSON),
+  // de modo que la respuesta de la API no cambie.
   return cliente;
 }
 
 async function actualizar(id, datosActualizados) {
-  const datos = await leerArchivoJson(ARCHIVO);
+  const doc = await ClienteModel.findOneAndUpdate(
+    { id: String(id) },
+    { $set: { ...datosActualizados, id: String(id) } },
+    { new: true },
+  ).lean();
 
-  const indice = datos.findIndex(
-    (cliente) => String(cliente.id) === String(id),
-  );
-
-  if (indice === -1) {
-    return null;
-  }
-
-  datos[indice] = {
-    ...datos[indice],
-    ...datosActualizados,
-    id,
-  };
-
-  await escribirArchivoJson(ARCHIVO, datos);
-
-  return datos[indice];
+  return doc ? limpio(doc) : null;
 }
 
 async function eliminar(id) {
-  const datos = await leerArchivoJson(ARCHIVO);
-
-  const indice = datos.findIndex(
-    (cliente) => String(cliente.id) === String(id),
-  );
-
-  if (indice === -1) {
-    return false;
-  }
-
-  datos.splice(indice, 1);
-
-  await escribirArchivoJson(ARCHIVO, datos);
-
-  return true;
+  const res = await ClienteModel.deleteOne({ id: String(id) });
+  return res.deletedCount > 0;
 }
 
-module.exports = {
-  obtenerTodas,
-  obtenerPorId,
-  crear,
-  actualizar,
-  eliminar,
-};
+export default { obtenerTodas, obtenerPorId, crear, actualizar, eliminar };

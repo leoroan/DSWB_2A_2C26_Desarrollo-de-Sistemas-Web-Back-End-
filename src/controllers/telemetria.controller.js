@@ -1,5 +1,5 @@
-const vehiculoService = require("../services/vehiculos.service");
-const telemetriaRepo = require("../repositories/telemetria.repo");
+import vehiculoService from "../services/vehiculos.service.js";
+import telemetriaRepo from "../repositories/telemetria.repo.js";
 
 /**
  * Controlador de telemetría (vistas web Pug).
@@ -34,4 +34,4 @@ async function renderDetail(req, res) {
   }
 }
 
-module.exports = { renderDetail };
+export default { renderDetail };

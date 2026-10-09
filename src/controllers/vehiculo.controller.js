@@ -1,4 +1,4 @@
-const vehiculoService = require("../services/vehiculos.service");
+import vehiculoService from "../services/vehiculos.service.js";
 
 /**
  * Controlador de vehículos (vistas web Pug).
@@ -20,4 +20,4 @@ async function renderIndex(req, res) {
   }
 }
 
-module.exports = { renderIndex };
+export default { renderIndex };

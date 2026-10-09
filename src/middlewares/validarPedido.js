@@ -1,4 +1,4 @@
-const { exigir, idValido } = require('../utils/validaciones');
+import { exigir, idValido } from "../utils/validaciones.js";
 
 function validarId(req, res, next, valor, nombre) {
   exigir(/^\d+$/.test(valor) && idValido(Number(valor)), `${nombre} debe ser un entero positivo`);
@@ -10,4 +10,4 @@ function validarCuerpo(req, res, next) {
   next();
 }
 
-module.exports = { validarId, validarCuerpo };
+export { validarId, validarCuerpo };

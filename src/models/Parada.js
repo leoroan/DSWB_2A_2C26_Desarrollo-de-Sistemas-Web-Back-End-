@@ -34,4 +34,4 @@ class Parada {
   }
 }
 
-module.exports = Parada;
+export default Parada;
