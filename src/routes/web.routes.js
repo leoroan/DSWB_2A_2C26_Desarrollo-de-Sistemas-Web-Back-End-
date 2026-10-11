@@ -7,6 +7,8 @@ import vehiculosController from "../controllers/vehiculo.controller.js";
 import telemetriaController from "../controllers/telemetria.controller.js";
 import * as pedidos from "../controllers/pedidos.controller.js";
 import { validarId, validarCuerpo } from "../middlewares/validarPedido.js";
+import authController from "../controllers/auth.controller.js";
+import choferesController from "../controllers/choferes.controller.js";
 
 const router = express.Router();
 
@@ -43,5 +45,15 @@ router.get("/vehiculos", vehiculosController.renderIndex);
 
 // Telemetría — detalle por vehículo (vistas web Pug)
 router.get("/telemetria/:id", telemetriaController.renderDetail);
+
+// Choferes — vistas web (Pug)
+router.get("/choferes", choferesController.indexWeb);
+router.get("/choferes/nuevo", choferesController.nuevoWeb);
+router.post("/choferes", choferesController.crearWeb);
+
+// Login simulado BBDD
+router.get("/login", authController.mostrarLogin);
+router.post("/login", authController.procesarLogin);
+router.get("/logout", authController.cerrarSesion);
 
 export default router;
