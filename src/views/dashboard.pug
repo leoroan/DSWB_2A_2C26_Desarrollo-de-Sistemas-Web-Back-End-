@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  // Banner de Simulación de Login Exitoso contra la BBDD
+  // Sesión del usuario autenticado
   if loginExitoso
     div.alert.alert-success.border-0.shadow-sm.p-3.mb-4(role="alert")
       div.d-flex.justify-content-between.align-items-center.flex-wrap.gap-2
@@ -9,12 +9,12 @@ block content
           div.bg-success.text-white.rounded-circle.p-3.me-3.d-flex.align-items-center.justify-content-center(style="width: 48px; height: 48px;")
             i.fa-solid.fa-check-double.fa-lg
           div
-            h5.alert-heading.mb-1.fw-bold ¡Sesión iniciada con éxito en la Base de Datos!
+            h5.alert-heading.mb-1.fw-bold ¡Sesión iniciada con éxito!
             div.small.text-secondary
               span.me-3
                 i.fa-solid.fa-user.me-1
                 strong Usuario: 
-                | #{usuario} (#{rol})
+                | #{nombreUsuario}
               span.me-3
                 i.fa-solid.fa-database.me-1
                 strong BBDD: 
@@ -23,12 +23,10 @@ block content
                 i.fa-solid.fa-lock.me-1
                 | Autenticado
         div.d-flex.gap-2
-          a.btn.btn-outline-success.btn-sm(href="/login")
-            i.fa-solid.fa-right-to-bracket.me-1
-            | Probar Pantalla Login
-          a.btn.btn-outline-secondary.btn-sm(href="/login")
-            i.fa-solid.fa-arrow-right-from-bracket.me-1
-            | Salir
+          form(action="/logout" method="post")
+            button.btn.btn-outline-secondary.btn-sm(type="submit")
+              i.fa-solid.fa-arrow-right-from-bracket.me-1
+              | Salir
 
   // Encabezado del Dashboard
   div.d-flex.justify-content-between.align-items-center.flex-wrap.mb-4

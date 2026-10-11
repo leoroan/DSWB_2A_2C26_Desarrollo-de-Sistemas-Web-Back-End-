@@ -59,8 +59,8 @@ async function mostrarDashboard(req, res) {
 
   const dbConectada = mongoose.connection.readyState === 1;
   const dbName = mongoose.connection.name || "freshroute";
-  const loginExitoso = req.query.login === "ok" || !req.query.logout;
-  const usuario = req.query.user || "Operador Logístico";
+  const loginExitoso = Boolean(req.usuario);
+  const nombreUsuario = req.usuario?.nombre || "Operador Logístico";
   const rol = req.query.rol || "Planificador de Rutas";
 
   res.render("dashboard", {
@@ -69,7 +69,7 @@ async function mostrarDashboard(req, res) {
     dbConectada,
     dbName,
     loginExitoso,
-    usuario,
+    nombreUsuario,
     rol,
   });
 }

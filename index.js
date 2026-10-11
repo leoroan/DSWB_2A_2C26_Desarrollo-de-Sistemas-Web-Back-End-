@@ -6,6 +6,8 @@ import errorHandler from "./src/middlewares/errorHandler.js";
 import webRoutes from "./src/routes/web.routes.js";
 import apiRoutes from "./src/routes/api.routes.js";
 import { conectarDB, cerrarDB } from "./src/config/database.js";
+import authRoutes from "./src/routes/auth.routes.js";
+import { cargarUsuario, requerirLogin } from "./src/middlewares/auth.js";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -20,7 +22,11 @@ app.use(requestLogger); // Nuestro logger de requests
 
 // Rutas web
 // Incluye dashboard, pedidos, remitos, clientes, rutas, vehículos y telemetría.
-app.use("/", webRoutes);
+app.use("/", cargarUsuario, authRoutes);
+app.use("/", (req, res, next) => {
+  if (req.path === "/api" || req.path.startsWith("/api/")) return next();
+  requerirLogin(req, res, next);
+}, webRoutes);
 
 // Rutas de API REST (para Postman, integraciones, etc.)
 app.use("/api", apiRoutes);

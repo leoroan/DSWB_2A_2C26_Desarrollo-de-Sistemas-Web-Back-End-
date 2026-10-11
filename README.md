@@ -248,6 +248,23 @@ Una vez que el servidor esté corriendo, podrás acceder a las diferentes seccio
 
 ---
 
+## Inicio de sesión
+
+Antes de acceder a las páginas internas, la aplicación solicita correo y contraseña
+en `/login`. Para crear un usuario en la base configurada en `.env`, ejecutá:
+
+```bash
+npm run user:create
+```
+
+El comando solicita nombre, correo y contraseña (entre 8 y 256 caracteres).
+Las contraseñas se almacenan en texto plano según los requisitos de esta entrega
+académica. No uses contraseñas de otras cuentas.
+Luego ejecutá `npm start` y accedé a `http://localhost:3000`.
+La sesión dura 8 horas y el botón **Cerrar sesión** la invalida.
+Las rutas `/api` siguen disponibles sin login para las pruebas con Postman.
+En producción, las cookies de sesión requieren HTTPS.
+
 ## 👥 Equipo de Desarrollo
 
 - **Maselli, Leandro:**

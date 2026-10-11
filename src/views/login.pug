@@ -1,58 +1,22 @@
 extends layout
 
 block content
-  div.row.justify-content-center.my-5
-    div.col-md-6.col-lg-5
-      div.card.shadow-sm.border-0
-        div.card-header.bg-dark.text-white.text-center.py-3
-          div.d-flex.justify-content-center.align-items-center.mb-2
-            i.fa-solid.fa-truck-ramp-box.fa-2x.text-info.me-2
-            h3.mb-0.fw-bold
-              span FRESH
-              span.text-info ROUTE
-          p.small.text-muted.mb-0 Plataforma de Distribución Inteligente B2B
-
-        div.card-body.p-4
-          if dbConectada
-            div.alert.alert-success.d-flex.align-items-center.py-2.small.mb-3
-              i.fa-solid.fa-database.me-2
-              div
-                strong Base de Datos: 
-                span Conectada a MongoDB "#{dbName}"
-          else
-            div.alert.alert-warning.d-flex.align-items-center.py-2.small.mb-3
-              i.fa-solid.fa-triangle-exclamation.me-2
-              div
-                strong Base de Datos: 
-                span Desconectada (iniciá npm run db:local)
-
-          h4.card-title.text-center.mb-3 Iniciar Sesión en el Sistema
-          p.text-muted.small.text-center.mb-4 Ingrese cualquier usuario y contraseña para acceder al sistema.
-
-          form(action="/login", method="POST")
-            div.mb-3
-              label.form-label.fw-semibold(for="email") Usuario / Correo Electrónico
-              div.input-group
-                span.input-group-text.bg-light
-                  i.fa-solid.fa-user
-                input#email.form-control(type="text", name="usuario", placeholder="Ingrese cualquier usuario o correo", required)
-
-            div.mb-3
-              label.form-label.fw-semibold(for="password") Contraseña
-              div.input-group
-                span.input-group-text.bg-light
-                  i.fa-solid.fa-lock
-                input#password.form-control(type="password", name="password", placeholder="Ingrese cualquier contraseña", required)
-
-            div.mb-3
-              label.form-label.fw-semibold(for="rol") Rol Asignado
-              select#rol.form-select(name="rol")
-                option(value="Planificador de Rutas" selected) Planificador de Rutas (Persona 3)
-                option(value="Administrador General") Administrador General
-                option(value="Operador de Depósito") Operador de Depósito
-                option(value="Chofer de Reparto") Chofer de Reparto
-
-            div.d-grid.gap-2.mt-4
-              button.btn.btn-primary.btn-lg(type="submit")
-                i.fa-solid.fa-right-to-bracket.me-2
-                | Iniciar Sesión
+  .row.justify-content-center.py-5
+    .col-12.col-md-7.col-lg-5
+      .card.border-0.shadow-sm
+        .card-body.p-4.p-md-5
+          .text-center.mb-4
+            i.fa-solid.fa-truck-fast.fa-3x.text-info.mb-3(aria-hidden="true")
+            h1.h3 Iniciar sesión
+            p.text-muted Accedé al sistema de distribución FreshRoute.
+          if error
+            .alert.alert-danger(role="alert")= error
+          form(action="/login" method="post")
+            .mb-3
+              label.form-label(for="email") Correo electrónico
+              input.form-control#email(type="email" name="email" value=email required maxlength="254" autocomplete="username" autofocus)
+            .mb-4
+              label.form-label(for="password") Contraseña
+              input.form-control#password(type="password" name="password" required maxlength="256" autocomplete="current-password")
+            button.btn.btn-dark.w-100(type="submit") Ingresar
+          p.small.text-muted.text-center.mt-4.mb-0 Solicitá tu usuario al administrador del equipo.
