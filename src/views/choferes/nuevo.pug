@@ -1,0 +1,60 @@
+extends ../layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    div
+      h1.mb-1 Registrar Nuevo Chófer
+      p.text-muted.mb-0 Dar de alta un chófer en la base de datos de FreshRoute B2B.
+
+    div
+      a.btn.btn-outline-secondary.me-2(href="/")
+        i.fa-solid.fa-house.me-1
+        | Panel Principal
+      a.btn.btn-outline-primary(href="/choferes")
+        i.fa-solid.fa-list.me-1
+        | Ver Choferes
+
+  div.card.shadow-sm.border-0
+    div.card-body.p-4
+      form(method="POST", action="/choferes")
+        div.row.g-3
+          div.col-md-6
+            label.form-label.fw-semibold(for="nombre") Nombre *
+            input#nombre.form-control(type="text", name="nombre", placeholder="Ej: Carlos", required)
+
+          div.col-md-6
+            label.form-label.fw-semibold(for="apellido") Apellido *
+            input#apellido.form-control(type="text", name="apellido", placeholder="Ej: Gomez", required)
+
+          div.col-md-4
+            label.form-label.fw-semibold(for="edad") Edad
+            input#edad.form-control(type="number", name="edad", placeholder="Ej: 35", min="18", max="75")
+
+          div.col-md-4
+            label.form-label.fw-semibold(for="licencia") Licencia de Conducir *
+            input#licencia.form-control(type="text", name="licencia", placeholder="Ej: B2 Profesional / C1", required)
+
+          div.col-md-4
+            label.form-label.fw-semibold(for="estado") Estado Inicial
+            select#estado.form-select(name="estado")
+              option(value="Disponible" selected) Disponible
+              option(value="En Viaje") En Viaje
+              option(value="Descanso") Descanso
+
+          div.col-md-6
+            label.form-label.fw-semibold(for="email") Correo Electrónico
+            input#email.form-control(type="email", name="email", placeholder="chofer@freshroute.com")
+
+          div.col-md-6
+            label.form-label.fw-semibold(for="vehiculoId") Vehículo Asignado (Opcional)
+            select#vehiculoId.form-select(name="vehiculoId")
+              option(value="") -- Sin vehículo asignado --
+              if vehiculos && vehiculos.length
+                each vehiculo in vehiculos
+                  option(value=vehiculo.id) Patente: #{vehiculo.patente} (#{vehiculo.tipo})
+
+          div.col-12.mt-4.d-flex.justify-content-end.gap-2
+            a.btn.btn-outline-secondary(href="/") Cancelar
+            button.btn.btn-primary(type="submit")
+              i.fa-solid.fa-id-card.me-2
+              | Guardar Chófer en Base de Datos

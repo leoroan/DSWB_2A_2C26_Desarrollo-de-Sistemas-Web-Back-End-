@@ -9,7 +9,8 @@
     "dev": "nodemon index.js",
     "seed": "node src/database/seed.js",
     "user:create": "node src/database/crear-usuario.js",
-    "seed:reset": "node src/database/seed.js --reset"
+    "seed:reset": "node src/database/seed.js --reset",
+    "db:local": "node run-local-db.js"
   },
   "repository": {
     "type": "git",

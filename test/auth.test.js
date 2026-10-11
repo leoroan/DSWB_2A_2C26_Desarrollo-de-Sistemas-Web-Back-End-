@@ -2,11 +2,23 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import app from "../index.js";
 import { Usuario, Sesion } from "../src/database/models/auth.js";
+import clientes from "../src/repositories/clientes.repo.js";
+import pedidos from "../src/repositories/pedidos.repo.js";
+import rutas from "../src/repositories/rutas.repo.js";
+import remitos from "../src/repositories/remito.repo.js";
+import choferes from "../src/repositories/choferes.repo.js";
+import vehiculos from "../src/repositories/vehiculos.repo.js";
 
 test("login, protección de páginas y cierre de sesión", async (t) => {
   // Simula la persistencia sin conectar ni escribir en la base del equipo.
   const usuario = { _id: "usuario-prueba", nombre: "Javier", email: "javi@example.com", password: "clave1234" };
   const sesiones = new Map();
+  for (const repo of [clientes, pedidos, rutas, remitos]) {
+    t.mock.method(repo, "obtenerTodas", async () => []);
+  }
+  for (const repo of [choferes, vehiculos]) {
+    t.mock.method(repo, "obtenerTodos", async () => []);
+  }
   t.mock.method(Usuario, "findOne", ({ email }) => ({
     select: async () => email === usuario.email ? usuario : null,
   }));
@@ -47,6 +59,8 @@ test("login, protección de páginas y cierre de sesión", async (t) => {
   assert.equal(inicio.status, 200);
   const html = await inicio.text();
   assert.match(html, /Cerrar sesión/);
+  assert.match(html, /Panel Operativo FreshRoute B2B/);
+  assert.match(html, /Javier/);
   assert.ok(!html.includes(usuario.password));
   assert.equal((await get("/login", cookie)).status, 302);
   const salida = await fetch(url + "/logout", { method: "POST", redirect: "manual", headers: { cookie } });
