@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .row.justify-content-center.py-5
+    .col-12.col-md-7.col-lg-5
+      .card.border-0.shadow-sm
+        .card-body.p-4.p-md-5
+          .text-center.mb-4
+            i.fa-solid.fa-truck-fast.fa-3x.text-info.mb-3(aria-hidden="true")
+            h1.h3 Iniciar sesión
+            p.text-muted Accedé al sistema de distribución FreshRoute.
+          if error
+            .alert.alert-danger(role="alert")= error
+          form(action="/login" method="post")
+            .mb-3
+              label.form-label(for="email") Correo electrónico
+              input.form-control#email(type="email" name="email" value=email required maxlength="254" autocomplete="username" autofocus)
+            .mb-4
+              label.form-label(for="password") Contraseña
+              input.form-control#password(type="password" name="password" required maxlength="256" autocomplete="current-password")
+            button.btn.btn-dark.w-100(type="submit") Ingresar
+          p.small.text-muted.text-center.mt-4.mb-0 Solicitá tu usuario al administrador del equipo.

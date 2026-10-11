@@ -40,12 +40,16 @@ html(lang="es")
           span.navbar-toggler-icon
         div.collapse.navbar-collapse#navbarNav
           ul.navbar-nav.ms-auto
-            li.nav-item
-              a.nav-link(href="/pedidos") Pedidos
-            li.nav-item
-              a.nav-link(href="/documentacion") 
-                i.fa-solid.fa-book.me-1
-                | Documentacion 1er Entrega
+            if usuario
+              li.nav-item
+                a.nav-link(href="/pedidos") Pedidos
+              li.nav-item
+                a.nav-link(href="/documentacion") Documentación
+              li.nav-item
+                span.nav-link.text-light= usuario.nombre
+              li.nav-item
+                form(action="/logout" method="post")
+                  button.btn.btn-outline-light.ms-lg-2(type="submit") Cerrar sesión
 
     main.container.my-4
       block content

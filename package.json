@@ -8,6 +8,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "seed": "node src/database/seed.js",
+    "user:create": "node src/database/crear-usuario.js",
     "seed:reset": "node src/database/seed.js --reset"
   },
   "repository": {
