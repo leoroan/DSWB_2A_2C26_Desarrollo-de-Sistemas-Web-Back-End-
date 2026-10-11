@@ -1,5 +1,5 @@
 // lógica de aplicación/negocio: genera el ID, decide la fecha de alta y valida los campos
-const clientesRepo = require("../repositories/clientes.repo");
+import clientesRepo from "../repositories/clientes.repo.js";
 
 // Valores permitidos para validar los datos recibidos por la API
 const TIPOS_CLIENTE = ["Restaurante", "Comedor"];
@@ -128,10 +128,4 @@ async function eliminar(id) {
     return await clientesRepo.eliminar(id);
 }
 
-module.exports = {
-    obtenerTodos,
-    obtenerPorId,
-    crear,
-    actualizar,
-    eliminar
-};
+export default { obtenerTodos, obtenerPorId, crear, actualizar, eliminar };

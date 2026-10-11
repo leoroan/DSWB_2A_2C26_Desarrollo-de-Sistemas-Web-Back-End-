@@ -1,72 +1,62 @@
-const {
-  leerArchivoJson,
-  escribirArchivoJson,
-} = require("../utils/persistencia");
-const Remito = require("../models/Remito");
+import { modelos, siguienteId } from "../database/models/index.js";
+import { limpio } from "../config/database.js";
+import Remito from "../models/Remito.js";
 
 /**
- * Repositorio de remitos.
- * Cada modelo tiene su propio archivo JSON independiente en data/.
- * Los remitos viven en data/remitos.json (array plano).
- * Para resolver relaciones (pedido, cliente, entrega) se leen los
- * archivos correspondientes: pedidos.json, clientes.json, entregas.json.
+ * Repositorio de remitos (MongoDB).
+ * Reemplaza data/remitos.json conservando la misma interfaz. Las relaciones
+ * (pedido, cliente, entrega) se resuelven igual que antes, consultando las
+ * colecciones correspondientes para hidratar las vistas.
  */
-const ARCHIVO = "remitos.json";
+const RemitoModel = modelos.Remito;
+const PedidoModel = modelos.Pedido;
+const ClienteModel = modelos.Cliente;
 
-/**
- * Lee los pedidos y clientes para formularios.
- * Resuelve desde sus archivos independientes (si existen).
- * @returns {Promise<{pedidos: Array, clientes: Array}>}
- */
-async function obtenerPedidos() {
-  const pedidos = await leerArchivoJson("pedidos.json");
-  const clientes = await leerArchivoJson("clientes.json");
-  return { pedidos, clientes };
-}
-
-/** Convierte un objeto crudo del JSON en una instancia de Remito,
- * resolviendo el contexto de la cadena (cliente, pedido, entrega)
- * para las vistas. */
-function mapearARemito(datos, pedidos, clientes, entregas) {
+/** Convierte un documento plano de Mongo en instancia de Remito, resolviendo
+ * el contexto de la cadena (cliente, pedido) para las vistas. */
+function mapearARemito(doc, pedidos, clientes) {
   const remito = new Remito(
-    datos.id,
-    datos.pedidoId,
-    datos.fechaEmision,
-    datos.fechaVencimiento,
-    datos.montoTotal,
-    datos.estado,
-    datos.firmadoPor,
-    datos.observaciones,
-    datos.penalizacionAplicada,
+    doc.id,
+    doc.pedidoId,
+    doc.fechaEmision,
+    doc.fechaVencimiento,
+    doc.montoTotal,
+    doc.estado,
+    doc.firmadoPor,
+    doc.observaciones,
+    doc.penalizacionAplicada,
   );
 
   // Resolución de la cadena logística: Remito → Pedido → Cliente
-  const pedido = pedidos.find((p) => p.id === datos.pedidoId);
-  remito.pedido = pedido || null;
+  const pedido = pedidos.find((p) => p.id === doc.pedidoId) || null;
+  remito.pedido = pedido;
 
   const cliente = pedido
-    ? clientes.find((c) => c.id === pedido.clienteId)
+    ? clientes.find((c) => String(c.id) === String(pedido.clienteId))
     : null;
   remito.cliente = cliente ? cliente.nombre : null;
 
-  // Remito → Entrega (si existe)
-  remito.entrega =
-    entregas.find((e) => e.pedidoId === datos.pedidoId) || null;
-
   return remito;
+}
+
+/** Lee los pedidos y clientes para resolver relaciones y formularios. */
+async function leerContexto() {
+  const [pedidos, clientes] = await Promise.all([
+    PedidoModel.find().lean(),
+    ClienteModel.find().lean(),
+  ]);
+  return { pedidos: pedidos.map(limpio), clientes: clientes.map(limpio) };
 }
 
 /**
  * @returns {Promise<Array<Remito>>} Todos los remitos almacenados.
  */
 async function obtenerTodas() {
-  const remitos = await leerArchivoJson(ARCHIVO);
-  const [pedidos, clientes, entregas] = await Promise.all([
-    leerArchivoJson("pedidos.json"),
-    leerArchivoJson("clientes.json"),
-    leerArchivoJson("entregas.json"),
+  const [docs, { pedidos, clientes }] = await Promise.all([
+    RemitoModel.find().lean(),
+    leerContexto(),
   ]);
-  return remitos.map((r) => mapearARemito(r, pedidos, clientes, entregas));
+  return docs.map((r) => mapearARemito(limpio(r), pedidos, clientes));
 }
 
 /**
@@ -74,8 +64,10 @@ async function obtenerTodas() {
  * @returns {Promise<Remito|null>} El remito con ese id o null si no existe.
  */
 async function obtenerPorId(id) {
-  const remitos = await obtenerTodas();
-  return remitos.find((r) => r.id === id) || null;
+  const doc = await RemitoModel.findOne({ id }).lean();
+  if (!doc) return null;
+  const { pedidos, clientes } = await leerContexto();
+  return mapearARemito(limpio(doc), pedidos, clientes);
 }
 
 /**
@@ -84,33 +76,11 @@ async function obtenerPorId(id) {
  * @returns {Promise<Remito>} El remito recién creado.
  */
 async function crear(datos) {
-  const remitos = await leerArchivoJson(ARCHIVO);
-  const siguienteId = remitos.length
-    ? Math.max(...remitos.map((r) => r.id)) + 1
-    : 1;
+  const nuevo = { ...datos, id: await siguienteId("remitos") };
+  await RemitoModel.create(nuevo);
 
-  const nuevoObjeto = {
-    id: siguienteId,
-    pedidoId: datos.pedidoId,
-    fechaEmision: datos.fechaEmision,
-    fechaVencimiento: datos.fechaVencimiento,
-    montoTotal: datos.montoTotal,
-    estado: datos.estado,
-    firmadoPor: datos.firmadoPor,
-    observaciones: datos.observaciones,
-    penalizacionAplicada: datos.penalizacionAplicada,
-  };
-
-  remitos.push(nuevoObjeto);
-  await escribirArchivoJson(ARCHIVO, remitos);
-
-  // Hidratar para devolver la instancia completa con contexto
-  const [pedidos, clientes, entregas] = await Promise.all([
-    leerArchivoJson("pedidos.json"),
-    leerArchivoJson("clientes.json"),
-    leerArchivoJson("entregas.json"),
-  ]);
-  return mapearARemito(nuevoObjeto, pedidos, clientes, entregas);
+  const { pedidos, clientes } = await leerContexto();
+  return mapearARemito(limpio(nuevo), pedidos, clientes);
 }
 
 /**
@@ -120,47 +90,33 @@ async function crear(datos) {
  * @returns {Promise<Remito|null>} El remito actualizado o null si no existe.
  */
 async function actualizar(id, cambios) {
-  const remitos = await leerArchivoJson(ARCHIVO);
-  const indice = remitos.findIndex((r) => r.id === id);
-  if (indice === -1) return null;
+  const doc = await RemitoModel.findOneAndUpdate(
+    { id },
+    { $set: { ...cambios, id } },
+    { new: true },
+  ).lean();
+  if (!doc) return null;
 
-  remitos[indice] = {
-    ...remitos[indice],
-    ...cambios,
-    id,
-  };
-
-  await escribirArchivoJson(ARCHIVO, remitos);
-
-  // Leer contexto para devolver instancia hidratada
-  const [pedidos, clientes, entregas] = await Promise.all([
-    leerArchivoJson("pedidos.json"),
-    leerArchivoJson("clientes.json"),
-    leerArchivoJson("entregas.json"),
-  ]);
-  return mapearARemito(remitos[indice], pedidos, clientes, entregas);
+  const { pedidos, clientes } = await leerContexto();
+  return mapearARemito(limpio(doc), pedidos, clientes);
 }
 
 /**
- * Elimina un remito del archivo independiente.
+ * Elimina un remito.
  * @param {number} id
  * @returns {Promise<boolean>} true si se eliminó, false si no existía.
  */
 async function eliminar(id) {
-  const remitos = await leerArchivoJson(ARCHIVO);
-  const indice = remitos.findIndex((r) => r.id === id);
-  if (indice === -1) return false;
-
-  remitos.splice(indice, 1);
-  await escribirArchivoJson(ARCHIVO, remitos);
-  return true;
+  const res = await RemitoModel.deleteOne({ id });
+  return res.deletedCount > 0;
 }
 
-module.exports = {
-  obtenerTodas,
-  obtenerPorId,
-  crear,
-  actualizar,
-  eliminar,
-  obtenerPedidos,
-};
+/**
+ * Lee los pedidos y clientes para formularios.
+ * @returns {Promise<{pedidos: Array, clientes: Array}>}
+ */
+async function obtenerPedidos() {
+  return leerContexto();
+}
+
+export default { obtenerTodas, obtenerPorId, crear, actualizar, eliminar, obtenerPedidos };

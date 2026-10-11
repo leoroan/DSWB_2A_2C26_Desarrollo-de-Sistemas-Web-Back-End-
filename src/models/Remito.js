@@ -79,4 +79,4 @@ class Remito {
   }
 }
 
-module.exports = Remito;
+export default Remito;

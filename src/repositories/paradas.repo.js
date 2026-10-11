@@ -1,32 +1,35 @@
-const { leerArchivoJson } = require("../utils/persistencia");
-const Parada = require("../models/Parada");
+import { modelos } from "../database/models/index.js";
+import { limpio } from "../config/database.js";
+import Parada from "../models/Parada.js";
 
-const ARCHIVO_PARADAS = "paradas.json";
+/**
+ * Repositorio de paradas (MongoDB). Reemplaza data/paradas.json conservando
+ * la misma interfaz. Se consultan por rutaId y se ordenan por "orden".
+ */
+const ParadaModel = modelos.Parada;
 
-function mapearAParada(datos) {
+function mapearAParada(doc) {
+  const d = limpio(doc);
   return new Parada(
-    datos.id,
-    datos.rutaId,
-    datos.clienteId,
-    datos.direccion,
-    datos.orden,
-    datos.estado,
-    datos.latitud,
-    datos.longitud,
-    datos.fechaProgramada,
-    datos.fechaReal,
-    datos.observaciones,
-    datos.motivoRechazo,
-    datos.temperaturaAlMomento,
+    d.id,
+    d.rutaId,
+    d.clienteId,
+    d.direccion,
+    d.orden,
+    d.estado,
+    d.latitud,
+    d.longitud,
+    d.fechaProgramada,
+    d.fechaReal,
+    d.observaciones,
+    d.motivoRechazo,
+    d.temperaturaAlMomento,
   );
 }
 
 async function obtenerPorRutaId(rutaId) {
-  const paradas = await leerArchivoJson(ARCHIVO_PARADAS);
-  return paradas
-    .filter((parada) => parada.rutaId === rutaId)
-    .sort((a, b) => a.orden - b.orden)
-    .map(mapearAParada);
+  const docs = await ParadaModel.find({ rutaId }).sort({ orden: 1 }).lean();
+  return docs.map(mapearAParada);
 }
 
-module.exports = { obtenerPorRutaId };
+export default { obtenerPorRutaId };

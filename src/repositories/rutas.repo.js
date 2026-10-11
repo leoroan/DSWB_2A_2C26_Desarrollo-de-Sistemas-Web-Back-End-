@@ -1,32 +1,36 @@
-const {
-  leerArchivoJson,
-} = require("../utils/persistencia");
-const Ruta = require("../models/Ruta");
+import { modelos } from "../database/models/index.js";
+import { limpio } from "../config/database.js";
+import Ruta from "../models/Ruta.js";
 
-const ARCHIVO_RUTAS = "rutas.json";
+/**
+ * Repositorio de rutas (MongoDB). Reemplaza data/rutas.json conservando la
+ * misma interfaz. Los paradas se resuelven en el servicio, igual que antes.
+ */
+const RutaModel = modelos.Ruta;
 
-function mapearARuta(datos) {
+function mapearARuta(doc) {
+  const d = limpio(doc);
   return new Ruta(
-    datos.id,
-    datos.codigo,
-    datos.planificadorId,
-    datos.choferId,
-    datos.estado,
-    datos.fechaPlanificacion,
-    datos.fechaEjecucion,
-    datos.observaciones,
-    datos.vehiculoPatente,
+    d.id,
+    d.codigo,
+    d.planificadorId,
+    d.choferId,
+    d.estado,
+    d.fechaPlanificacion,
+    d.fechaEjecucion,
+    d.observaciones,
+    d.vehiculoPatente,
   );
 }
 
 async function obtenerTodas() {
-  const rutas = await leerArchivoJson(ARCHIVO_RUTAS);
-  return rutas.map(mapearARuta);
+  const docs = await RutaModel.find().lean();
+  return docs.map(mapearARuta);
 }
 
 async function obtenerPorId(id) {
-  const rutas = await obtenerTodas();
-  return rutas.find((ruta) => ruta.id === id) || null;
+  const doc = await RutaModel.findOne({ id }).lean();
+  return doc ? mapearARuta(doc) : null;
 }
 
-module.exports = { obtenerTodas, obtenerPorId };
+export default { obtenerTodas, obtenerPorId };

@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import controller from "../controllers/remitos.controller.js";
+
 const router = express.Router();
-const controller = require("../controllers/remitos.controller");
 
 // CRUD
 router.get("/", controller.listar);
@@ -15,4 +16,4 @@ router.post("/:id/observaciones", controller.agregarObservacion);
 router.post("/:id/penalizacion", controller.aplicarPenalizacion);
 router.put("/:id/estado", controller.cambiarEstado);
 
-module.exports = router;
+export default router;

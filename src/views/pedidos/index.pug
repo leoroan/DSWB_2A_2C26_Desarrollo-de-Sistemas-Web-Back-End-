@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+  h1 Pedidos
+  p.text-muted Listado de pedidos de clientes de FreshRoute B2B.
+  .table-responsive
+    table.table.table-striped.align-middle
+      thead
+        tr
+          th Número
+          th Cliente
+          th Fecha
+          th Estado
+          th Fecha de entrega
+          th Acción
+      tbody
+        each pedido in pedidos
+          tr
+            td= pedido.id
+            td= pedido.cliente ? `${pedido.cliente.nombre} ${pedido.cliente.apellido || ''}` : `Cliente #${pedido.clienteId} no disponible`
+            td= pedido.fechaPedido
+            td
+              span.badge.bg-secondary= pedido.estado
+            td= pedido.fechaEntregaSolicitada
+            td
+              a.btn.btn-sm.btn-primary(href=`/pedidos/${pedido.id}`) Ver detalle
+        else
+          tr
+            td.text-center(colspan="6") Todavía no hay pedidos. Creá uno mediante POST /api/pedidos.

@@ -1,0 +1,48 @@
+extends ../layout
+
+block content
+  a(href='/pedidos') ← Volver a pedidos
+  h1.mt-3 Pedido ##{pedido.id}
+  .card.mb-3
+    .card-body
+      h2.h5 Datos del cliente
+      if pedido.cliente
+        p.mb-1 #{pedido.cliente.nombre} #{pedido.cliente.apellido}
+        p.mb-0= pedido.cliente.email
+      else
+        p Cliente ##{pedido.clienteId} no disponible
+  dl.row
+    dt.col-sm-4 Estado
+    dd.col-sm-8= pedido.estado
+    dt.col-sm-4 Fecha del pedido
+    dd.col-sm-8= pedido.fechaPedido
+    dt.col-sm-4 Fecha de entrega solicitada
+    dd.col-sm-8= pedido.fechaEntregaSolicitada
+    dt.col-sm-4 Observaciones
+    dd.col-sm-8= pedido.observaciones || 'Sin observaciones'
+  h2.h4 Productos
+  .table-responsive
+    table.table.table-striped
+      thead
+        tr
+          th Producto
+          th Cantidad
+          th Observaciones
+      tbody
+        each item in pedido.items
+          tr
+            td= item.producto.nombre
+            td= item.cantidad
+            td= item.observaciones || 'Sin observaciones'
+        else
+          tr
+            td(colspan='3') Este pedido todavía no tiene productos.
+  h2.h4 Asignación a ruta
+  p Ruta actual: #{pedido.ruta ? pedido.ruta.nombre : 'Sin asignar'}
+  form(method='post' action=`/pedidos/${pedido.id}/ruta`)
+    label.form-label(for='rutaId') Ruta de reparto
+    select.form-select.mb-3#rutaId(name='rutaId')
+      option(value='' selected=!pedido.ruta) Sin asignar
+      each ruta in rutas
+        option(value=ruta.id selected=pedido.ruta && pedido.ruta.id === ruta.id)= ruta.nombre
+    button.btn.btn-primary(type='submit') Guardar asignación

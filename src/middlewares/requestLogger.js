@@ -13,4 +13,4 @@ function requestLogger(req, res, next) {
   next();
 }
 
-module.exports = requestLogger;
+export default requestLogger;

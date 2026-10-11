@@ -1,4 +1,4 @@
-const rutasService = require("../services/rutas.service");
+import rutasService from "../services/rutas.service.js";
 
 async function listar(req, res) {
   const rutas = await rutasService.listarRutas();
@@ -35,4 +35,4 @@ async function mostrarDetalle(req, res) {
   res.render("rutas/detail", { titulo: `Detalle de ${ruta.codigo}`, ruta });
 }
 
-module.exports = { listar, detalle, mostrarListado, mostrarDetalle };
+export default { listar, detalle, mostrarListado, mostrarDetalle };

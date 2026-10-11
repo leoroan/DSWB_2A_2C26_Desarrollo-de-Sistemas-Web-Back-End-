@@ -1,6 +1,245 @@
 extends layout
 
 block content
-  h1= titulo
-  p Bienvenido al panel principal.
-  // acá iría el contenido de la dashboard
+  // Banner de Simulación de Login Exitoso contra la BBDD
+  if loginExitoso
+    div.alert.alert-success.border-0.shadow-sm.p-3.mb-4(role="alert")
+      div.d-flex.justify-content-between.align-items-center.flex-wrap.gap-2
+        div.d-flex.align-items-center
+          div.bg-success.text-white.rounded-circle.p-3.me-3.d-flex.align-items-center.justify-content-center(style="width: 48px; height: 48px;")
+            i.fa-solid.fa-check-double.fa-lg
+          div
+            h5.alert-heading.mb-1.fw-bold ¡Sesión iniciada con éxito en la Base de Datos!
+            div.small.text-secondary
+              span.me-3
+                i.fa-solid.fa-user.me-1
+                strong Usuario: 
+                | #{usuario} (#{rol})
+              span.me-3
+                i.fa-solid.fa-database.me-1
+                strong BBDD: 
+                | MongoDB "#{dbName}" (#{dbConectada ? "Conectada" : "En espera"})
+              span.badge.bg-success.text-uppercase
+                i.fa-solid.fa-lock.me-1
+                | Autenticado
+        div.d-flex.gap-2
+          a.btn.btn-outline-success.btn-sm(href="/login")
+            i.fa-solid.fa-right-to-bracket.me-1
+            | Probar Pantalla Login
+          a.btn.btn-outline-secondary.btn-sm(href="/login")
+            i.fa-solid.fa-arrow-right-from-bracket.me-1
+            | Salir
+
+  // Encabezado del Dashboard
+  div.d-flex.justify-content-between.align-items-center.flex-wrap.mb-4
+    div
+      h1.h2.fw-bold.mb-1 Panel Operativo FreshRoute B2B
+      p.text-muted.mb-0 Logística y distribución inteligente de viandas e insumos refrigerados.
+    div
+      span.badge.bg-dark.p-2.text-uppercase
+        i.fa-solid.fa-calendar-day.me-1
+        | Ciclo Lectivo 2026 - Grupo N°26
+
+  // Métricas rápidas de la BBDD
+  div.row.g-3.mb-4
+    div.col-6.col-md-4.col-lg-2
+      div.card.border-0.shadow-sm.text-center.py-3.h-100.bg-white
+        div.text-primary.mb-1
+          i.fa-solid.fa-users.fa-xl
+        h3.fw-bold.mb-0= stats.clientes
+        div.text-muted.small Clientes
+    div.col-6.col-md-4.col-lg-2
+      div.card.border-0.shadow-sm.text-center.py-3.h-100.bg-white
+        div.text-success.mb-1
+          i.fa-solid.fa-box-open.fa-xl
+        h3.fw-bold.mb-0= stats.pedidos
+        div.text-muted.small Pedidos Totales
+    div.col-6.col-md-4.col-lg-2
+      div.card.border-0.shadow-sm.text-center.py-3.h-100.bg-white
+        div.text-warning.mb-1
+          i.fa-solid.fa-route.fa-xl
+        h3.fw-bold.mb-0= stats.rutas
+        div.text-muted.small Rutas Activas
+    div.col-6.col-md-4.col-lg-2
+      div.card.border-0.shadow-sm.text-center.py-3.h-100.bg-white
+        div.text-info.mb-1
+          i.fa-solid.fa-id-card.fa-xl
+        h3.fw-bold.mb-0= stats.choferes
+        div.text-muted.small Choferes
+    div.col-6.col-md-4.col-lg-2
+      div.card.border-0.shadow-sm.text-center.py-3.h-100.bg-white
+        div.text-danger.mb-1
+          i.fa-solid.fa-file-invoice.fa-xl
+        h3.fw-bold.mb-0= stats.remitos
+        div.text-muted.small Remitos
+    div.col-6.col-md-4.col-lg-2
+      div.card.border-0.shadow-sm.text-center.py-3.h-100.bg-white
+        div.text-dark.mb-1
+          i.fa-solid.fa-truck.fa-xl
+        h3.fw-bold.mb-0= stats.vehiculos
+        div.text-muted.small Vehículos
+
+  // Sección de Accesos y Botones Directos del Proyecto
+  h4.fw-bold.mb-3
+    i.fa-solid.fa-cubes.text-info.me-2
+    | Módulos de Gestión Rápida
+
+  div.row.g-4
+    // 1. REGISTRAR UN CLIENTE
+    div.col-md-6.col-lg-4
+      div.card.h-100.border-0.shadow-sm
+        div.card-body.d-flex.flex-column.p-4
+          div.d-flex.align-items-center.mb-3
+            div.bg-primary.bg-opacity-10.text-primary.p-3.rounded-3.me-3
+              i.fa-solid.fa-user-tie.fa-2x
+            div
+              h5.card-title.fw-bold.mb-0 Clientes
+              span.badge.bg-primary.small #{stats.clientes} Registrados
+          p.card-text.text-muted.small Alta de restaurantes y comedores corporativos que reciben entregas diarias de viandas.
+          div.mt-auto.d-grid.gap-2
+            a.btn.btn-primary(href="/clientes/nuevo")
+              i.fa-solid.fa-user-plus.me-2
+              | Registrar un Cliente
+            a.btn.btn-outline-primary.btn-sm(href="/clientes")
+              i.fa-solid.fa-table.me-1
+              | Ver Listado de Clientes
+
+    // 2. VER LOS PEDIDOS EN VIAJE
+    div.col-md-6.col-lg-4
+      div.card.h-100.border-0.shadow-sm
+        div.card-body.d-flex.flex-column.p-4
+          div.d-flex.align-items-center.mb-3
+            div.bg-success.bg-opacity-10.text-success.p-3.rounded-3.me-3
+              i.fa-solid.fa-boxes-packing.fa-2x
+            div
+              h5.card-title.fw-bold.mb-0 Pedidos
+              span.badge.bg-success.small #{stats.pedidos} en Sistema
+          p.card-text.text-muted.small Seguimiento de pedidos solicitados, productos asignados, cantidades y estado de despacho.
+          div.mt-auto.d-grid.gap-2
+            a.btn.btn-success(href="/pedidos")
+              i.fa-solid.fa-truck-fast.me-2
+              | Ver Pedidos en Viaje
+            a.btn.btn-outline-success.btn-sm(href="/pedidos")
+              i.fa-solid.fa-eye.me-1
+              | Administrar Ítems y Rutas
+
+    // 3. VER EL ESTADO DE LAS RUTAS
+    div.col-md-6.col-lg-4
+      div.card.h-100.border-0.shadow-sm
+        div.card-body.d-flex.flex-column.p-4
+          div.d-flex.align-items-center.mb-3
+            div.bg-warning.bg-opacity-10.text-warning.p-3.rounded-3.me-3
+              i.fa-solid.fa-map-location-dot.fa-2x
+            div
+              h5.card-title.fw-bold.mb-0 Rutas
+              span.badge.bg-warning.text-dark.small #{stats.rutas} Planificadas
+          p.card-text.text-muted.small Hojas de ruta de distribución, asignación de choferes, paradas comerciales y estados de recorrido.
+          div.mt-auto.d-grid.gap-2
+            a.btn.btn-warning.fw-semibold(href="/rutas")
+              i.fa-solid.fa-route.me-2
+              | Ver Estado de las Rutas
+            a.btn.btn-outline-secondary.btn-sm(href="/rutas")
+              i.fa-solid.fa-list-check.me-1
+              | Ver Detalle de Paradas
+
+    // 4. PERMITIR REGISTRAR UN NUEVO CHÓFER
+    div.col-md-6.col-lg-4
+      div.card.h-100.border-0.shadow-sm
+        div.card-body.d-flex.flex-column.p-4
+          div.d-flex.align-items-center.mb-3
+            div.bg-info.bg-opacity-10.text-info.p-3.rounded-3.me-3
+              i.fa-solid.fa-id-card.fa-2x
+            div
+              h5.card-title.fw-bold.mb-0 Chóferes
+              span.badge.bg-info.text-dark.small #{stats.choferes} en Base de Datos
+          p.card-text.text-muted.small Registro y administración del plantel de choferes, asignación a unidades y licencias de conducir.
+          div.mt-auto.d-grid.gap-2
+            a.btn.btn-info.text-white.fw-semibold(href="/choferes/nuevo")
+              i.fa-solid.fa-user-gear.me-2
+              | Registrar un Nuevo Chófer
+            a.btn.btn-outline-info.btn-sm(href="/choferes")
+              i.fa-solid.fa-users-line.me-1
+              | Ver Personal de Reparto
+
+    // 5. VER ESTADOS DE REMITOS
+    div.col-md-6.col-lg-4
+      div.card.h-100.border-0.shadow-sm
+        div.card-body.d-flex.flex-column.p-4
+          div.d-flex.align-items-center.mb-3
+            div.bg-danger.bg-opacity-10.text-danger.p-3.rounded-3.me-3
+              i.fa-solid.fa-file-signature.fa-2x
+            div
+              h5.card-title.fw-bold.mb-0 Remitos
+              span.badge.bg-danger.small #{stats.remitos} Documentos
+          p.card-text.text-muted.small Control de remitos de entrega, firmas digitales de conformidad y auditoría de penalizaciones.
+          div.mt-auto.d-grid.gap-2
+            a.btn.btn-danger(href="/remitos")
+              i.fa-solid.fa-clipboard-check.me-2
+              | Ver Estados de Remitos
+            a.btn.btn-outline-danger.btn-sm(href="/remitos/nuevo")
+              i.fa-solid.fa-plus.me-1
+              | Emitir Nuevo Remito
+
+    // 6. FLOTA Y TELEMETRÍA (CADENA DE FRÍO)
+    div.col-md-6.col-lg-4
+      div.card.h-100.border-0.shadow-sm
+        div.card-body.d-flex.flex-column.p-4
+          div.d-flex.align-items-center.mb-3
+            div.bg-dark.bg-opacity-10.text-dark.p-3.rounded-3.me-3
+              i.fa-solid.fa-temperature-arrow-down.fa-2x
+            div
+              h5.card-title.fw-bold.mb-0 Flota y Frío
+              span.badge.bg-dark.small #{stats.vehiculos} Vehículos
+          p.card-text.text-muted.small Monitoreo en tiempo real de unidades térmicas, rango de temperaturas y sensores de telemetría.
+          div.mt-auto.d-grid.gap-2
+            a.btn.btn-dark(href="/vehiculos")
+              i.fa-solid.fa-truck-medical.me-2
+              | Ver Flota y Telemetría
+            button.btn.btn-outline-info.btn-sm(type="button" data-bs-toggle="modal" data-bs-target="#modalInfoFrio")
+              i.fa-solid.fa-snowflake.me-1
+              | Agregar Info sobre Cadena de Frío
+
+  // Modal para Agregar Información sobre Cadena de Frío
+  div#modalInfoFrio.modal.fade(tabindex="-1" aria-labelledby="modalInfoFrioLabel" aria-hidden="true")
+    div.modal-dialog.modal-dialog-centered
+      div.modal-content.border-0.shadow
+        div.modal-header.bg-dark.text-white
+          h5#modalInfoFrioLabel.modal-title.d-flex.align-items-center
+            i.fa-solid.fa-snowflake.text-info.me-2
+            | Registrar Información de Cadena de Frío
+          button.btn-close.btn-close-white(type="button" data-bs-dismiss="modal" aria-label="Close")
+        div.modal-body.p-4
+          p.small.text-muted Registre novedades térmicas, puntos de control o protocolos aplicados a las unidades de refrigeración.
+          div#alertaFrioExito.alert.alert-success.d-none.py-2.small(role="alert")
+            i.fa-solid.fa-check-circle.me-2
+            | Información de frío registrada exitosamente en el sistema.
+          form#formFrio(onsubmit="event.preventDefault(); document.getElementById('alertaFrioExito').classList.remove('d-none'); setTimeout(() => { bootstrap.Modal.getInstance(document.getElementById('modalInfoFrio')).hide(); document.getElementById('alertaFrioExito').classList.add('d-none'); document.getElementById('formFrio').reset(); }, 1200);")
+            div.mb-3
+              label.form-label.fw-semibold(for="frioUnidad") Unidad / Vehículo
+              select#frioUnidad.form-select(required)
+                option(value="") Seleccione el vehículo
+                option(value="AF123CD") Camioneta Térmica 01 (Patente: AF123CD)
+                option(value="AG456EF") Camión Refrigerado 02 (Patente: AG456EF)
+                option(value="AH789GH") Furgón Frío 03 (Patente: AH789GH)
+                option(value="AJ101IJ") Utilitario Urbano 04 (Patente: AJ101IJ)
+            div.row.g-2.mb-3
+              div.col-md-6
+                label.form-label.fw-semibold(for="frioTemp") Temperatura Medida (°C)
+                input#frioTemp.form-control(type="number" step="0.1" placeholder="Ej: -18.5 o 3.2" required)
+              div.col-md-6
+                label.form-label.fw-semibold(for="frioEstado") Estado del Frío
+                select#frioEstado.form-select
+                  option(value="Óptimo" selected) Óptimo (Cadena preservada)
+                  option(value="Monitoreo") En Monitoreo
+                  option(value="Alerta") Alerta de Temperatura
+            div.mb-3
+              label.form-label.fw-semibold(for="frioTipo") Tipo de Carga / Insumo
+              input#frioTipo.form-control(type="text" placeholder="Ej: Viandas congeladas / Carnes frescas / Lácteos" required)
+            div.mb-3
+              label.form-label.fw-semibold(for="frioObs") Observaciones / Protocolo Aplicado
+              textarea#frioObs.form-control(rows="3" placeholder="Detalle cualquier novedad térmica, apertura de compuertas o control de pre-enfriamiento...")
+            div.d-flex.justify-content-end.gap-2.mt-4
+              button.btn.btn-outline-secondary(type="button" data-bs-dismiss="modal") Cancelar
+              button.btn.btn-info.text-white(type="submit")
+                i.fa-solid.fa-floppy-disk.me-1
+                | Guardar Información

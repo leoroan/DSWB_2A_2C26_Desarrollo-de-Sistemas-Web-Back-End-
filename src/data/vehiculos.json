@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "patente": "AB123CD",
+    "tipo": "Refrigerado",
+    "capacidad": 1500,
+    "temperaturaMin": 2,
+    "temperaturaMax": 8,
+    "estado": "En Ruta",
+    "choferAsignadoId": 11,
+    "ultimaActualizacionTelemetria": "2026-09-17T10:15:00-03:00"
+  },
+  {
+    "id": 2,
+    "patente": "AC456EF",
+    "tipo": "Refrigerado",
+    "capacidad": 1200,
+    "temperaturaMin": 0,
+    "temperaturaMax": 6,
+    "estado": "Disponible",
+    "choferAsignadoId": 12,
+    "ultimaActualizacionTelemetria": "2026-09-16T11:10:00-03:00"
+  },
+  {
+    "id": 3,
+    "patente": "AD789GH",
+    "tipo": "Furgón",
+    "capacidad": 900,
+    "temperaturaMin": 5,
+    "temperaturaMax": 25,
+    "estado": "Mantenimiento",
+    "choferAsignadoId": null,
+    "ultimaActualizacionTelemetria": null
+  },
+  {
+    "id": 4,
+    "patente": "AE345KL",
+    "tipo": "Refrigerado",
+    "capacidad": 2000,
+    "temperaturaMin": 2,
+    "temperaturaMax": 8,
+    "estado": "Disponible",
+    "choferAsignadoId": 13,
+    "ultimaActualizacionTelemetria": "2026-09-17T07:05:00-03:00"
+  }
+]

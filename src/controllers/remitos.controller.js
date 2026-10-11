@@ -1,5 +1,5 @@
-const repo = require("../repositories/remito.repo");
-const Remito = require("../models/Remito");
+import repo from "../repositories/remito.repo.js";
+import Remito from "../models/Remito.js";
 
 /**
  * Controlador de remitos.
@@ -64,7 +64,11 @@ async function crearWeb(req, res) {
   if (!pedidoId) errores.push("El pedido es obligatorio");
   if (!fechaEmision) errores.push("La fecha de emisión es obligatoria");
   if (!fechaVencimiento) errores.push("La fecha de vencimiento es obligatoria");
-  if (montoTotal === undefined || montoTotal === "" || Number.isNaN(Number(montoTotal)))
+  if (
+    montoTotal === undefined ||
+    montoTotal === "" ||
+    Number.isNaN(Number(montoTotal))
+  )
     errores.push("El monto total debe ser un número válido");
   if (!estado) errores.push("El estado es obligatorio");
 
@@ -99,7 +103,10 @@ async function detailWeb(req, res) {
   const remito = await repo.obtenerPorId(id);
 
   if (!remito) {
-    return res.status(404).json({ message: "Remito no encontrado" });
+    return res.status(404).render("error", {
+      titulo: "Remito no encontrado",
+      mensaje: "El remito solicitado no existe.",
+    });
   }
 
   res.render("remitos/detail", {
@@ -145,8 +152,10 @@ async function crear(req, res) {
   const errores = [];
   if (!pedidoId) errores.push("El campo 'pedidoId' es obligatorio");
   if (!fechaEmision) errores.push("El campo 'fechaEmision' es obligatorio");
-  if (!fechaVencimiento)
-    errores.push("El campo 'fechaVencimiento' es obligatorio");
+  if (!fechaVencimiento || fechaVencimiento <= fechaEmision)
+    errores.push(
+      "El campo de fecha de vencimiento es obligatorio y debe ser posterior a la fecha de emision",
+    );
   if (montoTotal === undefined || montoTotal === null)
     errores.push("El campo 'montoTotal' es obligatorio");
   if (!estado) errores.push("El campo 'estado' es obligatorio");
@@ -326,7 +335,7 @@ async function cambiarEstado(req, res) {
   res.json(actualizado);
 }
 
-module.exports = {
+export default {
   indexWeb,
   nuevoWeb,
   crearWeb,

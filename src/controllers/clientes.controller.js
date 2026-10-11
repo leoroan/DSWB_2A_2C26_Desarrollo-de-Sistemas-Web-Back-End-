@@ -1,4 +1,4 @@
-const clientesService = require("../services/clientes.service");
+import clientesService from "../services/clientes.service.js";
 
 // ============================================================================
 // RUTAS WEB — Vistas Pug
@@ -41,7 +41,10 @@ async function edicionWeb(req, res, next) {
   try {
     const cliente = await clientesService.obtenerPorId(req.params.id);
     if (!cliente) {
-      return res.status(404).send("Cliente no encontrado");
+      return res.status(404).render("error", {
+        titulo: "Cliente no encontrado",
+        mensaje: "El cliente solicitado no existe.",
+      });
     }
     res.render("clientes/form", {
       titulo: "Editar cliente",
@@ -58,7 +61,10 @@ async function actualizarWeb(req, res, next) {
   try {
     const cliente = await clientesService.actualizar(req.params.id, req.body);
     if (!cliente) {
-      return res.status(404).send("Cliente no encontrado");
+      return res.status(404).render("error", {
+        titulo: "Cliente no encontrado",
+        mensaje: "El cliente solicitado no existe.",
+      });
     }
     res.redirect("/clientes");
   } catch (error) {
@@ -129,7 +135,7 @@ async function eliminar(req, res, next) {
   }
 }
 
-module.exports = {
+export default {
   // Web
   indexWeb,
   nuevoWeb,

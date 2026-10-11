@@ -1,6 +1,13 @@
 # FreshRoute B2B - Distribución Inteligente (ISFT N° 29 - Backend 2026)
 
-Este repositorio contiene la primera entrega para la asignatura de Desarrollo Web Backend del "ISFT n°29", curso 2° A 2C2026. El proyecto implementa una aplicación web utilizando Node.js y Express, siguiendo una estructura organizada de carpetas con persistencia de datos en archivos JSON. Se han aplicado conceptos de Programación Orientada a Objetos (POO), rutas dinámicas, middlewares y el motor de plantillas Pug.
+## Módulo de pedidos
+
+Disponible en `/pedidos`, con API REST de pedidos, ítems, productos y asignación a rutas.
+Ver [endpoints, ejemplos y pasos de prueba](docs/PEDIDOS.md) e importar la
+[colección de Postman](docs/FreshRoute.postman_collection.json).
+Pruebas de integración: `node --test`.
+
+Este repositorio contiene la primera entrega para la asignatura de Desarrollo Web Backend del "ISFT n°29", curso 2° A 2C2026. El proyecto implementa una aplicación web utilizando Node.js y Express, siguiendo una estructura organizada de carpetas. La persistencia de datos se realiza en **MongoDB** a través de **Mongoose** (ODM). Se han aplicado conceptos de Programación Orientada a Objetos (POO), rutas dinámicas, middlewares y el motor de plantillas Pug.
 
 ---
 
@@ -11,7 +18,7 @@ El objetivo principal fue desarrollar una aplicación web funcional que demuestr
 ### Objetivos Específicos Cumplidos:
 
 - Desarrollo de una aplicación web utilizando **Node.js y Express**.
-- Integración de una base de datos en formato **JSON** (sin usar MongoDB).
+- Integración de una base de datos **MongoDB** con **Mongoose** (ODM), alojada en **MongoDB Atlas**.
 - Aplicación de conceptos de **Programación Orientada a Objetos (POO)** en el diseño del modelo de dominio.
 - Implementación de **rutas dinámicas** para acceso a recursos detallados.
 - Uso de **middlewares** para lógica transversal (logging, validación, manejo de errores).
@@ -93,27 +100,55 @@ Para la aplicación móvil de los choferes (que requiere iteraciones rápidas y 
 .
 ├── node_modules/
 ├── src/
+│   ├── config/
+│   │   ├── env.js                 # Variables de entorno (dotenv) y constantes
+│   │   └── database.js            # Conexión a MongoDB con Mongoose
+│   ├── database/
+│   │   ├── models/                # Schemas y modelos de Mongoose (MongoDB)
+│   │   │   ├── index.js           #   Registro central de modelos + siguienteId()
+│   │   │   ├── Cliente.js         #   clientes
+│   │   │   ├── Chofer.js          #   choferes
+│   │   │   ├── Vehiculo.js        #   vehiculos
+│   │   │   ├── Ruta.js            #   rutas
+│   │   │   ├── Parada.js          #   paradas
+│   │   │   ├── Pedido.js          #   pedidos
+│   │   │   ├── ItemPedido.js      #   itempedidos
+│   │   │   ├── Producto.js        #   productos
+│   │   │   ├── Remito.js          #   remitos
+│   │   │   ├── RegistroTelemetria.js # telemetria
+│   │   │   ├── RutaCatalogo.js    #   rutacatalogos (catálogo de rutas)
+│   │   │   ├── Asignacion.js      #   asignaciones (pedido ↔ ruta)
+│   │   │   └── Contador.js        #   contadores (secuencias autoincrementales)
+│   │   └── seed.js                # Migra los JSON de data/ a MongoDB
 │   ├── controllers/            # Lógica de negocio y manejo de peticiones
 │   │
-│   ├── data/                   # Archivos JSON que simulan la base de datos
+│   ├── data/                   # JSON originales (semilla; no se usan en caliente)
 |   |
 │   ├── middlewares/            # Funciones intermedias de Express
 |   |
 │   ├── models/                 # Clases POO del dominio (Chofer, Parada, Ruta)
 |   |
-│   ├── repositories/           # Capa de acceso a datos (interactúa con JSON)
+│   ├── repositories/           # Capa de acceso a datos (interactúa con MongoDB)
 |   |
 │   ├── routes/                 # Definición de rutas de la aplicación
 |   |
 │   └── utils/                  # Utilidades generales
-│       └── persistencia.js     # Funciones para leer/escribir archivos JSON
+│       └── validaciones.js     # Helpers de validación compartidos
 ├── views/                      # Plantillas Pug para el frontend
 |
+├── .env                        # Configuración local (NO se sube al repo)
+├── .env.example                # Plantilla de variables de entorno
 ├── .gitignore
 ├── index.js                    # Archivo principal de la aplicación Express
 ├── package-lock.json
 └── package.json
 ```
+
+> **Nota de arquitectura:** `src/models/` conserva las **clases POO del dominio**
+> (con herencia, polimorfismo y encapsulamiento). `src/database/models/` define los
+> **schemas de Mongoose** que persisten esas entidades en MongoDB. Los
+> `repositories/` traducen entre documentos de Mongo y las clases de dominio, de
+> modo que controladores, servicios y vistas **no cambian**.
 
 ---
 
@@ -123,6 +158,7 @@ Para la aplicación móvil de los choferes (que requiere iteraciones rápidas y 
 
 - [Node.js](https://nodejs.org/es/) (versión 18 o superior recomendada)
 - [npm](https://www.npmjs.com/) (viene incluido con Node.js)
+- Una base de datos **MongoDB** (local o un clúster gratuito en **MongoDB Atlas**)
 
 ### Pasos
 
@@ -135,7 +171,23 @@ Para la aplicación móvil de los choferes (que requiere iteraciones rápidas y 
     ```bash
     npm install
     ```
-3.  **Ejecutar la aplicación:**
+3.  **Configurar las variables de entorno:**
+    Copiá la plantilla y editá el archivo `.env` con los datos de tu base:
+    ```bash
+    # Windows (PowerShell)
+    Copy-Item .env.example .env
+    ```
+    Luego abrí `.env` y completá `MONGODB_URI` con tu cadena de conexión
+    (ver la sección **“Credenciales de MongoDB Atlas”** más abajo).
+
+4.  **Cargar los datos iniciales (seed/migración):**
+    Este paso copia los datos de `src/data/*.json` a MongoDB para que la
+    aplicación tenga exactamente la misma información que antes:
+    ```bash
+    npm run seed           # Carga sin borrar lo existente
+    npm run seed:reset    # Vacía las colecciones y vuelve a cargar
+    ```
+5.  **Ejecutar la aplicación:**
     - **Modo desarrollo (con `nodemon` para reinicios automáticos):**
       ```bash
       npm run dev
@@ -144,6 +196,47 @@ Para la aplicación móvil de los choferes (que requiere iteraciones rápidas y 
       ```bash
       npm start
       ```
+
+    > El servidor se conecta a MongoDB **antes** de empezar a escuchar peticiones.
+    > Si la conexión falla, se muestra el error y el proceso se detiene.
+
+### 🔑 Credenciales de MongoDB Atlas
+
+Para conectar la app a **MongoDB Atlas** necesitás la cadena de conexión. Se
+arma con un **usuario**, una **contraseña** y el **host de tu clúster**. Te
+indicamos exactamente dónde obtener cada dato dentro de Atlas:
+
+1.  **Crear el clúster** (si aún no tenés uno): en el panel de Atlas, botón
+    **“+ Create”** → elegí el plan gratuito **M0** → **Create Deployment**.
+
+2.  **Usuario y contraseña de la base de datos:**
+    - En el menú izquierdo andá a **Database Access** (o aparece al crear el
+      clúster en el paso de *Security Quickstart*).
+    - **Create Database User**: definí un **username** y una **password**
+      (guardalos, son los que van en la URI). Elegí el rol **“Read and write to
+      any database”**.
+
+3.  **Permitir tu IP (Network Access):**
+    - En el menú izquierdo, **Network Access** → **Add IP Address**.
+    - Para desarrollo podés usar **“Allow access from anywhere”** (`0.0.0.0/0`).
+
+4.  **Obtener la cadena de conexión (Connection String):**
+    - En **Database**, botón **“Connect”** de tu clúster → **Drivers** (o
+      **“Connect your application”**).
+    - Copiá el string, con este formato:
+      ```
+      mongodb+srv://<username>:<password>@<cluster-host>/<database>?retryWrites=true&w=majority
+      ```
+    - Reemplazá `<username>`, `<password>` y `<cluster-host>` por los tuyos, y
+      el nombre de la base (`freshroute`).
+
+5.  **Pegarla en el `.env`:**
+    ```env
+    MONGODB_URI=mongodb+srv://miusuario:MiPassword123@cluster0.abcd.mongodb.net
+    MONGODB_DB=freshroute
+    ```
+    > ⚠️ Si tu contraseña tiene caracteres especiales (`@ : / ? #`), codificalos
+    > en la URL (por ejemplo `@` → `%40`).
 
 ### Acceso a la Aplicación
 

@@ -1,5 +1,8 @@
-const fs = require("node:fs/promises");
-const path = require("node:path");
+import fs from "node:fs/promises";
+import path from "node:path";
+
+// Equivalente ESM de __dirname (Node ≥ 20.11)
+const __dirname = import.meta.dirname;
 
 // Ruta al archivo de personas original (compatibilidad)
 const rutaArchivo = path.join(__dirname, "..", "data", "personas.json");
@@ -56,11 +59,4 @@ async function leerJsonObjeto(nombreArchivo) {
   }
 }
 
-module.exports = {
-  leerJson,
-  escribirJson,
-  rutaArchivo,
-  leerArchivoJson,
-  escribirArchivoJson,
-  leerJsonObjeto
-};
+export default { leerJson, escribirJson, rutaArchivo, leerArchivoJson, escribirArchivoJson, leerJsonObjeto };

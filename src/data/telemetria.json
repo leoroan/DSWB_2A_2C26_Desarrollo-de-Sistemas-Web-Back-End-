@@ -1,0 +1,252 @@
+[
+  {
+    "id": 1,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-16T06:45:00-03:00",
+    "latitud": -34.635,
+    "longitud": -58.397,
+    "temperatura": 4.6,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 2,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-16T07:08:00-03:00",
+    "latitud": -34.6193,
+    "longitud": -58.3893,
+    "temperatura": 4.4,
+    "velocidad": 30,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 3,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-16T07:38:00-03:00",
+    "latitud": -34.6037,
+    "longitud": -58.3816,
+    "temperatura": 4.1,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 4,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-16T08:37:00-03:00",
+    "latitud": -34.6073,
+    "longitud": -58.3885,
+    "temperatura": 6.9,
+    "velocidad": 37,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 5,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-16T09:07:00-03:00",
+    "latitud": -34.6109,
+    "longitud": -58.3955,
+    "temperatura": 9.6,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 6,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-16T11:05:00-03:00",
+    "latitud": -34.5992,
+    "longitud": -58.403,
+    "temperatura": 7,
+    "velocidad": 44,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 7,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-16T11:35:00-03:00",
+    "latitud": -34.5876,
+    "longitud": -58.4105,
+    "temperatura": 4.4,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 8,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-16T12:20:00-03:00",
+    "latitud": -34.635,
+    "longitud": -58.397,
+    "temperatura": 4.4,
+    "velocidad": 0,
+    "estadoMotor": "Apagado"
+  },
+  {
+    "id": 9,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-17T07:00:00-03:00",
+    "latitud": -34.635,
+    "longitud": -58.397,
+    "temperatura": 4.2,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 10,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-17T07:17:00-03:00",
+    "latitud": -34.6356,
+    "longitud": -58.3991,
+    "temperatura": 4.3,
+    "velocidad": 30,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 11,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-17T07:47:00-03:00",
+    "latitud": -34.6363,
+    "longitud": -58.4012,
+    "temperatura": 4.4,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 12,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-17T08:26:00-03:00",
+    "latitud": -34.6119,
+    "longitud": -58.4058,
+    "temperatura": 3.8,
+    "velocidad": 37,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 13,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-17T08:56:00-03:00",
+    "latitud": -34.5876,
+    "longitud": -58.4105,
+    "temperatura": 3.1,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 14,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-17T09:40:00-03:00",
+    "latitud": -34.5762,
+    "longitud": -58.4261,
+    "temperatura": 3.2,
+    "velocidad": 35,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 15,
+    "vehiculoId": 1,
+    "timestamp": "2026-09-17T10:15:00-03:00",
+    "latitud": -34.563,
+    "longitud": -58.4444,
+    "temperatura": 3.3,
+    "velocidad": 45,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 16,
+    "vehiculoId": 2,
+    "timestamp": "2026-09-16T07:00:00-03:00",
+    "latitud": -34.635,
+    "longitud": -58.397,
+    "temperatura": 3.4,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 17,
+    "vehiculoId": 2,
+    "timestamp": "2026-09-16T07:22:00-03:00",
+    "latitud": -34.5822,
+    "longitud": -58.4376,
+    "temperatura": 3.4,
+    "velocidad": 30,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 18,
+    "vehiculoId": 2,
+    "timestamp": "2026-09-16T07:52:00-03:00",
+    "latitud": -34.5295,
+    "longitud": -58.4782,
+    "temperatura": 3.4,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 19,
+    "vehiculoId": 2,
+    "timestamp": "2026-09-16T08:50:00-03:00",
+    "latitud": -34.5464,
+    "longitud": -58.4675,
+    "temperatura": 4.3,
+    "velocidad": 37,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 20,
+    "vehiculoId": 2,
+    "timestamp": "2026-09-16T09:20:00-03:00",
+    "latitud": -34.5634,
+    "longitud": -58.4568,
+    "temperatura": 5.2,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 21,
+    "vehiculoId": 2,
+    "timestamp": "2026-09-16T09:55:00-03:00",
+    "latitud": -34.5479,
+    "longitud": -58.4733,
+    "temperatura": 4.6,
+    "velocidad": 44,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 22,
+    "vehiculoId": 2,
+    "timestamp": "2026-09-16T10:25:00-03:00",
+    "latitud": -34.5325,
+    "longitud": -58.4899,
+    "temperatura": 3.9,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 23,
+    "vehiculoId": 2,
+    "timestamp": "2026-09-16T11:10:00-03:00",
+    "latitud": -34.635,
+    "longitud": -58.397,
+    "temperatura": 3.9,
+    "velocidad": 0,
+    "estadoMotor": "Apagado"
+  },
+  {
+    "id": 24,
+    "vehiculoId": 4,
+    "timestamp": "2026-09-17T06:50:00-03:00",
+    "latitud": -34.635,
+    "longitud": -58.397,
+    "temperatura": 3.2,
+    "velocidad": 0,
+    "estadoMotor": "Encendido"
+  },
+  {
+    "id": 25,
+    "vehiculoId": 4,
+    "timestamp": "2026-09-17T07:05:00-03:00",
+    "latitud": -34.635,
+    "longitud": -58.397,
+    "temperatura": 3,
+    "velocidad": 0,
+    "estadoMotor": "Apagado"
+  }
+]

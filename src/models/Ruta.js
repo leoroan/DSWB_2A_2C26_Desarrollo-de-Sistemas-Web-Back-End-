@@ -30,4 +30,4 @@ class Ruta {
   }
 }
 
-module.exports = Ruta;
+export default Ruta;
