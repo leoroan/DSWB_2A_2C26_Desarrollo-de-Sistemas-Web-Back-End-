@@ -1,5 +1,5 @@
 import repo from "../repositories/remito.repo.js";
-import Remito from "../models/Remito.js";
+import Remito from "../domain/entities/Remito.js";
 
 /**
  * Controlador de remitos.

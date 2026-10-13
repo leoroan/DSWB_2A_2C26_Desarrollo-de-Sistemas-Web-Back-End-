@@ -1,6 +1,6 @@
-import { modelos } from "../database/models/index.js";
+import { modelos } from "../models/index.js";
 import { limpio } from "../config/database.js";
-import Ruta from "../models/Ruta.js";
+import Ruta from "../domain/entities/Ruta.js";
 
 /**
  * Repositorio de rutas (MongoDB). Reemplaza data/rutas.json conservando la

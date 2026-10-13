@@ -1,7 +1,7 @@
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { conectarDB, cerrarDB } from "../config/database.js";
-import { Usuario } from "./models/auth.js";
+import { Usuario } from "../models/index.js";
 
 const terminal = createInterface({ input: stdin, output: stdout });
 try {

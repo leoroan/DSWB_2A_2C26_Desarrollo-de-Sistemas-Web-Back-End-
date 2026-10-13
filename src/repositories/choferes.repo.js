@@ -1,6 +1,6 @@
-import { modelos, siguienteId } from "../database/models/index.js";
+import { modelos, siguienteId } from "../models/index.js";
 import { limpio } from "../config/database.js";
-import Chofer from "../models/Chofer.js";
+import Chofer from "../domain/entities/Chofer.js";
 
 /**
  * Repositorio de choferes (MongoDB).

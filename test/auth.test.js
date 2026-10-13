@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import app from "../index.js";
-import { Usuario, Sesion } from "../src/database/models/auth.js";
+import { Usuario, Sesion } from "../src/models/index.js";
 import clientes from "../src/repositories/clientes.repo.js";
 import pedidos from "../src/repositories/pedidos.repo.js";
 import rutas from "../src/repositories/rutas.repo.js";

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { conectarDB, cerrarDB, mongoose } from "../config/database.js";
-import { modelos } from "./models/index.js";
+import { modelos } from "../models/index.js";
 
 /**
  * Script de migración (seed): carga los datos de los JSON originales

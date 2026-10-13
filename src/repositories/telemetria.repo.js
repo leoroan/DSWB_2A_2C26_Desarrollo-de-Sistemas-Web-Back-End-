@@ -1,6 +1,6 @@
-import { modelos, siguienteId } from "../database/models/index.js";
+import { modelos, siguienteId } from "../models/index.js";
 import { limpio } from "../config/database.js";
-import RegistroTelemetria from "../models/RegistroTelemetria.js";
+import RegistroTelemetria from "../domain/entities/RegistroTelemetria.js";
 
 /**
  * Repositorio de telemetría (MongoDB). Reemplaza data/telemetria.json

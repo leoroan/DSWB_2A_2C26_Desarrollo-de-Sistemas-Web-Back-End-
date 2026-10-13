@@ -1,10 +1,13 @@
-import { modelos, siguienteId } from "../database/models/index.js";
+import { modelos, siguienteId } from "../models/index.js";
 import { limpio } from "../config/database.js";
-import Pedido from "../models/Pedido.js";
-import ItemPedido from "../models/ItemPedido.js";
-import Producto from "../models/Producto.js";
+import Pedido from "../domain/entities/Pedido.js";
+import ItemPedido from "../domain/entities/ItemPedido.js";
+import Producto from "../domain/entities/Producto.js";
 import clientesRepo from "./clientes.repo.js";
 import { exigir } from "../utils/validaciones.js";
+import { validarPedido } from "../domain/validators/pedido.validator.js";
+import { validarItemPedido } from "../domain/validators/itemPedido.validator.js";
+import { validarProducto } from "../domain/validators/producto.validator.js";
 
 /**
  * Repositorio de pedidos (MongoDB).
@@ -126,11 +129,9 @@ async function crear(datos) {
     404,
   );
 
-  const pedido = new Pedido({
-    ...datos,
-    clienteId,
-    id: await siguienteId("pedidos"),
-  });
+  const pedido = new Pedido(
+    validarPedido({ ...datos, clienteId, id: await siguienteId("pedidos") }),
+  );
   await PedidoModel.create({ ...pedido });
   return pedido;
 }
@@ -154,7 +155,9 @@ async function actualizar(id, datos) {
     404,
   );
 
-  const pedido = new Pedido({ ...limpio(anterior), ...datos, clienteId, id });
+  const pedido = new Pedido(
+    validarPedido({ ...limpio(anterior), ...datos, clienteId, id }),
+  );
   await PedidoModel.updateOne({ id }, { $set: { ...pedido } });
   return pedido;
 }
@@ -210,11 +213,9 @@ async function crearItem(pedidoId, datos) {
   exigirEncontrado(pedido ? [pedido] : [], pedidoId, "Pedido");
 
   const productos = await leerProductosCrudos();
-  const item = new ItemPedido({
-    ...datos,
-    pedidoId,
-    id: await siguienteId("items"),
-  });
+  const item = new ItemPedido(
+    validarItemPedido({ ...datos, pedidoId, id: await siguienteId("items") }),
+  );
   exigirProductoActivo(productos, item.productoId);
 
   await ItemModel.create({ ...item });
@@ -238,12 +239,9 @@ async function actualizarItem(pedidoId, itemId, datos) {
   const anterior = exigirEncontrado(anteriores, itemId, "Ítem");
 
   const productos = await leerProductosCrudos();
-  const item = new ItemPedido({
-    ...limpio(anterior),
-    ...datos,
-    pedidoId,
-    id: itemId,
-  });
+  const item = new ItemPedido(
+    validarItemPedido({ ...limpio(anterior), ...datos, pedidoId, id: itemId }),
+  );
   exigirProductoActivo(productos, item.productoId);
 
   await ItemModel.updateOne({ id: itemId }, { $set: { ...item } });
@@ -288,7 +286,9 @@ async function obtenerProductoPorId(id) {
  * @returns {Promise<Producto>} El producto creado.
  */
 async function crearProducto(datos) {
-  const producto = new Producto({ ...datos, id: await siguienteId("productos") });
+  const producto = new Producto(
+    validarProducto({ ...datos, id: await siguienteId("productos") }),
+  );
   await ProductoModel.create({ ...producto });
   return producto;
 }
@@ -302,7 +302,9 @@ async function actualizarProducto(id, datos) {
   const anterior = await ProductoModel.findOne({ id }).lean();
   if (!anterior) return null;
 
-  const producto = new Producto({ ...limpio(anterior), ...datos, id });
+  const producto = new Producto(
+    validarProducto({ ...limpio(anterior), ...datos, id }),
+  );
   await ProductoModel.updateOne({ id }, { $set: { ...producto } });
   return producto;
 }

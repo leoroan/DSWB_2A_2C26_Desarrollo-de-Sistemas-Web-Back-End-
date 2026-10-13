@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { Sesion } from "../database/models/auth.js";
+import { Sesion } from "../models/index.js";
 import config from "../config/env.js";
 
 export const cookieOptions = {
