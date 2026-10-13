@@ -1,29 +1,131 @@
 extends ../layout
 
 block content
-  h1 Pedidos
-  p.text-muted Listado de pedidos de clientes de FreshRoute B2B.
-  .table-responsive
-    table.table.table-striped.align-middle
-      thead
-        tr
-          th Número
-          th Cliente
-          th Fecha
-          th Estado
-          th Fecha de entrega
-          th Acción
-      tbody
-        each pedido in pedidos
-          tr
-            td= pedido.id
-            td= pedido.cliente ? `${pedido.cliente.nombre} ${pedido.cliente.apellido || ''}` : `Cliente #${pedido.clienteId} no disponible`
-            td= pedido.fechaPedido
-            td
-              span.badge.bg-secondary= pedido.estado
-            td= pedido.fechaEntregaSolicitada
-            td
-              a.btn.btn-sm.btn-primary(href=`/pedidos/${pedido.id}`) Ver detalle
-        else
-          tr
-            td.text-center(colspan="6") Todavía no hay pedidos. Creá uno mediante POST /api/pedidos.
+  // Header de página
+  div.d-flex.flex-column.flex-md-row.justify-content-between.align-items-start.align-items-md-center.gap-3.mb-4
+    
+    div.d-flex.align-items-center.gap-3
+      a.btn.btn-outline-secondary.rounded-circle.p-2(href="/", title="Volver al inicio")
+        i.fa-solid.fa-arrow-left
+      
+      div
+        h1.fw-bold.fs-2.text-dark.mb-0 Pedidos
+        p.text-muted.fs-6.mt-1 Gestión de pedidos de FreshRoute B2B.
+
+    a.btn.btn-primary.shadow-sm.rounded-pill.px-4.py-2(href="/pedidos/nuevo")
+      i.fa-solid.fa-plus.me-2
+      | Nuevo pedido
+
+  // Filtros / Buscador
+  if filtros || true 
+    div.card.border-0.shadow-sm.bg-light-subtle.mb-4
+      div.card-body.py-3.px-4
+        form(method='get' action='/pedidos')
+          .row.g-3.align-items-end
+            .col-12.col-md-4
+              label.form-label.small.fw-semibold.text-secondary(for='clienteId') ID Cliente
+              input.form-control#clienteId(type='text' name='clienteId' 
+                value=(filtros && filtros.clienteId ? filtros.clienteId : '') 
+                placeholder='Buscar por ID...'
+                autocomplete="off")
+            
+            .col-12.col-md-4
+              label.form-label.small.fw-semibold.text-secondary(for='estado') Estado
+              select.form-select#estado(name='estado')
+                option(value='' selected=!filtros || !filtros.estado) Todos los estados
+                each estado in estados
+                  option(value=estado selected=filtros && filtros.estado === estado)= estado
+            
+            .col-12.col-md-4.d-flex.gap-2
+              button.btn.btn-primary.w-100(type='submit')
+                i.fa-solid.fa-filter.me-2
+                | Aplicar Filtro
+              a.btn.btn-outline-secondary.w-100(href='/pedidos') Limpiar
+
+  // Tabla de Resultados
+  if pedidos && pedidos.length > 0
+    div.card.border-0.shadow-sm.overflow-hidden
+      div.table-responsive
+        table.table.table-hover.align-middle.mb-0
+        
+          thead.bg-white.text-uppercase.small.fw-semibold.text-secondary.border-bottom
+            tr
+              th(scope="col", class="ps-3") Pedido #
+              th(scope="col") Cliente
+              th(scope="col", class="d-none d-lg-table-cell") Fecha Solicitud
+              th(scope="col") Estado
+              th(scope="col", class="d-none d-xl-table-cell") Entrega Prevista
+              th(scope="col", class="text-end pe-3") Acción
+
+          tbody
+            each pedido in pedidos
+              tr
+                td(class="ps-3 fw-medium text-muted small")= `#${pedido.id}`
+                
+                td(class="fw-semibold")
+                  - const nombreCompleto = pedido.cliente ? `${pedido.cliente.nombre} ${pedido.cliente.apellido || ''}`.trim() : null;
+                  if nombreCompleto
+                    span.text-dark= nombreCompleto
+                  else
+                    span.badge.bg-warning-subtle.text-warning-emitter.border.border-warning-subtle.rounded-pill.px-2.py-1
+                      i.fa-solid.fa-user-xmark.me-1
+                      | Sin asignar (ID: #{pedido.clienteId})
+                
+                td(class="d-none d-lg-table-cell small text-muted")
+                  if pedido.fechaPedido
+                    = new Date(pedido.fechaPedido).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
+                  else
+                    span.text-danger.small Inválida
+                
+                td
+                  //- Lógica simple de colores según estado común en e-commerce/logística
+                  - let badgeClass = 'bg-secondary-subtle text-secondary border-secondary-subtle';
+                  - let iconClass = 'fa-circle-question';
+                  
+                  if pedido.estado === 'Pendiente'
+                    - badgeClass = 'bg-warning-subtle text-warning-emitter border-warning-subtle';
+                    - iconClass = 'fa-clock';
+                  else if pedido.estado === 'En Proceso' || pedido.estado === 'Preparando'
+                    - badgeClass = 'bg-info-subtle text-info-emitter border-info-subtle';
+                    - iconClass = 'fa-box-open';
+                  else if pedido.estado === 'Enviado' || pedido.estado === 'Transporte'
+                    - badgeClass = 'bg-primary-subtle text-primary border-primary-subtle';
+                    - iconClass = 'fa-truck-fast';
+                  else if pedido.estado === 'Entregado' || pedido.estado === 'Completado'
+                    - badgeClass = 'bg-success-subtle text-success border-success-subtle';
+                    - iconClass = 'fa-check-double';
+                  else if pedido.estado === 'Cancelado'
+                    - badgeClass = 'bg-danger-subtle text-danger border-danger-subtle';
+                    - iconClass = 'fa-ban';
+
+                  span.badge.rounded-pill.px-2.py-1.fw-medium(class=badgeClass)
+                    i.fa-solid(iconClass + '.me-1')
+                    = pedido.estado
+
+                td(class="d-none d-xl-table-cell small text-muted")
+                  if pedido.fechaEntregaSolicitada
+                    = new Date(pedido.fechaEntregaSolicitada).toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' })
+                  else
+                    span.text-muted.small -
+                
+                td(text-align="right", class="pe-3")
+                  a.btn.btn-sm.btn-outline-primary.rounded-pill.px-3(title="Ver detalle completo", href=`/pedidos/${pedido.id}`)
+                    i.fa-solid.fa-eye.me-1
+                    | Detalle
+  else
+    // Empty State (No hay datos o filtro sin resultados)
+    div.card.border-0.shadow-sm.bg-white
+      div.card-body.text-center.py-5
+        i.fa-solid.fa-file-invoice-dollar.fa-3x.text-muted.opacity-50.mb-3
+        h4.fw-normal.text-dark No se encontraron pedidos
+        p.text-muted.mb-4
+          if filtros && (filtros.clienteId || filtros.estado)
+            | Intentá ajustar los filtros de búsqueda.
+          else
+            | Todavía no hay registros. Podés crear uno manualmente vía API o esperar sincronización.
+        
+        div.d-flex.justify-content-center.gap-2
+          if filtros && (filtros.clienteId || filtros.estado)
+             a.btn.btn-outline-secondary.rounded-pill.px-4(href='/pedidos') Ver todos los pedidos
+          else
+             a.btn.btn-primary.rounded-pill.px-4(href="/") Volver al inicio

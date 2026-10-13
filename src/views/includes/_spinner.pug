@@ -1,0 +1,21 @@
+// _spinner.pug — Spinner reutilizable (Bootstrap 5.3)
+// Uso: include ../includes/_spinner  →  +spinner("Cargando...")
+
+// Spinner estándar de Bootstrap 5.3
+mixin spinner(titulo = "Loading...")
+  div.spinner-border(role='status')
+    span.visually-hidden= titulo
+
+// Spinner con etiqueta visible (overlay mientras se envía un formulario)
+mixin spinnerToast(titulo = "Loading...")
+  div.d-flex.align-items-center.justify-content-center.py-3
+    div.spinner-border.me-2(role='status')
+      span.visually-hidden= titulo
+    span.text-muted= titulo
+
+// Botón de envío con spinner embebido (patrón de botón de Bootstrap 5.3)
+mixin buttonLoader(label = "Loading...")
+  button.btn.btn-primary(type='submit' disabled)
+    span.spinner-border.spinner-border-sm.me-1(role='status' aria-hidden='true')
+    span.visually-hidden= label
+    | #{label}
