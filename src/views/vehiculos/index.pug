@@ -1,32 +1,126 @@
 extends ../layout
 
 block content
-  .container.mt-4
-    h2 Flota de Vehículos
-    p Listado de unidades disponibles y sus estados.
-    
-    table.table.table-striped.mt-3
-      thead
-        tr
-          th Patente
-          th Tipo
-          th Capacidad
-          th Rango Temp.
-          th Chofer Asignado
-          th Estado
-          th Acciones
-      tbody
-        each vehiculo in vehiculos
-          tr
-            td= vehiculo.patente
-            td= vehiculo.tipo
-            td= vehiculo.capacidad
-            td #{vehiculo.temperaturaMin}°C a #{vehiculo.temperaturaMax}°C
-            td= vehiculo.choferAsignadoId ? vehiculo.choferAsignadoId : 'Sin asignar'
-            td
-              span.badge(class=vehiculo.estado === 'Disponible' ? 'bg-success' : 'bg-warning')= vehiculo.estado
-            td
-              a.btn.btn-sm.btn-primary(href=`/telemetria/${vehiculo.id}`) Ver Telemetría
+  .container.my-4
+
+    //- ===== Botón volver al inicio =====
+    .mb-3
+      a.btn.btn-sm.btn-outline-secondary(href="/")
+        i.fa-solid.fa-arrow-left.me-1
+        | Volver al inicio
+
+    //- ===== Mensajes de resultado (autocierre) =====
+    if mensaje
+      .alert.alert-success.alert-dismissible.fade.show.d-flex.align-items-center.js-auto-close(role="alert" data-auto-close="4000")
+        i.fa-solid.fa-check-circle.me-2
+        .flex-grow-1 ¡Chofer asignado exitosamente!
+        button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Cerrar")
+    else if error
+      .alert.alert-danger.alert-dismissible.fade.show.d-flex.align-items-center.js-auto-close(role="alert" data-auto-close="8000")
+        i.fa-solid.fa-exclamation-circle.me-2
+        .flex-grow-1= error
+        button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Cerrar")
+
+    //- ===== Card: Formulario de asignación =====
+    .card.shadow-sm.border-0.mb-4
+      .card-header.bg-primary-subtle.border-0.d-flex.align-items-center
+        i.fa-solid.fa-user-plus.me-2.text-primary
+        span.fw-semibold.text-primary Asignar chofer a un vehículo
+      .card-body.p-4
+
+        //- Caso: no hay vehículos disponibles
+        if !vehiculosDisponibles || vehiculosDisponibles.length === 0
+          .alert.alert-warning.d-flex.align-items-center.mb-0(role="alert")
+            i.fa-solid.fa-triangle-exclamation.me-2
+            div
+              strong No hay vehículos disponibles para asignar.
+              br
+              span.small Todos los vehículos ya tienen un chofer asignado o no hay unidades registradas.
+
+        //- Caso: hay vehículos, mostramos el formulario
         else
-          tr
-            td(colspan="7").text-center No hay vehículos registrados en la flota.
+          form(action="/vehiculos/asignar-chofer" method="post")
+            .row.g-3.align-items-end
+              .col-12.col-md-5
+                label.form-label.fw-semibold(for="vehiculoId") Vehículo
+                select#vehiculoId.form-select(name="vehiculoId" required)
+                  option(value="" disabled selected) -- Seleccione un vehículo --
+                  each vehiculo in vehiculosDisponibles
+                    option(value=vehiculo.id) #{vehiculo.patente} (#{vehiculo.tipo})
+              .col-12.col-md-5
+                label.form-label.fw-semibold(for="choferId") Chofer
+                select#choferId.form-select(name="choferId" required)
+                  option(value="" disabled selected) -- Seleccione un chofer --
+                  each chofer in choferesDisponibles
+                    option(value=chofer.id) #{chofer.nombre} #{chofer.apellido ? chofer.apellido : ''}
+              .col-12.col-md-2.d-grid
+                button.btn.btn-primary.w-100(type="submit")
+                  i.fa-solid.fa-check.me-1
+                  | Asignar
+
+    //- ===== Card: Flota de vehículos =====
+    .card.shadow-sm.border-0
+      .card-header.bg-body.border-0.d-flex.justify-content-between.align-items-center
+        h2.h5.mb-0 Flota de Vehículos
+        span.text-muted.small Listado de unidades disponibles y sus estados.
+      .table-responsive.text-center
+        table.table.table-striped.table-hover.align-middle.mb-0
+          thead.table-light
+            tr
+              th Patente
+              th Tipo
+              th Capacidad
+              th Rango Temp.
+              th Chofer Asignado
+              th Estado
+              th.text-center Accion
+          tbody
+            each vehiculo in vehiculos
+              tr
+                td.fw-semibold= vehiculo.patente
+                td= vehiculo.tipo
+                td= vehiculo.capacidad
+                td #{vehiculo.temperaturaMin}°C a #{vehiculo.temperaturaMax}°C
+                td
+                  if vehiculo.choferAsignadoId
+                    span.badge.bg-info-subtle.text-info-emphasis
+                      i.fa-solid.fa-id-card.me-1
+                      | #{vehiculo.choferAsignadoId}
+                  else
+                    span.text-muted.fst-italic Sin asignar
+                td
+                  case vehiculo.estado
+                    when 'En Ruta'
+                      span.badge.rounded-pill.bg-primary= vehiculo.estado
+                    when 'Asignado'
+                      span.badge.rounded-pill.bg-info-subtle.text-info-emphasis
+                        | Asignado
+                    when 'Mantenimiento'
+                      span.badge.rounded-pill.bg-warning.text-dark= vehiculo.estado
+                    default
+                      span.badge.rounded-pill.bg-secondary= vehiculo.estado
+                td.text-end
+                  if vehiculo.choferAsignadoId && vehiculo.estado === "Asignado"
+                    form(action=`/vehiculos/${vehiculo.id}/quitar-chofer` method="post")
+                      button.btn.btn-sm.btn-warning(type="submit")
+                        i.fa-solid.fa-user-minus.me-1
+                        | Quitar Chofer
+                  else
+                    a.btn.btn-sm.btn-outline-primary(href=`/telemetria/${vehiculo.id}`)
+                      i.fa-solid.fa-chart-line.me-1
+                      | Ver Telemetría
+            else
+              tr
+                td(colspan="7").text-center.text-muted.py-4
+                  i.fa-solid.fa-truck-moving.d-block.fs-3.mb-2.opacity-50
+                  | No hay vehículos registrados en la flota.
+
+  //- ===== Script de autocierre (inline, sin depender del layout) =====
+  block scripts
+    script.
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.js-auto-close').forEach((el) => {
+          const delay = parseInt(el.dataset.autoClose || '4000', 10);
+          setTimeout(() => bootstrap.Alert.getOrCreateInstance(el).close(), delay);
+        });
+      })

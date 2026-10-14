@@ -58,6 +58,10 @@ router.post("/clientes/:id/editar", clientesController.actualizarWeb);
 
 // Flota — vehículos (vistas web Pug)
 router.get("/vehiculos", vehiculosController.renderIndex);
+// Asignación de choferes — vistas web (Pug)
+router.post("/vehiculos/asignar-chofer", vehiculosController.asignarChoferWeb);
+// Quitar chofer del vehículo — vistas web (Pug)
+router.post("/vehiculos/:id/quitar-chofer", vehiculosController.quitarChoferWeb);
 
 // Telemetría — detalle por vehículo (vistas web Pug)
 router.get("/telemetria/:id", telemetriaController.renderDetail);
