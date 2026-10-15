@@ -9,6 +9,7 @@ import { conectarDB, cerrarDB } from "./src/config/database.js";
 import authRoutes from "./src/routes/auth.routes.js";
 import { cargarUsuario, requerirLogin } from "./src/middlewares/auth.js";
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
 
 // Configuración del motor de plantillas Pug
@@ -23,10 +24,14 @@ app.use(requestLogger); // Nuestro logger de requests
 // Rutas web
 // Incluye dashboard, pedidos, remitos, clientes, rutas, vehículos y telemetría.
 app.use("/", cargarUsuario, authRoutes);
-app.use("/", (req, res, next) => {
-  if (req.path === "/api" || req.path.startsWith("/api/")) return next();
-  requerirLogin(req, res, next);
-}, webRoutes);
+app.use(
+  "/",
+  (req, res, next) => {
+    if (req.path === "/api" || req.path.startsWith("/api/")) return next();
+    requerirLogin(req, res, next);
+  },
+  webRoutes,
+);
 
 // Rutas de API REST (para Postman, integraciones, etc.)
 app.use("/api", apiRoutes);

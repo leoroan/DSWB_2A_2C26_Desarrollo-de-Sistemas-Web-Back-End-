@@ -172,10 +172,12 @@ Para la aplicación móvil de los choferes (que requiere iteraciones rápidas y 
     ```
 3.  **Configurar las variables de entorno:**
     Copiá la plantilla y editá el archivo `.env` con los datos de tu base:
+
     ```bash
     # Windows (PowerShell)
     Copy-Item .env.example .env
     ```
+
     Luego abrí `.env` y completá `MONGODB_URI` con tu cadena de conexión
     (ver la sección **“Credenciales de MongoDB Atlas”** más abajo).
 
@@ -210,7 +212,7 @@ indicamos exactamente dónde obtener cada dato dentro de Atlas:
 
 2.  **Usuario y contraseña de la base de datos:**
     - En el menú izquierdo andá a **Database Access** (o aparece al crear el
-      clúster en el paso de *Security Quickstart*).
+      clúster en el paso de _Security Quickstart_).
     - **Create Database User**: definí un **username** y una **password**
       (guardalos, son los que van en la URI). Elegí el rol **“Read and write to
       any database”**.
@@ -263,6 +265,8 @@ Luego ejecutá `npm start` y accedé a `http://localhost:3000`.
 La sesión dura 8 horas y el botón **Cerrar sesión** la invalida.
 Las rutas `/api` siguen disponibles sin login para las pruebas con Postman.
 En producción, las cookies de sesión requieren HTTPS.
+
+_O usá las credenciales de demostracion publicadas en la vista de login ;)_
 
 ## 👥 Equipo de Desarrollo
 
