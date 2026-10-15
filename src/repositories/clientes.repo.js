@@ -1,6 +1,6 @@
-import { modelos } from "../database/models/index.js";
+import { modelos } from "../models/index.js";
 import { limpio } from "../config/database.js";
-import Cliente from "../models/Cliente.js";
+import Cliente from "../domain/entities/Cliente.js";
 
 /**
  * Repositorio de clientes (MongoDB).

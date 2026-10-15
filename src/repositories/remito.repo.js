@@ -1,6 +1,6 @@
-import { modelos, siguienteId } from "../database/models/index.js";
+import { modelos, siguienteId } from "../models/index.js";
 import { limpio } from "../config/database.js";
-import Remito from "../models/Remito.js";
+import Remito from "../domain/entities/Remito.js";
 
 /**
  * Repositorio de remitos (MongoDB).

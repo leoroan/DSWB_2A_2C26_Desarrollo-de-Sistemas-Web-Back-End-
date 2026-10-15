@@ -1,0 +1,46 @@
+[
+  {
+    "id": 11,
+    "nombre": "Martín",
+    "apellido": "Herrera",
+    "edad": 38,
+    "email": "martin.herrera@freshroute.com.ar",
+    "fechaAlta": "2026-04-02",
+    "estado": "En Viaje",
+    "licencia": "C1 Profesional",
+    "vehiculoId": 1
+  },
+  {
+    "id": 12,
+    "nombre": "Lucas",
+    "apellido": "Fernández",
+    "edad": 34,
+    "email": "lucas.fernandez@freshroute.com.ar",
+    "fechaAlta": "2026-05-12",
+    "estado": "Disponible",
+    "licencia": "B2 Profesional",
+    "vehiculoId": 2
+  },
+  {
+    "id": 13,
+    "nombre": "Diego",
+    "apellido": "Sosa",
+    "edad": 41,
+    "email": "diego.sosa@freshroute.com.ar",
+    "fechaAlta": "2026-06-03",
+    "estado": "Disponible",
+    "licencia": "C1 Profesional",
+    "vehiculoId": 4
+  },
+  {
+    "id": 14,
+    "nombre": "Carolina",
+    "apellido": "Paredes",
+    "edad": 29,
+    "email": "carolina.paredes@freshroute.com.ar",
+    "fechaAlta": "2026-08-20",
+    "estado": "Descanso",
+    "licencia": "B2",
+    "vehiculoId": null
+  }
+]

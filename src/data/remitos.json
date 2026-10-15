@@ -61,19 +61,41 @@
     "fechaVencimiento": "2026-10-16",
     "montoTotal": 227000,
     "estado": "firmado",
-    "firmadoPor": "Lean",
-    "observaciones": "Pendiente de firma: la copia firmada se retira en la próxima visita.",
+    "firmadoPor": "Paula Domínguez (Comedor Norte)",
+    "observaciones": "Entrega conforme. Última entrega del pack de agua saborizada antes de la baja del producto.",
     "penalizacionAplicada": 0
   },
   {
     "id": 7,
-    "pedidoId": 15,
-    "fechaEmision": "2026-09-19",
-    "fechaVencimiento": "2026-10-19",
-    "montoTotal": 1500.5,
+    "pedidoId": 8,
+    "fechaEmision": "2026-09-17",
+    "fechaVencimiento": "2026-10-17",
+    "montoTotal": 100000,
+    "estado": "firmado",
+    "firmadoPor": "Sofía Marchetti (La Trattoria del Puerto)",
+    "observaciones": "Entrega conforme antes de las 8:00.",
+    "penalizacionAplicada": 0
+  },
+  {
+    "id": 8,
+    "pedidoId": 9,
+    "fechaEmision": "2026-09-17",
+    "fechaVencimiento": "2026-10-17",
+    "montoTotal": 91600,
+    "estado": "firmado",
+    "firmadoPor": "Luciana Ferreyra (Comedor Tecnológico Palermo)",
+    "observaciones": "Entrega conforme. Viandas vegetarianas sin picante según lo solicitado.",
+    "penalizacionAplicada": 0
+  },
+  {
+    "id": 9,
+    "pedidoId": 10,
+    "fechaEmision": "2026-09-17",
+    "fechaVencimiento": "2026-10-17",
+    "montoTotal": 132300,
     "estado": "pendiente",
-    "firmadoPor": "Juan Pérez",
-    "observaciones": "Factura generada automáticamente",
+    "firmadoPor": null,
+    "observaciones": "En reparto el 17/09 por Ruta Centro AM; pendiente de firma en destino.",
     "penalizacionAplicada": 0
   }
 ]

@@ -1,50 +1,73 @@
 extends ../layout
 
 block content
-  div.d-flex.justify-content-between.align-items-center.mb-4
-    div
-      h1.mb-1 Clientes
-      p.text-muted.mb-0 Gestión de clientes de FreshRoute B2B.
+  //- ===== Botón volver al inicio =====
+    .mb-3
+      a.btn.btn-sm.btn-outline-secondary(href="/")
+        i.fa-solid.fa-arrow-left.me-1
+        | Volver al inicio
 
-    a.btn.btn-primary(href="/clientes/nuevo")
+  // Header de página con layout flexible
+  div.d-flex.flex-column.flex-md-row.justify-content-between.align-items-start.align-items-md-center.gap-3.mb-4
+
+    div.d-flex.align-items-center.gap-3
+      a.btn.btn-outline-secondary.p-2(href="/", title="Volver al inicio")
+        i.fa-solid.fa-arrow-left volver
+      
+      div
+        h1.fw-bold.fs-2.text-dark.mb-0 Clientes
+        p.text-muted.fs-6.mt-1 Gestión de clientes de FreshRoute B2B.
+
+    // Acción Principal a la derecha
+    a.btn.btn-primary.shadow-sm.rounded-pill.px-4.py-2(href="/clientes/nuevo")
       i.fa-solid.fa-plus.me-2
       | Nuevo cliente
 
   if clientes && clientes.length
-    div.table-responsive
-      table.table.table-striped.table-hover.align-middle
-        thead.table-dark
-          tr
-            th ID
-            th Nombre
-            th Tipo
-            th Email
-            th Teléfono
-            th Domicilio de entrega
-            th Estado
-            th Fecha de alta
-            th Acciones
-
-        tbody
-          each cliente in clientes
+    // Contenedor responsive para scroll horizontal en pantallas pequeñas
+    div.card.border-0.shadow-sm.overflow-hidden
+      div.table-responsive
+        table.table.table-hover.align-middle.mb-0
+          thead.bg-light.text-uppercase.small.fw-semibold.text-secondary
             tr
-              td= cliente.id
-              td= cliente.nombre
-              td= cliente.tipo
-              td= cliente.email
-              td= cliente.telefono
-              td= cliente.domicilioDeEntrega
-              td
-                if cliente.estado === "Activo"
-                  span.badge.bg-success= cliente.estado
-                else
-                  span.badge.bg-secondary= cliente.estado
-              td= cliente.fechaAlta
-              td
-                a.btn.btn-sm.btn-outline-primary(href=`/clientes/${cliente.id}/editar`)
-                  i.fa-solid.fa-pen.me-1
-                  | Editar
+              //- th(scope="col", class="ps-3") ID
+              th(scope="col") Nombre
+              th(scope="col") Tipo
+              th(scope="col") Email
+              th(scope="col") Teléfono
+              th(scope="col", class="d-none d-lg-table-cell") Domicilio
+              th(scope="col") Estado
+              th(scope="col", class="d-none d-xl-table-cell") Alta
+              th(scope="col", class="text-end pe-3") Acciones
+
+          tbody
+            each cliente in clientes
+              tr
+                //- td(class="ps-3 fw-medium text-muted small")= cliente.id
+                td(class="fw-semibold")= cliente.nombre
+                td
+                  span.badge.bg-light.text-dark.border.rounded-pill.px-2.py-1= cliente.tipo || '-'
+                td(class="small text-truncate", style="max-width: 150px;") 
+                  a.text-decoration-none.text-primary(href=`mailto:${cliente.email}`)= cliente.email
+                td(class="small")= cliente.telefono || '-'
+                td(class="d-none d-lg-table-cell small text-truncate", style="max-width: 200px;")= cliente.domicilioDeEntrega || '-'
+                td
+                  if cliente.estado === "Activo"
+                    span.badge.bg-success-subtle.text-success.border.border-success-subtle.rounded-pill.px-2.py-1.fw-medium
+                      i.fa-solid.fa-circle-check.me-1
+                      = cliente.estado
+                  else
+                    span.badge.bg-secondary-subtle.text-secondary.border.border-secondary-subtle.rounded-pill.px-2.py-1.fw-medium
+                      = cliente.estado || 'Inactivo'
+                td(class="d-none d-xl-table-cell small text-muted")= cliente.fechaAlta ? new Date(cliente.fechaAlta).toLocaleDateString('es-AR') : '-'
+                td(class="pe-3 text-center")
+                  a.btn.btn-sm.p-2(title="Editar cliente", href=`/clientes/${cliente.id}/editar`)
+                    i.fa-solid.fa-pen-to-square
   else
-    div.alert.alert-info
-      i.fa-solid.fa-circle-info.me-2
-      | No hay clientes registrados.
+    // Empty state mejorado
+    div.card.border-0.shadow-sm.bg-white
+      div.card-body.text-center.py-5
+        i.fa-solid.fa-user-slash.fa-3x.text-muted.opacity-50.mb-3
+        h4.fw-normal.text-dark No hay clientes registrados
+        p.text-muted.mb-4 Empezá creando tu primer cliente para gestionar entregas.
+        a.btn.btn-primary.rounded-pill.px-4(href="/clientes/nuevo") Crear ahora

@@ -1,6 +1,6 @@
 import express from "express";
 import { randomBytes } from "node:crypto";
-import { Usuario, Sesion } from "../database/models/auth.js";
+import { Usuario, Sesion } from "../models/index.js";
 import { cookieOptions, hashToken } from "../middlewares/auth.js";
 
 const router = express.Router();

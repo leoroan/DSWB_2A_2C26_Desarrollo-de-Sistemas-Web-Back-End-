@@ -4,6 +4,7 @@ import rutasRepo from "../repositories/rutas.repo.js";
 import choferesRepo from "../repositories/choferes.repo.js";
 import remitosRepo from "../repositories/remito.repo.js";
 import vehiculosRepo from "../repositories/vehiculos.repo.js";
+import productosRepo from "../repositories/pedidos.repo.js";
 import { mongoose } from "../config/database.js";
 
 function mostrarDocumentacion(req, res) {
@@ -21,10 +22,11 @@ async function mostrarDashboard(req, res) {
     choferes: 0,
     remitos: 0,
     vehiculos: 0,
+    productos: 0,
   };
 
   try {
-    const [clientes, pedidos, rutas, choferes, remitos, vehiculos] =
+    const [clientes, pedidos, rutas, choferes, remitos, vehiculos, productos] =
       await Promise.allSettled([
         clientesRepo.obtenerTodas(),
         pedidosRepo.obtenerTodas(),
@@ -32,6 +34,7 @@ async function mostrarDashboard(req, res) {
         choferesRepo.obtenerTodos(),
         remitosRepo.obtenerTodas(),
         vehiculosRepo.obtenerTodos(),
+        productosRepo.obtenerProductos(),
       ]);
 
     const listaPedidos = pedidos.status === "fulfilled" ? pedidos.value : [];
@@ -52,6 +55,7 @@ async function mostrarDashboard(req, res) {
       choferes: choferes.status === "fulfilled" ? choferes.value.length : 0,
       remitos: remitos.status === "fulfilled" ? remitos.value.length : 0,
       vehiculos: vehiculos.status === "fulfilled" ? vehiculos.value.length : 0,
+      productos: productos.status === "fulfilled" ? productos.value.length : 0,
     };
   } catch (err) {
     console.error("Error al obtener estadísticas del dashboard:", err.message);

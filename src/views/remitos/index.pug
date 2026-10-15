@@ -1,12 +1,22 @@
 extends ../layout
 
 block content
+  //- ===== Botón volver al inicio =====
+    .mb-3
+      a.btn.btn-sm.btn-outline-secondary(href="/")
+        i.fa-solid.fa-arrow-left.me-1
+        | Volver al inicio
+
   // Header
   div.d-flex.justify-content-between.align-items-center.mb-4
-    h3.fw-bold.text-dark
-      i.fa-solid.fa-file-invoice.text-info.me-2
-      | Remitos
-    a.btn.btn-primary.btn-sm(href="/remitos/nuevo")
+    div.d-flex.align-items-center.gap-3
+      a.btn.btn-outline-secondary.btn-sm.rounded-pill.px-3(href="/", title="Volver al inicio")
+        i.fa-solid.fa-house.me-1
+        | Inicio
+      h3.fw-bold.text-dark.mb-0
+        i.fa-solid.fa-file-invoice.text-info.me-2
+        | Remitos
+    a.btn.btn-primary.btn-sm.rounded-pill.px-3(href="/remitos/nuevo")
       i.fa-solid.fa-plus.me-1
       | Nuevo Remito
 
@@ -31,42 +41,42 @@ block content
                 td.font-monospace
                   strong #{remito.id}
                 td
-                  a(href="/remitos/" + remito.id style="text-decoration:none;color:inherit")
+                  a.text-decoration-none.text-reset(href="/remitos/" + remito.id)
                     span.badge.bg-warning.text-dark #{remito.pedidoId}
                 td
                   if (remito.cliente)
                     small.text-muted #{remito.cliente}
                   else
-                    span.text-muted.fa-regular.fa-user
+                    i.fa-regular.fa-user.text-muted
                 td.text-nowrap.small.text-muted #{remito.fechaEmision}
                 td
                   if (remito.estado === 'Firmado')
-                    span.badge.badge-success
+                    span.badge.bg-success
                       i.fa-solid.fa-check-circle.me-1
                       | Firmado
                   else if (remito.estado === 'Pendiente')
-                    span.badge.badge-warning
+                    span.badge.bg-warning.text-dark
                       i.fa-solid.fa-clock.me-1
                       | Pendiente
                   else if (remito.estado === 'Vencido')
-                    span.badge.badge-danger
-                      i.fa-solid.fa-exclamation-triangle.me-1
+                    span.badge.bg-danger
+                      i.fa-solid.fa-triangle-exclamation.me-1
                       | Vencido
                   else
                     span.badge.bg-secondary #{remito.estado}
                 td.text-center
                   if (remito.firmadoPor)
-                    i.fa-solid.fa-pen-or-fountain.text-info.me-1
+                    i.fa-solid.fa-signature.text-info.me-1
                     small.fw-bold #{remito.firmadoPor}
                   else
-                    span.text-muted.fa-regular.fa-user-slash
+                    i.fa-regular.fa-user-slash.text-muted
                 td
                   if (remito.penalizacionAplicada && remito.penalizacionAplicada > 0)
                     span.badge.bg-danger
                       i.fa-solid.fa-circle-exclamation.me-1
                       | $#{remito.penalizacionAplicada.toFixed(2)}
                   else
-                    span.text-muted.fa-regular.fa-circle-check
+                    i.fa-regular.fa-circle-check.text-muted
                 td.text-nowrap.text-end
                   a.btn.btn-outline-secondary.btn-sm(href="/remitos/" + remito.id)
                     i.fa-solid.fa-eye.me-1
@@ -80,6 +90,6 @@ block content
       i.fa-solid.fa-box-open.fa-3x.text-muted.mb-3
       h5.text-muted No hay remitos registrados
       p.small.text-muted Aún no se han generado remitos. Comienza creando uno nuevo.
-      a.btn.btn-outline-primary.btn-sm(href="/remitos/nuevo" class="mt-2")
+      a.btn.btn-outline-primary.btn-sm.mt-2(href="/remitos/nuevo")
         i.fa-solid.fa-plus.me-1
         | Crear Primer Remito

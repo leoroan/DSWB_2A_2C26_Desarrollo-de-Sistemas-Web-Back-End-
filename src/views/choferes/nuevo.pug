@@ -1,15 +1,21 @@
 extends ../layout
 
 block content
+  if error
+    .alert.alert-danger.alert-dismissible.fade.show(role="alert")
+      button.close(type="button" data-bs-dismiss="alert" aria-label="Cerrar")
+        span aria-hidden="true" ×
+      i.fa-solid.fa-exclamation-circle.me-2
+      | #{error}
+
   div.d-flex.justify-content-between.align-items-center.mb-4
     div
       h1.mb-1 Registrar Nuevo Chófer
       p.text-muted.mb-0 Dar de alta un chófer en la base de datos de FreshRoute B2B.
-
     div
-      a.btn.btn-outline-secondary.me-2(href="/")
-        i.fa-solid.fa-house.me-1
-        | Panel Principal
+      a.btn.btn-sm.btn-outline-secondary(href="/")
+        i.fa-solid.fa-arrow-left.me-1
+        | Volver al inicio
       a.btn.btn-outline-primary(href="/choferes")
         i.fa-solid.fa-list.me-1
         | Ver Choferes
@@ -49,9 +55,9 @@ block content
             label.form-label.fw-semibold(for="vehiculoId") Vehículo Asignado (Opcional)
             select#vehiculoId.form-select(name="vehiculoId")
               option(value="") -- Sin vehículo asignado --
-              if vehiculos && vehiculos.length
-                each vehiculo in vehiculos
-                  option(value=vehiculo.id) Patente: #{vehiculo.patente} (#{vehiculo.tipo})
+              if vehiculosDisponibles && vehiculosDisponibles.length
+                each vehiculo in vehiculosDisponibles
+                  option(value=vehiculo.id) Estado: #{vehiculo.estado} Patente: #{vehiculo.patente} (#{vehiculo.tipo})
 
           div.col-12.mt-4.d-flex.justify-content-end.gap-2
             a.btn.btn-outline-secondary(href="/") Cancelar

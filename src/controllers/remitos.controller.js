@@ -1,5 +1,5 @@
 import repo from "../repositories/remito.repo.js";
-import Remito from "../models/Remito.js";
+import Remito from "../domain/entities/Remito.js";
 
 /**
  * Controlador de remitos.
@@ -11,7 +11,7 @@ import Remito from "../models/Remito.js";
  * para poder usar los métodos de la clase (firmar, estaVencido, etc.).
  */
 function hidratarRemito(datos) {
-  return new Remito(
+  const remito = new Remito(
     datos.id,
     datos.pedidoId,
     datos.fechaEmision,
@@ -22,6 +22,8 @@ function hidratarRemito(datos) {
     datos.observaciones,
     datos.penalizacionAplicada,
   );
+  remito.cliente = datos.cliente;
+  return remito;
 }
 
 // ============================================================================
@@ -112,6 +114,7 @@ async function detailWeb(req, res) {
   res.render("remitos/detail", {
     titulo: `Remito #${remito.id}`,
     remito: hidratarRemito(remito),
+    elRemito: remito,
   });
 }
 

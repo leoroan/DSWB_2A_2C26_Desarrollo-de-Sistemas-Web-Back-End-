@@ -1,0 +1,68 @@
+extends ../layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h3.fw-bold.text-dark
+      i.fa-solid.fa-box-open.text-info.me-2
+      if typeof modoEdicion !== "undefined" && modoEdicion
+        | Editar producto #{producto ? "#" + producto.id : ""}
+      else
+        | Nuevo producto
+    a.btn.btn-outline-secondary.btn-sm(href="/productos")
+      i.fa-solid.fa-arrow-left.me-1
+      | Volver
+
+  //- ===== Botón volver al inicio =====
+    .mb-3
+      a.btn.btn-sm.btn-outline-secondary(href="/")
+        i.fa-solid.fa-arrow-left.me-1
+        | Volver al inicio
+
+  if (typeof errores !== "undefined" && errores.length > 0)
+    div.alert.alert-danger
+      strong
+        i.fa-solid.fa-circle-exclamation.me-1
+        | Se encontraron errores:
+      ul.mb-0
+        each error in errores
+          li #{error}
+
+  div.row.justify-content-center
+    div.col-lg-8
+      div.card.shadow-sm.border-0
+        div.card-header.bg-primary.text-white
+          h6.mb-0
+            i.fa-solid.fa-pen.me-2
+            | Datos del producto
+        div.card-body
+          form(method="POST" action=(typeof modoEdicion !== "undefined" && modoEdicion && typeof producto !== "undefined" ? `/productos/${producto.id}/editar` : "/productos"))
+            div.row
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  | Nombre
+                  span.text-danger *
+                input.form-control(type="text" name="nombre" required value=(typeof form !== "undefined" && form.nombre ? form.nombre : ""))
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  | Categoría
+                  span.text-danger *
+                input.form-control(type="text" name="categoria" required value=(typeof form !== "undefined" && form.categoria ? form.categoria : ""))
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  | Precio
+                  span.text-danger *
+                input.form-control(type="number" name="precio" min="0" step="0.01" required value=(typeof form !== "undefined" && form.precio !== undefined ? form.precio : ""))
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  | Estado
+                select.form-select(name="estado")
+                  option(value="activo" selected=(typeof form !== "undefined" && form.estado === "activo") || typeof form === "undefined") activo
+                  option(value="inactivo" selected=(typeof form !== "undefined" && form.estado === "inactivo")) inactivo
+            div.text-end
+              a.btn.btn-outline-secondary.me-2(href="/productos") Cancelar
+              button.btn.btn-primary(type="submit")
+                i.fa-solid.fa-floppy-disk.me-1
+                if typeof modoEdicion !== "undefined" && modoEdicion
+                  | Guardar cambios
+                else
+                  | Crear producto

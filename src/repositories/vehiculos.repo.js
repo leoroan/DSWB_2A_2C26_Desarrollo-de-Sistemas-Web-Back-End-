@@ -1,6 +1,6 @@
-import { modelos, siguienteId } from "../database/models/index.js";
+import { modelos, siguienteId } from "../models/index.js";
 import { limpio } from "../config/database.js";
-import Vehiculo from "../models/Vehiculo.js";
+import Vehiculo from "../domain/entities/Vehiculo.js";
 
 /**
  * Repositorio de vehículos (MongoDB). Reemplaza data/vehiculos.json

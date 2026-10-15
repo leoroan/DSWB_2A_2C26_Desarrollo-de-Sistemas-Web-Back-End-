@@ -104,36 +104,34 @@ Para la aplicación móvil de los choferes (que requiere iteraciones rápidas y 
 │   │   ├── env.js                 # Variables de entorno (dotenv) y constantes
 │   │   └── database.js            # Conexión a MongoDB con Mongoose
 │   ├── database/
-│   │   ├── models/                # Schemas y modelos de Mongoose (MongoDB)
-│   │   │   ├── index.js           #   Registro central de modelos + siguienteId()
-│   │   │   ├── Cliente.js         #   clientes
-│   │   │   ├── Chofer.js          #   choferes
-│   │   │   ├── Vehiculo.js        #   vehiculos
-│   │   │   ├── Ruta.js            #   rutas
-│   │   │   ├── Parada.js          #   paradas
-│   │   │   ├── Pedido.js          #   pedidos
-│   │   │   ├── ItemPedido.js      #   itempedidos
-│   │   │   ├── Producto.js        #   productos
-│   │   │   ├── Remito.js          #   remitos
-│   │   │   ├── RegistroTelemetria.js # telemetria
-│   │   │   ├── RutaCatalogo.js    #   rutacatalogos (catálogo de rutas)
-│   │   │   ├── Asignacion.js      #   asignaciones (pedido ↔ ruta)
-│   │   │   └── Contador.js        #   contadores (secuencias autoincrementales)
-│   │   └── seed.js                # Migra los JSON de data/ a MongoDB
+│   │   ├── seed.js                # Migra los JSON de data/ a MongoDB
+│   │   └── crear-usuario.js       # Alta interactiva de usuarios (login)
+│   ├── domain/                   # Dominio POO (sin Mongoose, sin Express)
+│   │   ├── entities/             #   Clases con propiedades y comportamiento
+│   │   │   ├── Persona.js        #   base: Chofer/Empleado/Cliente heredan
+│   │   │   ├── Empleado.js       #   base de Chofer
+│   │   │   ├── Chofer.js / Cliente.js / Pedido.js / ItemPedido.js
+│   │   │   ├── Producto.js / Parada.js / Ruta.js / Vehiculo.js
+│   │   │   └── Remito.js / RegistroTelemetria.js
+│   │   └── validators/           #   Validación y normalización por entidad
+│   │       ├── pedido.validator.js / itemPedido.validator.js
+│   │       ├── producto.validator.js / cliente.validator.js
 │   ├── controllers/            # Lógica de negocio y manejo de peticiones
 │   │
 │   ├── data/                   # JSON originales (semilla; no se usan en caliente)
 |   |
 │   ├── middlewares/            # Funciones intermedias de Express
 |   |
-│   ├── models/                 # Clases POO del dominio (Chofer, Parada, Ruta)
+│   ├── models/                 # Persistencia BDD: SOLO esquemas Mongoose
+│   │   ├── index.js            #   Registro central + siguienteId() + Usuario/Sesion
+│   │   └── *.schema.js         #   un esquema por colección (cliente, pedido…)
 |   |
-│   ├── repositories/           # Capa de acceso a datos (interactúa con MongoDB)
+│   ├── repositories/           # Traducen Mongo ↔ entidades de dominio
 |   |
 │   ├── routes/                 # Definición de rutas de la aplicación
 |   |
 │   └── utils/                  # Utilidades generales
-│       └── validaciones.js     # Helpers de validación compartidos
+│       └── validaciones.js     # Helpers genéricos (exigir, idValido, texto…)
 ├── views/                      # Plantillas Pug para el frontend
 |
 ├── .env                        # Configuración local (NO se sube al repo)
@@ -144,11 +142,12 @@ Para la aplicación móvil de los choferes (que requiere iteraciones rápidas y 
 └── package.json
 ```
 
-> **Nota de arquitectura:** `src/models/` conserva las **clases POO del dominio**
-> (con herencia, polimorfismo y encapsulamiento). `src/database/models/` define los
-> **schemas de Mongoose** que persisten esas entidades en MongoDB. Los
-> `repositories/` traducen entre documentos de Mongo y las clases de dominio, de
-> modo que controladores, servicios y vistas **no cambian**.
+> **Nota de arquitectura:** `src/models/*.schema.js` son los **esquemas Mongoose**
+> (persistencia BDD) compilados una sola vez en `src/models/index.js`.
+> `src/domain/entities/` conserva las **clases POO** (propiedades + métodos, sin
+> validaciones) y `src/domain/validators/` la validación por entidad. Los
+> `repositories/` traducen entre documentos de Mongo y esas clases, de modo que
+> controladores, servicios y vistas **no cambian**.
 
 ---
 

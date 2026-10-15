@@ -1,6 +1,7 @@
-import { modelos } from "../database/models/index.js";
+import { modelos, siguienteId } from "../models/index.js";
 import { limpio } from "../config/database.js";
-import Ruta from "../models/Ruta.js";
+import { exigir } from "../utils/validaciones.js";
+import Ruta from "../domain/entities/Ruta.js";
 
 /**
  * Repositorio de rutas (MongoDB). Reemplaza data/rutas.json conservando la
@@ -33,4 +34,28 @@ async function obtenerPorId(id) {
   return doc ? mapearARuta(doc) : null;
 }
 
-export default { obtenerTodas, obtenerPorId };
+/**
+ * Crea una ruta simple (código único, chofer válido, fechas texto).
+ * El id se autoincrementa con la secuencia "rutas".
+ */
+async function crear(datos) {
+  exigir(datos && typeof datos === "object", "Se requieren los datos de la ruta");
+  exigir(typeof datos.codigo === "string" && datos.codigo.trim().length > 0, "El código es obligatorio");
+  const docs = await RutaModel.find().lean();
+  exigir(!docs.some((r) => r.codigo === datos.codigo.trim()), "El código de ruta ya existe", 409);
+  const ruta = new Ruta(
+    await siguienteId("rutas"),
+    datos.codigo.trim(),
+    datos.planificadorId ?? null,
+    datos.choferId ?? null,
+    datos.estado ?? "planificada",
+    datos.fechaPlanificacion ?? new Date().toISOString(),
+    datos.fechaEjecucion ?? null,
+    datos.observaciones ?? "",
+    datos.vehiculoPatente ?? null,
+  );
+  await RutaModel.create({ ...ruta });
+  return ruta;
+}
+
+export default { obtenerTodas, obtenerPorId, crear };

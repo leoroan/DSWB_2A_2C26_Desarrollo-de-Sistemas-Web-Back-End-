@@ -11,6 +11,12 @@ block content
       i.fa-solid.fa-arrow-left.me-2
       | Volver
 
+  //- ===== Botón volver al inicio =====
+    .mb-3
+      a.btn.btn-sm.btn-outline-secondary(href="/")
+        i.fa-solid.fa-arrow-left.me-1
+        | Volver al inicio
+
   form(method="POST", action=cliente ? `/clientes/${cliente.id}/editar` : "/clientes")
     div.row.g-3
 

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { conectarDB, cerrarDB, mongoose } from "../config/database.js";
-import { modelos } from "./models/index.js";
+import { modelos } from "../models/index.js";
 
 /**
  * Script de migración (seed): carga los datos de los JSON originales
@@ -61,6 +61,8 @@ async function migrar({ reset }) {
       "rutacatalogos",
       "asignaciones",
       "contadores",
+      "usuarios",
+      "sesiones",
     ];
     for (const col of colecciones) {
       await mongoose.connection.db.collection(col).deleteMany({});
@@ -70,6 +72,8 @@ async function migrar({ reset }) {
 
   // --- Entidades independientes (arrays planos) ---
   const clientes = leerArray("clientes.json");
+  const choferes = leerArray("choferes.json");
+  const usuarios = leerArray("usuarios.json");
   const vehiculos = leerArray("vehiculos.json");
   const rutas = leerArray("rutas.json");
   const paradas = leerArray("paradas.json");
@@ -78,6 +82,10 @@ async function migrar({ reset }) {
 
   if (clientes.length)
     await modelos.Cliente.insertMany(clientes, { ordered: false });
+  if (choferes.length)
+    await modelos.Chofer.insertMany(choferes, { ordered: false });
+  if (usuarios.length)
+    await modelos.Usuario.insertMany(usuarios, { ordered: false });
   if (vehiculos.length)
     await modelos.Vehiculo.insertMany(vehiculos, { ordered: false });
   if (rutas.length) await modelos.Ruta.insertMany(rutas, { ordered: false });
@@ -119,7 +127,7 @@ async function migrar({ reset }) {
     ["remitos", maxId(remitos)],
     ["vehiculos", maxId(vehiculos)],
     ["telemetria", maxId(telemetria)],
-    ["choferes", 0],
+    ["choferes", maxId(choferes)],
   ];
   for (const [nombre, valor] of contadores) {
     await modelos.Contador.updateOne(
@@ -131,6 +139,8 @@ async function migrar({ reset }) {
 
   const resumen = {
     clientes: clientes.length,
+    choferes: choferes.length,
+    usuarios: usuarios.length,
     vehiculos: vehiculos.length,
     rutas: rutas.length,
     paradas: paradas.length,
