@@ -1,6 +1,12 @@
 extends ../layout
 
 block content
+  //- ===== Botón volver al inicio =====
+    .mb-3
+      a.btn.btn-sm.btn-outline-secondary(href="/")
+        i.fa-solid.fa-arrow-left.me-1
+        | Volver al inicio
+
   //- ===== Breadcrumb =====
   nav.navbar.navbar-expand-lg.navbar-dark.bg-dark.shadow-sm.mb-4.rounded
     div.container
