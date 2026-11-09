@@ -53,6 +53,8 @@ export function inicializarSocketsChatbot(io) {
     console.log(
       `[Socket.IO] Cliente conectado: ${socket.usuario.nombre} (${socket.id})`,
     );
+    // Historial de conversación en memoria (sin persistencia), por conexión.
+    socket.historialChat = [];
 
     // Evento de mensajes del chatbot (FreshBot) con respuesta por streaming de Gemini.
     // El usuario no envía su id: el servidor lo resuelve por la sesión ya autenticada.
@@ -89,6 +91,7 @@ export function inicializarSocketsChatbot(io) {
               parcial: true,
             });
           },
+          socket.historialChat,
         );
 
         if (resultado.ok) {
@@ -98,6 +101,11 @@ export function inicializarSocketsChatbot(io) {
             destinatario: socket.usuario.nombre,
             recibidoEn: new Date().toISOString(),
           });
+          socket.historialChat.push({ rol: "usuario", texto: textoEntrante });
+          socket.historialChat.push({ rol: "modelo", texto: resultado.texto });
+          if (socket.historialChat.length > 20) {
+            socket.historialChat = socket.historialChat.slice(-20);
+          }
         } else {
           socket.emit("chat:error", {
             codigo: "gemini_error",
