@@ -22,39 +22,76 @@ block scripts
     const btn = document.getElementById("enviar");
     const estado = document.getElementById("estado");
 
+    let burbujaBot = null;
+
+    function setEstado(clase, mensaje) {
+      estado.textContent = mensaje;
+      estado.className = `mt-2 small ${clase}`;
+    }
+
     function agregarMensaje(texto, quien) {
       const div = document.createElement("div");
       div.className = `list-group-item ${quien === "yo" ? "bg-info-subtle" : "bg-light"}`;
       div.textContent = `${quien === "yo" ? "Tú: " : "FreshBot: "}${texto}`;
       contenedor.appendChild(div);
       contenedor.scrollTop = contenedor.scrollHeight;
+      return div;
     }
 
     socket.on("connect", () => {
-      estado.textContent = "Conectado a FreshBot (Socket.IO).";
-      estado.className = "mt-2 small text-success";
+      setEstado("text-success", "Conectado a FreshBot (Socket.IO).");
       agregarMensaje("Conexión establecida. Probá enviando un mensaje.", "sistema");
     });
 
     socket.on("connect_error", (err) => {
-      estado.textContent = `Error de conexión: ${err.message}`;
-      estado.className = "mt-2 small text-danger";
+      setEstado("text-danger", `Error de conexión: ${err.message}`);
       agregarMensaje(`No se pudo conectar: ${err.message}`, "sistema");
     });
 
+    socket.on("chat:fragment", (data) => {
+      if (!burbujaBot) {
+        burbujaBot = agregarMensaje("", "bot");
+        input.disabled = true;
+        btn.disabled = true;
+        setEstado("text-info", "FreshBot está escribiendo...");
+      }
+      burbujaBot.textContent = `FreshBot: ${data && data.texto ? data.texto : ""}`;
+      contenedor.scrollTop = contenedor.scrollHeight;
+    });
+
     socket.on("chat:complete", (data) => {
-      const texto = data && data.texto ? data.texto : "Respuesta sin texto.";
-      agregarMensaje(texto, "bot");
+      input.disabled = false;
+      btn.disabled = false;
+      input.focus();
+      setEstado("text-success", "Conectado a FreshBot (Socket.IO).");
+      burbujaBot = null;
       console.log("[chat:complete]", data);
+    });
+
+    socket.on("chat:error", (data) => {
+      input.disabled = false;
+      btn.disabled = false;
+      input.focus();
+      const mensaje = data && data.mensaje ? data.mensaje : "Error desconocido.";
+      setEstado("text-danger", `Error: ${mensaje}`);
+      if (burbujaBot) {
+        burbujaBot.remove();
+        burbujaBot = null;
+      }
+      console.error("[chat:error]", data);
     });
 
     function enviar() {
       const texto = input.value.trim();
       if (!texto) return;
+      burbujaBot = null;
       // No se envía ningún id de usuario: el servidor lo resuelve por la sesión.
       socket.emit("chat:message", { texto });
       agregarMensaje(texto, "yo");
       input.value = "";
+      input.disabled = true;
+      btn.disabled = true;
+      setEstado("text-info", "FreshBot está escribiendo...");
     }
 
     btn.addEventListener("click", enviar);

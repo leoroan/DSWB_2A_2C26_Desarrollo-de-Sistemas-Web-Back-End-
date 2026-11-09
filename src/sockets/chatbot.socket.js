@@ -1,5 +1,6 @@
 import { hashToken } from "../middlewares/auth.js";
 import { Sesion } from "../models/index.js";
+import chatbotService from "../services/chatbot.service.js";
 
 const COOKIE_SESION = "freshroute_session";
 
@@ -53,16 +54,65 @@ export function inicializarSocketsChatbot(io) {
       `[Socket.IO] Cliente conectado: ${socket.usuario.nombre} (${socket.id})`,
     );
 
-    // Evento de prueba del chatbot (sin Gemini, sin persistencia).
-    socket.on("chat:message", (data) => {
-      const respuesta = {
-        tipo: "prueba",
-        texto:
-          "Mensaje de prueba desde FreshBot (servidor). Infraestructura de Socket.IO lista.",
-        destinatario: socket.usuario.nombre,
-        recibidoEn: new Date().toISOString(),
-      };
-      socket.emit("chat:complete", respuesta);
+    // Evento de mensajes del chatbot (FreshBot) con respuesta por streaming de Gemini.
+    // El usuario no envía su id: el servidor lo resuelve por la sesión ya autenticada.
+    socket.on("chat:message", async (data) => {
+      const textoEntrante = data && data.texto ? String(data.texto).trim() : "";
+
+      if (!textoEntrante) {
+        socket.emit("chat:error", {
+          codigo: "mensaje_vacio",
+          mensaje: "Escribí un mensaje antes de enviar.",
+        });
+        return;
+      }
+
+      // Evita solapar varios flujos de respuesta en la misma conexión.
+      if (socket.chatStreaming) {
+        socket.emit("chat:error", {
+          codigo: "ya_procesando",
+          mensaje: "FreshBot aún está respondiendo al mensaje anterior. Esperá un momento.",
+        });
+        return;
+      }
+
+      socket.chatStreaming = true;
+      let textoCompleto = "";
+
+      try {
+        const resultado = await chatbotService.generarRespuesta(
+          textoEntrante,
+          (fragmento) => {
+            textoCompleto += fragmento;
+            socket.emit("chat:fragment", {
+              texto: fragmento,
+              parcial: true,
+            });
+          },
+        );
+
+        if (resultado.ok) {
+          socket.emit("chat:complete", {
+            tipo: "gemini",
+            texto: resultado.texto,
+            destinatario: socket.usuario.nombre,
+            recibidoEn: new Date().toISOString(),
+          });
+        } else {
+          socket.emit("chat:error", {
+            codigo: "gemini_error",
+            mensaje: resultado.error,
+          });
+        }
+      } catch (err) {
+        console.error("[FreshBot] Error inesperado:", err);
+        socket.emit("chat:error", {
+          codigo: "error_interno",
+          mensaje: "Ocurrió un error inesperado al procesar tu mensaje.",
+        });
+      } finally {
+        socket.chatStreaming = false;
+      }
     });
 
     socket.on("disconnect", () => {
