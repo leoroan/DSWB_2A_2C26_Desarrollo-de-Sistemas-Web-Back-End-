@@ -290,3 +290,127 @@ _O usá las credenciales de demostracion publicadas en la vista de login ;)_
 📁 Drive con la doc: https://drive.google.com/drive/folders/1RrcNzOGEtzdppUzZDrnIOx8fhhwAlthj?usp=drive_link
 
 🚀 [Mirá la demo en Render](https://dswb-2a-2c26-desarrollo-de-sistemas-web.onrender.com/)
+
+---
+
+para agregar sobre chatbot y websocksets:
+
+# FreshRoute B2B — FreshBot
+
+## 🤖 Chatbot inteligente
+
+FreshBot es un asistente conversacional integrado en FreshRoute B2B, desarrollado para interactuar naturalmente con los usuarios y responder consultas relacionadas con la empresa.
+
+Está construido con **Node.js, Express, Pug, Socket.IO, MongoDB y Google Gemini API**.
+
+### Funcionalidades implementadas
+
+- Interfaz de chat accesible desde `/chatbot`.
+- Comunicación en tiempo real mediante WebSockets con Socket.IO.
+- Integración con Gemini mediante el SDK oficial `@google/genai`.
+- Generación de respuestas progresivas (_streaming_), mostrando el texto a medida que se genera.
+- Manejo de errores de conexión, API Key y límites de cuota.
+- Contexto inicial del negocio mediante instrucciones de sistema (_system prompt_).
+
+### ¿Cómo funciona?
+
+El flujo de comunicación se divide en cuatro etapas:
+
+1. **Usuario:** escribe un mensaje desde la interfaz Pug.
+2. **Socket.IO:** transmite el mensaje al backend.
+3. **Chatbot Service:** envía el mensaje a Gemini junto con las instrucciones de contexto de FreshRoute.
+4. **Respuesta:** Gemini genera el contenido progresivamente y el backend transmite los fragmentos al navegador mediante Socket.IO.
+
+La API Key permanece exclusivamente en el backend.
+
+### Arquitectura
+
+```text
+Frontend (Pug + JavaScript)
+          │
+          │ Socket.IO
+          ▼
+Backend (Express)
+          │
+          ▼
+chatbot.socket.js
+          │
+          ▼
+chatbot.service.js
+          │
+          │ Google GenAI SDK
+          ▼
+       Gemini API
+          │
+          │ Streaming
+          ▼
+Backend → Socket.IO → Frontend
+```
+
+### Contexto de FreshRoute
+
+FreshBot cuenta con información inicial sobre el negocio:
+
+- Empresa de logística gastronómica.
+- Distribución de viandas corporativas e insumos gastronómicos refrigerados.
+- Más de 120 restaurantes y comedores empresariales.
+- 40 empleados distribuidos entre reparto, depósito, planificación y administración.
+
+El asistente utiliza esta información para contextualizar sus respuestas y evitar inventar datos operativos que desconoce.
+
+### Configuración
+
+Crear o completar el archivo `.env`:
+
+```env
+GEMINI_API_KEY=tu_api_key
+GEMINI_MODEL=gemini-3.5-flash-lite
+```
+
+La API Key se obtiene desde [Google AI Studio](https://aistudio.google.com/app/apikey).
+
+### Ejecución
+
+Instalar las dependencias del proyecto (si todavía no están instaladas):
+
+```bash
+npm install
+```
+
+Iniciar el servidor:
+
+```bash
+npm run dev
+```
+
+o:
+
+```bash
+npm start
+```
+
+Con la aplicación en ejecución y una sesión iniciada, acceder a:
+
+```text
+http://localhost:3000/chatbot
+```
+
+### Tecnologías utilizadas
+
+| Tecnología         | Utilización                               |
+| ------------------ | ----------------------------------------- |
+| Node.js + Express  | Backend y servidor HTTP                   |
+| Pug                | Interfaz del chatbot                      |
+| Socket.IO          | Comunicación bidireccional en tiempo real |
+| Google Gemini API  | Generación de respuestas mediante IA      |
+| `@google/genai`    | SDK oficial de Google                     |
+| MongoDB + Mongoose | Base de datos del sistema                 |
+
+### Próximas mejoras
+
+- Incorporar **Gemini Function Calling** para consultar información real de MongoDB mediante funciones controladas del backend.
+- Permitir consultas sobre pedidos, clientes y productos.
+- Recuperar contexto de conversaciones anteriores mediante persistencia en MongoDB.
+- Ampliar progresivamente las capacidades del asistente.
+
+> **Estado actual:** chatbot funcional con Gemini, contexto de negocio y respuestas por streaming. La integración de consultas a los datos operativos de MongoDB se encuentra en desarrollo.
