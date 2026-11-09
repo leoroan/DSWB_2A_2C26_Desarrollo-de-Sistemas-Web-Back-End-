@@ -25,10 +25,12 @@
   },
   "homepage": "https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-#readme",
   "dependencies": {
+    "@google/genai": "^3.0.0",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
     "mongoose": "^9.11.1",
-    "pug": "^3.0.4"
+    "pug": "^3.0.4",
+    "socket.io": "^4.8.4"
   },
   "devDependencies": {
     "mongodb-memory-server": "^11.3.0",
