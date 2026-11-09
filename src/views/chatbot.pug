@@ -51,11 +51,13 @@ block scripts
     socket.on("chat:fragment", (data) => {
       if (!burbujaBot) {
         burbujaBot = agregarMensaje("", "bot");
+        // agregarMensaje ya escribe el prefijo "FreshBot: ", se deja así y se concatena debajo.
         input.disabled = true;
         btn.disabled = true;
         setEstado("text-info", "FreshBot está escribiendo...");
       }
-      burbujaBot.textContent = `FreshBot: ${data && data.texto ? data.texto : ""}`;
+      const fragmento = data && data.texto ? data.texto : "";
+      burbujaBot.textContent += fragmento;
       contenedor.scrollTop = contenedor.scrollHeight;
     });
 
@@ -64,6 +66,10 @@ block scripts
       btn.disabled = false;
       input.focus();
       setEstado("text-success", "Conectado a FreshBot (Socket.IO).");
+      if (burbujaBot) {
+        const textoCompleto = data && data.texto ? data.texto : "";
+        burbujaBot.textContent = `FreshBot: ${textoCompleto}`;
+      }
       burbujaBot = null;
       console.log("[chat:complete]", data);
     });
