@@ -1,17 +1,26 @@
 import express from "express";
+import http from "node:http";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { Server } from "socket.io";
 import requestLogger from "./src/middlewares/requestLogger.js";
 import errorHandler from "./src/middlewares/errorHandler.js";
 import webRoutes from "./src/routes/web.routes.js";
 import apiRoutes from "./src/routes/api.routes.js";
 import { conectarDB, cerrarDB } from "./src/config/database.js";
 import authRoutes from "./src/routes/auth.routes.js";
+import { cargarUsuario, requerirLogin } from "./src/middlewares/auth.js";
+import { inicializarSocketsChatbot } from "./src/sockets/chatbot.socket.js";
 import { cargarUsuario, requerirLogin, autorizarOperacion } from "./src/middlewares/auth.js";
 import { validarSecretoJWT } from "./src/utils/jwt.js";
 const app = express();
 app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
+
+// Servidor HTTP (Express) sobre el cual se monta Socket.IO.
+const server = http.createServer(app);
+const io = new Server(server);
+inicializarSocketsChatbot(io);
 
 // Configuración del motor de plantillas Pug
 app.set("view engine", "pug");
@@ -61,7 +70,7 @@ if (
   // error y se detiene el proceso (la app depende de la base de datos).
   Promise.resolve().then(() => { validarSecretoJWT(); return conectarDB(); })
     .then(() => {
-      app.listen(PORT, () => {
+      server.listen(PORT, () => {
         console.log(
           `Servidor FreshRoute B2B corriendo en http://localhost:${PORT}`,
         );
@@ -84,6 +93,7 @@ if (
   // Cierre ordenado.
   const apagar = async (signal) => {
     console.log(`\nRecibida señal ${signal}. Cerrando servidor...`);
+    await new Promise((resolve) => server.close(resolve));
     await cerrarDB();
     process.exit(0);
   };

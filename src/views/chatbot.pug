@@ -1,0 +1,132 @@
+extends layout
+
+block content
+  div.card.shadow-sm.mx-auto(style="max-width: 900px;")
+    div.card-header.bg-dark.text-white.d-flex.justify-content-between.align-items-center
+      h5.mb-0.d-flex.align-items-center
+        i.fa-solid.fa-robot.me-2.text-info
+        | FreshBot — Asistente de consultas
+      span.badge.bg-secondary= (usuario && usuario.nombre) || "Invitado"
+    div.card-body.p-4
+      div#chat.list-group.list-group-flushed.mb-3(style="min-height: 220px; max-height: 400px; overflow-y: auto;")
+      div.input-group
+        input#msg.form-control(type="text" placeholder="Escribí un mensaje y presioná Enter...")
+        button#enviar.btn.btn-outline-secondary(type="button") Enviar
+      div#estado.mt-2.small.text-muted
+
+      hr.mt-4.mb-3
+
+      h6.small.text-uppercase.text-muted.mb-2 ¡Probá consultas como estas!
+      div.row.g-2
+        div.col-md-6
+          div.card.border-0.shadow-sm.mb-2
+            div.card-body.p-2
+              small.text-muted.mb-1 Pedidos
+              ul.list-unstyled.mb-0
+                li.mb-1.cursor-pointer(text-primary, onclick="llenarInput('¿Cuántos pedidos pendientes tenemos?')") ¿Cuántos pedidos pendientes tenemos?
+                li.mb-1.cursor-pointer(text-primary, onclick="llenarInput('¿Cómo está el pedido número 123?')") ¿Cómo está el pedido número 123?
+                li.mb-1.cursor-pointer(text-primary, onclick="llenarInput('¿Qué pedidos tiene el cliente X?')") ¿Qué pedidos tiene el cliente X?
+        div.col-md-6
+          div.card.border-0.shadow-sm.mb-2
+            div.card-body.p-2
+              small.text-muted.mb-1 Clientes y productos
+              ul.list-unstyled.mb-0
+                li.mb-1.cursor-pointer(text-primary, onclick="llenarInput('¿Cuántos clientes activos tenemos?')") ¿Cuántos clientes activos tenemos?
+                li.mb-1.cursor-pointer(text-primary, onclick="llenarInput('¿Qué productos ofrecemos?')") ¿Qué productos ofrecemos?
+                li.mb-1.cursor-pointer(text-primary, onclick="llenarInput('¿Cuánto cuesta el producto X?')") ¿Cuánto cuesta el producto X?
+
+      div.alert.alert-info.mt-4.p-3
+        small.d-block.mb-2 **Disclaimer:** FreshBot consulta información real de la base de datos de MongoDB mediante funciones de solo lectura. No permite escrituras ni consultas arbitrarias.
+        small.d-block Los resultados se generan con Gemini Function Calling y pueden contener errores. Verificá datos críticos antes de tomar decisiones operativas.
+
+block scripts
+  script.
+    const socket = io();
+    const contenedor = document.getElementById("chat");
+    const input = document.getElementById("msg");
+    const btn = document.getElementById("enviar");
+    const estado = document.getElementById("estado");
+
+    let burbujaBot = null;
+
+    function setEstado(clase, mensaje) {
+      estado.textContent = mensaje;
+      estado.className = `mt-2 small ${clase}`;
+    }
+
+    function agregarMensaje(texto, quien) {
+      const div = document.createElement("div");
+      div.className = `list-group-item ${quien === "yo" ? "bg-info-subtle" : "bg-light"}`;
+      div.textContent = `${quien === "yo" ? "Tú: " : "FreshBot: "}${texto}`;
+      contenedor.appendChild(div);
+      contenedor.scrollTop = contenedor.scrollHeight;
+      return div;
+    }
+
+    socket.on("connect", () => {
+      setEstado("text-success", "Conectado a FreshBot (Socket.IO).");
+      agregarMensaje("Conexión establecida. Probá enviando un mensaje.", "sistema");
+    });
+
+    socket.on("connect_error", (err) => {
+      setEstado("text-danger", `Error de conexión: ${err.message}`);
+      agregarMensaje(`No se pudo conectar: ${err.message}`, "sistema");
+    });
+
+    socket.on("chat:fragment", (data) => {
+      if (!burbujaBot) {
+        burbujaBot = agregarMensaje("", "bot");
+        // agregarMensaje ya escribe el prefijo "FreshBot: ", se deja así y se concatena debajo.
+        input.disabled = true;
+        btn.disabled = true;
+        setEstado("text-info", "FreshBot está escribiendo...");
+      }
+      const fragmento = data && data.texto ? data.texto : "";
+      burbujaBot.textContent += fragmento;
+      contenedor.scrollTop = contenedor.scrollHeight;
+    });
+
+    socket.on("chat:complete", (data) => {
+      input.disabled = false;
+      btn.disabled = false;
+      input.focus();
+      setEstado("text-success", "Conectado a FreshBot (Socket.IO).");
+      if (burbujaBot) {
+        const textoCompleto = data && data.texto ? data.texto : "";
+        burbujaBot.textContent = `FreshBot: ${textoCompleto}`;
+      }
+      burbujaBot = null;
+    });
+
+    socket.on("chat:error", (data) => {
+      input.disabled = false;
+      btn.disabled = false;
+      input.focus();
+      const mensaje = data && data.mensaje ? data.mensaje : "Error desconocido.";
+      setEstado("text-danger", `Error: ${mensaje}`);
+      if (burbujaBot) {
+        burbujaBot.remove();
+        burbujaBot = null;
+      }
+    });
+
+    function enviar() {
+      const texto = input.value.trim();
+      if (!texto) return;
+      burbujaBot = null;
+      // No se envía ningún id de usuario: el servidor lo resuelve por la sesión.
+      socket.emit("chat:message", { texto });
+      agregarMensaje(texto, "yo");
+      input.value = "";
+      input.disabled = true;
+      btn.disabled = true;
+      setEstado("text-info", "FreshBot está escribiendo...");
+    }
+
+    btn.addEventListener("click", enviar);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") enviar(); });
+
+    function llenarInput(texto) {
+      input.value = texto;
+      input.focus();
+    }

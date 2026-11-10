@@ -18,6 +18,11 @@ router.get("/", controller.mostrarDashboard);
 // Documentación
 router.get("/documentacion", controller.mostrarDocumentacion);
 
+// Chatbot FreshBot — prueba de comunicación Socket.IO (requiere sesión).
+router.get("/chatbot", (req, res) => {
+  res.render("chatbot", { titulo: "FreshBot | FreshRoute B2B" });
+});
+
 router.param("id", validarId);
 router.get("/pedidos", pedidos.indexWeb);
 router.get("/pedidos/nuevo", pedidos.nuevoWeb); // antes de /:id

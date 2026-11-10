@@ -17,6 +17,15 @@ const config = {
     // Tiempo máximo de espera para encontrar un servidor (ms).
     serverSelectionTimeoutMS: Number(process.env.MONGODB_TIMEOUT_MS) || 10000,
   },
+
+  // -----------------------------------------------------------------------------
+  // Gemini (Google Generative AI) — solo utilizado por el chatbot FreshBot.
+  // La API Key vive exclusivamente en el backend; nunca se expone al frontend.
+  // -----------------------------------------------------------------------------
+  gemini: {
+    apiKey: process.env.GEMINI_API_KEY || "",
+    model: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
+  },
 };
 
 export default config;
