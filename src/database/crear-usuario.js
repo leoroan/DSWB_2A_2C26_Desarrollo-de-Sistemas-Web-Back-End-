@@ -9,12 +9,14 @@ try {
   const email = (await terminal.question("Correo: ")).trim().toLowerCase();
   console.log("La contraseña será visible en esta terminal local.");
   const password = await terminal.question("Contraseña (mínimo 8 caracteres): ");
+  const rol = (await terminal.question("Rol (admin/operador, predeterminado operador): ")).trim() || "operador";
+  if (!["admin", "operador"].includes(rol)) throw new Error("Rol inválido.");
   if (!nombre || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || password.length < 8 || password.length > 256) {
     throw new Error("Revisá el nombre, el correo y la contraseña (entre 8 y 256 caracteres).");
   }
   await conectarDB();
   await Usuario.init();
-  await Usuario.create({ nombre, email, password });
+  await Usuario.create({ nombre, email, password, rol });
   console.log("Usuario creado. Ya podés iniciar sesión en /login.");
 } catch (err) {
   console.error(err.code === 11000 ? "Ese correo ya tiene un usuario." : err.message);

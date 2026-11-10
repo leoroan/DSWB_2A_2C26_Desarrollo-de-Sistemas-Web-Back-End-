@@ -7,7 +7,8 @@ import webRoutes from "./src/routes/web.routes.js";
 import apiRoutes from "./src/routes/api.routes.js";
 import { conectarDB, cerrarDB } from "./src/config/database.js";
 import authRoutes from "./src/routes/auth.routes.js";
-import { cargarUsuario, requerirLogin } from "./src/middlewares/auth.js";
+import { cargarUsuario, requerirLogin, autorizarOperacion } from "./src/middlewares/auth.js";
+import { validarSecretoJWT } from "./src/utils/jwt.js";
 const app = express();
 app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
@@ -24,17 +25,21 @@ app.use(requestLogger); // Nuestro logger de requests
 // Rutas web
 // Incluye dashboard, pedidos, remitos, clientes, rutas, vehículos y telemetría.
 app.use("/", cargarUsuario, authRoutes);
+app.use("/api", requerirLogin, autorizarOperacion, apiRoutes);
 app.use(
   "/",
   (req, res, next) => {
     if (req.path === "/api" || req.path.startsWith("/api/")) return next();
     requerirLogin(req, res, next);
   },
+  (req, res, next) => {
+    if (req.path === "/api" || req.path.startsWith("/api/")) return next();
+    autorizarOperacion(req, res, next);
+  },
   webRoutes,
 );
 
 // Rutas de API REST (para Postman, integraciones, etc.)
-app.use("/api", apiRoutes);
 
 // Manejador 404 — captura cualquier ruta que no coincida
 app.use((req, res, next) => {
@@ -54,7 +59,7 @@ if (
 ) {
   // Conecta a MongoDB antes de levantar el servidor. Si falla, se informa el
   // error y se detiene el proceso (la app depende de la base de datos).
-  conectarDB()
+  Promise.resolve().then(() => { validarSecretoJWT(); return conectarDB(); })
     .then(() => {
       app.listen(PORT, () => {
         console.log(
@@ -70,7 +75,7 @@ if (
     })
     .catch((err) => {
       console.error(
-        "[MongoDB] No se pudo iniciar la aplicación por un error de conexión:",
+        "No se pudo iniciar la aplicación:",
         err.message,
       );
       process.exit(1);
