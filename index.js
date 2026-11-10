@@ -9,9 +9,12 @@ import webRoutes from "./src/routes/web.routes.js";
 import apiRoutes from "./src/routes/api.routes.js";
 import { conectarDB, cerrarDB } from "./src/config/database.js";
 import authRoutes from "./src/routes/auth.routes.js";
-import { cargarUsuario, requerirLogin } from "./src/middlewares/auth.js";
 import { inicializarSocketsChatbot } from "./src/sockets/chatbot.socket.js";
-import { cargarUsuario, requerirLogin, autorizarOperacion } from "./src/middlewares/auth.js";
+import {
+  cargarUsuario,
+  requerirLogin,
+  autorizarOperacion,
+} from "./src/middlewares/auth.js";
 import { validarSecretoJWT } from "./src/utils/jwt.js";
 const app = express();
 app.set("trust proxy", 1);
@@ -68,7 +71,11 @@ if (
 ) {
   // Conecta a MongoDB antes de levantar el servidor. Si falla, se informa el
   // error y se detiene el proceso (la app depende de la base de datos).
-  Promise.resolve().then(() => { validarSecretoJWT(); return conectarDB(); })
+  Promise.resolve()
+    .then(() => {
+      validarSecretoJWT();
+      return conectarDB();
+    })
     .then(() => {
       server.listen(PORT, () => {
         console.log(
@@ -83,10 +90,7 @@ if (
       });
     })
     .catch((err) => {
-      console.error(
-        "No se pudo iniciar la aplicación:",
-        err.message,
-      );
+      console.error("No se pudo iniciar la aplicación:", err.message);
       process.exit(1);
     });
 

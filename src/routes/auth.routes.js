@@ -19,6 +19,7 @@ router.use((req, res, next) => {
   }
   next();
 });
+
 router.get("/login", (req, res) => {
   if (req.usuario) return res.redirect("/");
   res.render("login", { titulo: "Iniciar sesión | FreshRoute", email: "" });
@@ -34,7 +35,11 @@ router.post(["/login", "/api/auth/login"], async (req, res, next) => {
     const password =
       typeof req.body?.password === "string" ? req.body.password : "";
     if (!email || email.length > 254 || !password || password.length > 256) {
-      if (esAPI) return res.status(400).json({ error: true, message: "Ingresá un correo y una contraseña válidos." });
+      if (esAPI)
+        return res.status(400).json({
+          error: true,
+          message: "Ingresá un correo y una contraseña válidos.",
+        });
       return res.status(400).render("login", {
         email,
         error: "Ingresá un correo y una contraseña válidos.",
@@ -42,7 +47,10 @@ router.post(["/login", "/api/auth/login"], async (req, res, next) => {
     }
     const usuario = await Usuario.findOne({ email }).select("+password");
     if (!usuario || !(await verificarPassword(password, usuario.password))) {
-      if (esAPI) return res.status(401).json({ error: true, message: "Correo o contraseña incorrectos." });
+      if (esAPI)
+        return res
+          .status(401)
+          .json({ error: true, message: "Correo o contraseña incorrectos." });
       return res
         .status(401)
         .render("login", { email, error: "Correo o contraseña incorrectos." });
@@ -54,10 +62,18 @@ router.post(["/login", "/api/auth/login"], async (req, res, next) => {
       expiresAt: new Date(Date.now() + duracion),
     });
     if (req.sesion) await req.sesion.deleteOne();
-    if (esAPI) return res.json({
-      access_token: token, token_type: "Bearer", expires_in: duracionSegundos,
-      usuario: { id: usuario._id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol || "operador" },
-    });
+    if (esAPI)
+      return res.json({
+        access_token: token,
+        token_type: "Bearer",
+        expires_in: duracionSegundos,
+        usuario: {
+          id: usuario._id,
+          nombre: usuario.nombre,
+          email: usuario.email,
+          rol: usuario.rol || "operador",
+        },
+      });
     res.cookie("freshroute_session", token, {
       ...cookieOptions,
       maxAge: duracion,
@@ -71,7 +87,9 @@ router.post(["/login", "/api/auth/login"], async (req, res, next) => {
 router.post(["/logout", "/api/auth/logout"], async (req, res, next) => {
   try {
     if (req.path === "/api/auth/logout" && !req.usuario) {
-      return res.status(401).json({ error: true, message: "Debés iniciar sesión." });
+      return res
+        .status(401)
+        .json({ error: true, message: "Debés iniciar sesión." });
     }
     if (req.sesion) await req.sesion.deleteOne();
     res.clearCookie("freshroute_session", cookieOptions);
