@@ -13,9 +13,6 @@ block content
       h1.mb-1 Registrar Nuevo Chófer
       p.text-muted.mb-0 Dar de alta un chófer en la base de datos de FreshRoute B2B.
     div
-      a.btn.btn-sm.btn-outline-secondary(href="/")
-        i.fa-solid.fa-arrow-left.me-1
-        | Volver al inicio
       a.btn.btn-outline-primary(href="/choferes")
         i.fa-solid.fa-list.me-1
         | Ver Choferes
@@ -60,7 +57,6 @@ block content
                   option(value=vehiculo.id) Estado: #{vehiculo.estado} Patente: #{vehiculo.patente} (#{vehiculo.tipo})
 
           div.col-12.mt-4.d-flex.justify-content-end.gap-2
-            a.btn.btn-outline-secondary(href="/") Cancelar
             button.btn.btn-primary(type="submit")
               i.fa-solid.fa-id-card.me-2
               | Guardar Chófer en Base de Datos

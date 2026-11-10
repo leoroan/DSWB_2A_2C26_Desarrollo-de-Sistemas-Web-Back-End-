@@ -7,6 +7,7 @@ import "dotenv/config";
 const config = {
   port: Number(process.env.PORT) || 3000,
   nodeEnv: process.env.NODE_ENV || "development",
+  jwtSecret: process.env.JWT_SECRET,
   mongo: {
     // URI de conexión a MongoDB (local o MongoDB Atlas).
     // Ejemplo Atlas: mongodb+srv://<user>:<pass>@<cluster>.mongodb.net

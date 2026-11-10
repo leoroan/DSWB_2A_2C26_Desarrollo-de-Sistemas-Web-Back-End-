@@ -52,6 +52,12 @@ html(lang="es")
                   button.btn.btn-outline-light.ms-lg-2(type="submit") Cerrar sesión
 
     main.container.my-4
+      block navegacionInicio
+        if usuario
+          nav.mb-4(aria-label="Navegación al inicio")
+            a.btn.btn-outline-secondary.rounded-pill.px-3(href="/")
+              i.fa-solid.fa-house.me-2(aria-hidden="true")
+              | Volver al inicio
       block content
 
     footer.bg-dark.text-white.py-3.text-center.border-top.border-secondary
