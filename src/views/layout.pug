@@ -69,10 +69,142 @@ html(lang="es")
           |  · 
           a.text(href="https://github.com/leoroan/DSWB_2A_2C26_Desarrollo-de-Sistemas-Web-Back-End-" target="_blank" rel="noopener noreferrer") Repo del GitHub
 
+    // Widget flotante FreshBot — estilos
+    style.
+      #freshbot-widget { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1055; flex-direction: column; }
+      #freshbot-panel { position: fixed; bottom: 5rem; right: 1.5rem; width: 340px; height: 520px; z-index: 1056; display: none; flex-direction: column; }
+      #freshbot-mensajes { flex: 1; overflow-y: auto; background: #f8f9fa; border-radius: 0.5rem; margin-bottom: 0.75rem; padding: 0.75rem; }
+      .freshbot-burbuja-bot { max-width: 85%; }
+      .freshbot-burbuja-yo { max-width: 85%; }
+    // Widget flotante FreshBot — HTML (visible en todas las vistas que extienden layout.pug)
+    div#freshbot-widget.position-fixed.bottom-0.end-0.mb-4.me-4.d-flex.flex-column(z-index="1055")
+      button#freshbot-toggle.btn.btn-info.btn-lg.rounded-circle.shadow-lg(type="button" aria-label="Abrir FreshBot")
+        i.fa-solid.fa-robot.fa-1x
+        span#freshbot-badge.position-absolute.top-0.start-100.translate-middle.badge.bg-danger.p-1(style="font-size: 0.6rem;") 0
+        span.visually-hidden FreshBot
+      div#freshbot-panel.card.shadow-lg.border-0.rounded-4(style="width: 340px; height: 520px; display: none; flex-direction: column;")
+        div.card-header.bg-dark.text-white.d-flex.justify-content-between.align-items-center.py-3
+          div.d-flex.align-items-center
+            i.fa-solid.fa-robot.text-info.me-2
+            span.fw-semibold FreshBot
+          button#freshbot-cerrar.btn.btn-close.btn-close-white(type="button" aria-label="Cerrar")
+        div#freshbot-mensajes.d-flex.flex-column(style="flex: 1; overflow-y: auto; background: #f8f9fa; border-radius: 0.5rem; margin-bottom: 0.75rem; padding: 0.75rem;")
+          div#freshbot-estado.small.text-muted.mb-2 Conectando…
+        div.input-group.p-2
+          input#freshbot-msg.form-control(type="text" placeholder="Escribí tu consulta...")
+          button#freshbot-enviar.btn.btn-outline-secondary(type="button") Enviar
+        div#freshbot-ejemplos.small.mt-2.p-2.bg-light.rounded
+          div.fw-semibold.text-uppercase.mb-1 Ejemplos
+          ul.list-unstyled.mb-0
+            li.mb-1(cursor-pointer, onclick="llenarInputFreshBot('¿Cuántos pedidos pendientes tenemos?')") ¿Cuántos pedidos pendientes tenemos?
+            li.mb-1(cursor-pointer, onclick="llenarInputFreshBot('¿Qué vehículos hay en flota?')") ¿Qué vehículos hay en flota?
+            li.mb-1(cursor-pointer, onclick="llenarInputFreshBot('¿Cómo está la cadena de frío?')") ¿Cómo está la cadena de frío?
     // Bootstrap 5 JS Bundle CDN
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js")
 
     // Cliente Socket.IO (servido automáticamente por el servidor HTTP)
     script(src="/socket.io/socket.io.js")
+
+    // Widget FreshBot — cliente Socket.IO (usa la misma sesión de cookie freshroute_session)
+    script.
+      (function(){
+        var toggle = document.getElementById('freshbot-toggle');
+        var panel = document.getElementById('freshbot-panel');
+        var cerrar = document.getElementById('freshbot-cerrar');
+        var msg = document.getElementById('freshbot-msg');
+        var enviar = document.getElementById('freshbot-enviar');
+        var contenedor = document.getElementById('freshbot-mensajes');
+        var estado = document.getElementById('freshbot-estado');
+        var badge = document.getElementById('freshbot-badge');
+        var abierto = false;
+        var noLeidos = 0;
+        var socket = io();
+        var burbujaBot = null;
+
+        function alternar(){
+          abierto = !abierto;
+          panel.style.display = abierto ? 'flex' : 'none';
+          if(abierto){ noLeidos = 0; badge.textContent = '0'; badge.style.display = 'none'; msg.focus(); }
+        }
+        toggle.addEventListener('click', alternar);
+        cerrar.addEventListener('click', alternar);
+
+        function agregarMensaje(texto, quien){
+          var div = document.createElement('div');
+          div.className = quien === 'yo' ? 'd-flex justify-content-end mb-2' : 'd-flex justify-content-start mb-2';
+          var burbuja = document.createElement('div');
+          burbuja.className = quien === 'yo'
+            ? 'freshbot-burbuja-yo bg-info text-white rounded-3 p-2 small'
+            : 'freshbot-burbuja-bot bg-white border rounded-3 p-2 small';
+          burbuja.textContent = quien === 'yo' ? 'Tú: ' + texto : 'FreshBot: ' + texto;
+          div.appendChild(burbuja);
+          contenedor.appendChild(div);
+          contenedor.scrollTop = contenedor.scrollHeight;
+          return burbuja;
+        }
+
+        function setEstado(clase, texto){
+          estado.textContent = texto;
+          estado.className = 'small mt-2 mb-2 ' + clase;
+        }
+
+        socket.on('connect', function(){
+          setEstado('text-success', 'Conectado a FreshBot');
+        });
+        socket.on('connect_error', function(err){
+          setEstado('text-danger', 'Error de conexión: ' + (err && err.message ? err.message : ''));
+        });
+        socket.on('chat:fragment', function(data){
+          if(!burbujaBot){
+            burbujaBot = agregarMensaje('', 'bot');
+            msg.disabled = true;
+            enviar.disabled = true;
+            setEstado('text-info', 'FreshBot está escribiendo...');
+          }
+          if(!abierto){ noLeidos++; badge.textContent = String(noLeidos); badge.style.display = 'inline-block'; }
+          var frag = data && data.texto ? data.texto : '';
+          burbujaBot.textContent = 'FreshBot: ' + frag;
+          contenedor.scrollTop = contenedor.scrollHeight;
+        });
+        socket.on('chat:complete', function(data){
+          msg.disabled = false;
+          enviar.disabled = false;
+          msg.focus();
+          setEstado('text-success', 'Conectado a FreshBot');
+          if(burbujaBot){
+            var texto = data && data.texto ? data.texto : '';
+            burbujaBot.textContent = 'FreshBot: ' + texto;
+            burbujaBot = null;
+          }
+          if(!abierto){ noLeidos++; badge.textContent = String(noLeidos); badge.style.display = 'inline-block'; }
+        });
+        socket.on('chat:error', function(data){
+          msg.disabled = false;
+          enviar.disabled = false;
+          msg.focus();
+          setEstado('text-danger', 'Error: ' + (data && data.mensaje ? data.mensaje : 'Error desconocido.'));
+          if(burbujaBot){ burbujaBot.remove(); burbujaBot = null; }
+        });
+
+        function enviarMsg(){
+          var texto = msg.value.trim();
+          if(!texto) return;
+          burbujaBot = null;
+          socket.emit('chat:message', { texto: texto });
+          agregarMensaje(texto, 'yo');
+          msg.value = '';
+          msg.disabled = true;
+          enviar.disabled = true;
+          setEstado('text-info', 'FreshBot está escribiendo...');
+        }
+        enviar.addEventListener('click', enviarMsg);
+        msg.addEventListener('keydown', function(e){ if(e.key === 'Enter') enviarMsg(); });
+
+        window.llenarInputFreshBot = function(texto){
+          msg.value = texto;
+          msg.focus();
+          if(!abierto) alternar();
+        };
+      })();
 
     block scripts
