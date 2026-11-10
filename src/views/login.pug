@@ -1,7 +1,96 @@
+
 extends layout
 
 block content
-  .row.justify-content-center.py-5
+  style.
+    .globo-credenciales {
+      background: #cff4fc;
+      border: 1px solid #9ee2f4;
+      color: #055a8c;
+      border-radius: 14px;
+      padding: 1.1rem 1rem;
+      position: relative;
+      box-shadow: 0 4px 12px rgba(13, 148, 213, 0.15);
+      text-align: left;
+    }
+
+    .globo-credenciales::before {
+      content: "";
+      position: absolute;
+      left: -12px;
+      top: 1.35rem;
+      border-width: 12px 12px 12px 0;
+      border-style: solid;
+      border-color: transparent #9ee2f4 transparent transparent;
+    }
+
+    .globo-credenciales::after {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 1.35rem;
+      border-width: 10px 10px 10px 0;
+      border-style: solid;
+      border-color: transparent #cff4fc transparent transparent;
+    }
+
+    .credencial {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.35rem 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .credencial:last-child {
+      margin-bottom: 0;
+    }
+
+    .etiqueta {
+      grid-column: 1 / -1;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #055a8c;
+    }
+
+    .valor {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.85rem;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 6px;
+      padding: 0.4rem 0.5rem;
+      user-select: text;
+    }
+
+    .btn-copiar {
+      background: #055a8c;
+      border: none;
+      color: #fff;
+      border-radius: 6px;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-copiar:hover {
+      background: #074673;
+    }
+
+    .btn-copiar:active {
+      transform: translateY(1px);
+    }
+
+    .copiado {
+      grid-column: 1 / -1;
+      font-size: 0.7rem;
+      min-height: 0.8rem;
+      color: #15803d;
+    }
+
+  .row.justify-content-center.py-5.gap-4
     .col-12.col-md-7.col-lg-5
       .card.border-0.shadow-sm
         .card-body.p-4.p-md-5
@@ -9,14 +98,69 @@ block content
             i.fa-solid.fa-truck-fast.fa-3x.text-info.mb-3(aria-hidden="true")
             h1.h3 Iniciar sesión
             p.text-muted Accedé al sistema de distribución FreshRoute.
+
           if error
             .alert.alert-danger(role="alert")= error
+
           form(action="/login" method="post")
             .mb-3
               label.form-label(for="email") Correo electrónico
-              input.form-control#email(type="email" name="email" value=email required maxlength="254" autocomplete="username" autofocus)
+              input.form-control#email(
+                type="email"
+                name="email"
+                value=email
+                required
+                maxlength="254"
+                autocomplete="username"
+                autofocus
+              )
+
             .mb-4
               label.form-label(for="password") Contraseña
-              input.form-control#password(type="password" name="password" required maxlength="256" autocomplete="current-password")
+              input.form-control#password(
+                type="password"
+                name="password"
+                required
+                maxlength="256"
+                autocomplete="current-password"
+              )
+
             button.btn.btn-dark.w-100(type="submit") Ingresar
-          p.small.text-muted.text-center.mt-4.mb-0 Ingresá con una cuenta creada en la base de datos de esta aplicación.
+
+          p.small.text-muted.text-center.mt-4.mb-0            Ingresá con una cuenta creada en la base de datos de esta aplicación.
+
+    .col-12.col-md-4.col-lg-3
+      .globo-credenciales
+        p.mb-2.text-center.fw-bold.small.text-uppercase Credenciales de prueba
+
+        .credencial
+          span.etiqueta Correo
+          span.valor#credEmail admin@freshroute.com.ar
+          button.btn-copiar(
+            type="button"
+            onclick="copiar('credEmail','msgEmail')"
+          ) Copiar
+          span#msgEmail.copiado
+
+        .credencial
+          span.etiqueta Contraseña
+          span.valor#credPass admin1234
+          button.btn-copiar(
+            type="button"
+            onclick="copiar('credPass','msgPass')"
+          ) Copiar
+          span#msgPass.copiado
+
+  script.
+    function copiar(idElem, idMsg) {
+      const el = document.getElementById(idElem);
+      const msg = document.getElementById(idMsg);
+
+      navigator.clipboard.writeText(el.innerText).then(() => {
+        msg.innerText = "¡Copiado!";
+
+        setTimeout(() => {
+          msg.innerText = "";
+        }, 1500);
+      });
+    }

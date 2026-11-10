@@ -21,7 +21,7 @@ async function autenticarConexion(socket, next) {
       .find((parte) => parte.startsWith(`${COOKIE_SESION}=`))
       ?.slice(`${COOKIE_SESION}=`.length);
 
-    if (!token || !/^[a-f0-9]{64}$/.test(token)) {
+    if (!token) {
       return next(new Error("Autenticación requerida: sesión inválida"));
     }
 
