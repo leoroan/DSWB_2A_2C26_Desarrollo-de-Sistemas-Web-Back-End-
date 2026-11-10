@@ -250,24 +250,169 @@ Una vez que el servidor esté corriendo, podrás acceder a las diferentes seccio
 
 ---
 
-## Inicio de sesión
+## Autenticación, autorización y contraseñas
 
-Antes de acceder a las páginas internas, la aplicación solicita correo y contraseña
-en `/login`. Para crear un usuario en la base configurada en `.env`, ejecutá:
+La aplicación utiliza **JWT firmados con HS256** mediante `jsonwebtoken` para
+las vistas web y la API REST. Cada petición valida firma, algoritmo, emisor,
+audiencia y vencimiento. MongoDB conserva el hash del JWT emitido para poder
+revocarlo inmediatamente al cerrar sesión. Los tokens opacos de la versión
+anterior ya no son válidos: hay que iniciar sesión nuevamente.
+
+### Contraseñas con hash
+
+Las contraseñas se guardan con **scrypt** de `node:crypto`, salt aleatorio de
+16 bytes y clave derivada de 64 bytes. Se comparan con `timingSafeEqual`.
+No se acepta texto plano al iniciar sesión. El campo `password` se excluye de
+las consultas por defecto. El modelo aplica el hash al crear o guardar usuarios
+y al ejecutar `insertMany` (incluido el seed). Para cambiar una contraseña,
+asignala al documento y ejecutá `save()`; las actualizaciones directas que
+modifican contraseñas se rechazan. No uses escrituras directas a la colección
+ni `bulkWrite` para administrar credenciales, porque omiten estos hooks.
+
+### Roles y permisos
+
+| Rol | Consultar páginas y API | Crear, modificar y eliminar datos |
+| --- | --- | --- |
+| `admin` | Sí | Sí |
+| `operador` | Sí | No (403) |
+| Sin sesión | Redirección a `/login` en web; 401 en API | Sin acceso |
+
+Los usuarios nuevos tienen rol `operador` por defecto. El rol se consulta desde
+MongoDB en cada petición; el cliente no puede elegirlo al iniciar sesión.
+Los controles se aplican en el servidor, aunque una vista muestre formularios.
+Para crear un usuario y elegir su rol, ejecutá:
 
 ```bash
 npm run user:create
 ```
 
-El comando solicita nombre, correo y contraseña (entre 8 y 256 caracteres).
-Las contraseñas se almacenan en texto plano según los requisitos de esta entrega
-académica. No uses contraseñas de otras cuentas.
-Luego ejecutá `npm start` y accedé a `http://localhost:3000`.
-La sesión dura 8 horas y el botón **Cerrar sesión** la invalida.
-Las rutas `/api` siguen disponibles sin login para las pruebas con Postman.
-En producción, las cookies de sesión requieren HTTPS.
+El comando solicita nombre, correo, contraseña (8 a 256 caracteres) y rol
+(`admin` u `operador`). La contraseña ingresada es visible en la terminal.
+El seed incluye un administrador de demostración: `admin@freshroute.com.ar`,
+contraseña `admin1234`. Esa clave pública está en el JSON de ejemplo;
+usala únicamente para una demostración local. La cuenta solo existe si se
+cargó ese seed en la base configurada; no se crea al iniciar la aplicación. En MongoDB se guarda su
+hash. Para un despliegue real, quitá esa cuenta y creá un administrador propio.
 
-_O usá las credenciales de demostracion publicadas en la vista de login ;)_
+### Bases existentes con contraseñas en texto plano
+
+Antes de iniciar sesión con usuarios de la versión anterior, ejecutá sobre la
+base configurada en `.env`:
+
+```bash
+npm run user:migrate-passwords
+```
+
+Convierte las contraseñas existentes a hash sin cambiar sus valores, conserva
+los hashes ya migrados y revoca todas las sesiones. Puede ejecutarse nuevamente.
+Conserva los roles existentes; los usuarios sin rol quedan como `operador`.
+Para disponer de un administrador, creá uno con otro correo mediante
+`npm run user:create` y elegí `admin`. No es necesario borrar la base ni ejecutar
+`seed:reset` para migrar.
+
+### Restablecer la contraseña de una cuenta existente
+
+Si una cuenta existente rechaza la contraseña, podés definir una nueva desde
+la terminal del proyecto, usando la base configurada en `.env`:
+
+```bash
+npm run user:password
+```
+
+Ingresá el correo, la nueva contraseña (8 a 256 caracteres) y su confirmación.
+El comando guarda un nuevo hash scrypt y revoca las sesiones de esa cuenta.
+Conserva el nombre, correo, rol y demás datos. La contraseña es visible en tu
+terminal local: no la compartas en el chat. Es una herramienta administrativa
+que requiere acceso a las credenciales de MongoDB; no es un endpoint público.
+Si las contraseñas no coinciden o no existe la cuenta, no modifica usuarios.
+
+### Configuración de JWT
+
+Agregá `JWT_SECRET` en `.env` (y en las variables de entorno de Render), con
+un secreto aleatorio privado de al menos 32 bytes. Generá uno con:
+
+```bash
+node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+```
+
+Copiá el resultado en `JWT_SECRET=...`. No publiques ese valor. El servidor no
+inicia si falta el secreto o es demasiado corto. Todos los procesos de la app
+deben compartir el mismo secreto. Cambiarlo invalida todos los JWT anteriores.
+La plantilla `.env.example` incluye esta variable.
+
+### Login, JWT y logout
+
+| Endpoint público | Resultado |
+| --- | --- |
+| `GET /login` | Formulario web |
+| `POST /login` | Valida `email` y `password`, emite JWT en cookie y redirige a `/` |
+| `POST /api/auth/login` | Recibe JSON con `email` y `password`, devuelve el JWT en JSON |
+
+El resto de `/api` y todas las páginas internas requieren un JWT válido y no
+revocado. `POST /api/auth/logout` requiere autenticación, revoca el token
+presentado y devuelve 204; `POST /logout` revoca el token y redirige a `/login`.
+La salida web también permite borrar la cookie si el JWT ya venció.
+Los datos de login inválidos devuelven 400; credenciales incorrectas, 401.
+
+El JWT dura **8 horas** y contiene `sub` (id del usuario), `jti` (identificador
+aleatorio), `iat`, `exp`, `iss=freshroute` y `aud=freshroute-web-api`.
+No contiene contraseña ni hash de contraseña. El rol se obtiene de MongoDB en
+cada petición para aplicar los cambios de permisos inmediatamente.
+La firma se verifica con una lista que admite únicamente `HS256`.
+
+Para la web se guarda en la cookie `freshroute_session`, con `HttpOnly`,
+`SameSite=Strict`, ruta `/` y `Secure` en producción (`NODE_ENV=production`,
+requiere HTTPS). Para API se envía `Authorization: Bearer <access_token>`.
+Si se presenta un encabezado Authorization, tiene prioridad sobre la cookie;
+un encabezado inválido no utiliza una cookie como alternativa.
+
+MongoDB guarda únicamente el hash SHA-256 del JWT, el usuario y su vencimiento.
+Se requiere ese registro activo además de una firma válida: cerrar sesión
+impide reutilizar el token, aunque todavía no haya vencido. La comprobación de
+vencimiento no depende de la limpieza del índice TTL de MongoDB.
+Las operaciones de escritura rechazan un `Origin` de otro sitio. Las respuestas
+de autenticación y acceso protegido usan `Cache-Control: no-store`.
+
+### Pruebas de JWT con Postman o curl
+
+1. Enviá `POST http://localhost:3000/api/auth/login` con cuerpo JSON:
+
+   ```json
+   { "email": "admin@freshroute.com.ar", "password": "admin1234" }
+   ```
+
+2. La respuesta incluye `access_token`, `token_type: "Bearer"`,
+   `expires_in: 28800` y datos públicos del usuario. Copiá `access_token`.
+3. En Postman elegí **Authorization → Bearer Token** y pegá ese valor para
+   consultar o modificar recursos de `/api`.
+4. Enviá `POST /api/auth/logout` con el mismo token. Reutilizarlo devuelve 401.
+
+```bash
+curl -X POST http://localhost:3000/api/auth/login -H "Content-Type: application/json" -d '{"email":"admin@freshroute.com.ar","password":"admin1234"}'
+curl http://localhost:3000/api/clientes -H "Authorization: Bearer PEGAR_ACCESS_TOKEN"
+curl -i -X POST http://localhost:3000/api/auth/logout -H "Authorization: Bearer PEGAR_ACCESS_TOKEN"
+```
+
+Los ejemplos curl usan sintaxis de Bash; en PowerShell podés usar Postman o
+`Invoke-RestMethod`:
+
+```powershell
+$login = Invoke-RestMethod -Method Post -Uri 'http://localhost:3000/api/auth/login' -ContentType 'application/json' -Body (@{ email = 'admin@freshroute.com.ar'; password = 'admin1234' } | ConvertTo-Json)
+$headers = @{ Authorization = "Bearer $($login.access_token)" }
+Invoke-RestMethod -Uri 'http://localhost:3000/api/clientes' -Headers $headers
+Invoke-RestMethod -Method Post -Uri 'http://localhost:3000/api/auth/logout' -Headers $headers
+```
+
+Un JWT ausente, alterado, vencido, firmado con otra clave, de otro emisor o
+audiencia, o revocado devuelve **401** en la API y redirige a `/login` en web.
+Una escritura con rol `operador` devuelve **403**.
+
+Ejecutá `npm test` para verificar JWT por cookie y Bearer, firma, vencimiento,
+emisor, audiencia, algoritmo, revocación, permisos y hash de contraseñas,
+además de las reglas de pedidos. Las pruebas usan un secreto propio y no
+modifican la base configurada en `.env`.
+
+Implementación basada en la [documentación oficial de jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
 
 ## 👥 Equipo de Desarrollo
 
