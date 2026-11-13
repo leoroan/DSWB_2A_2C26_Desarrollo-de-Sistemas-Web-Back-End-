@@ -34,6 +34,9 @@ router.post("/pedidos/:id/ruta", validarCuerpo, pedidos.asignarRutaWeb);
 router.post("/pedidos/:id/items", validarCuerpo, pedidos.agregarItemWeb);
 router.post("/pedidos/:id/items/:itemId", validarCuerpo, pedidos.actualizarItemWeb);
 router.post("/pedidos/:id/items/:itemId/eliminar", pedidos.eliminarItemWeb);
+router.post("/pedidos/:id/estado/confirmar", pedidos.confirmarWeb);
+router.post("/pedidos/:id/estado/preparacion", pedidos.cambiarEstadoAPreparacionWeb);
+router.post("/pedidos/:id/estado/rechazar", pedidos.rechazarWeb);
 
 // Rutas planificadas — vistas web (Pug)
 router.get("/rutas/nueva", rutasController.nuevoWeb);

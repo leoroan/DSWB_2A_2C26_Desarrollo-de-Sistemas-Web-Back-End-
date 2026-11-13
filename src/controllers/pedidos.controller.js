@@ -64,6 +64,78 @@ export const eliminarItem = async (req, res) => {
   res.status(204).send();
 };
 
+/** POST /pedidos/:id/estado/confirmar → confirma el pedido (respeta matriz D1). */
+export const confirmarWeb = async (req, res) => {
+  const id = Number(req.params.id);
+  try {
+    await repo.actualizar(id, { estado: "confirmado" });
+    res.redirect(303, `/pedidos/${id}`);
+  } catch (error) {
+    const pedido = await repo.obtenerPorId(id);
+    if (!pedido) {
+      return res.status(404).render("error", {
+        titulo: "Pedido no encontrado",
+        mensaje: "El pedido solicitado no existe.",
+      });
+    }
+    res.render("pedidos/detail", {
+      titulo: `Pedido #${pedido.id}`,
+      pedido,
+      rutas: await repo.obtenerRutas(),
+      productos: await repo.obtenerProductos(),
+      error: error.message || "No se pudo confirmar el pedido",
+    });
+  }
+};
+
+/** POST /pedidos/:id/estado/preparacion → pasa el pedido a "en_preparacion" (respeta matriz D1). */
+export const cambiarEstadoAPreparacionWeb = async (req, res) => {
+  const id = Number(req.params.id);
+  try {
+    await repo.actualizar(id, { estado: "en_preparacion" });
+    res.redirect(303, `/pedidos/${id}`);
+  } catch (error) {
+    const pedido = await repo.obtenerPorId(id);
+    if (!pedido) {
+      return res.status(404).render("error", {
+        titulo: "Pedido no encontrado",
+        mensaje: "El pedido solicitado no existe.",
+      });
+    }
+    res.render("pedidos/detail", {
+      titulo: `Pedido #${pedido.id}`,
+      pedido,
+      rutas: await repo.obtenerRutas(),
+      productos: await repo.obtenerProductos(),
+      error: error.message || "No se pudo cambiar el estado a En Preparación",
+    });
+  }
+};
+
+/** POST /pedidos/:id/estado/rechazar → rechaza (cancela) el pedido (respeta matriz D1). */
+export const rechazarWeb = async (req, res) => {
+  const id = Number(req.params.id);
+  try {
+    await repo.actualizar(id, { estado: "cancelado" });
+    res.redirect(303, `/pedidos/${id}`);
+  } catch (error) {
+    const pedido = await repo.obtenerPorId(id);
+    if (!pedido) {
+      return res.status(404).render("error", {
+        titulo: "Pedido no encontrado",
+        mensaje: "El pedido solicitado no existe.",
+      });
+    }
+    res.render("pedidos/detail", {
+      titulo: `Pedido #${pedido.id}`,
+      pedido,
+      rutas: await repo.obtenerRutas(),
+      productos: await repo.obtenerProductos(),
+      error: error.message || "No se pudo rechazar el pedido",
+    });
+  }
+};
+
 /** PATCH /api/pedidos/:id/ruta → asignar ruta o quitarla con rutaId null. */
 export const asignarRuta = async (req, res) => {
   exigir(

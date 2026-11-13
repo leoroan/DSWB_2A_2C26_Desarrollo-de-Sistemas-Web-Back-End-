@@ -2,6 +2,10 @@ extends ../layout
 
 block content
   include ../includes/_spinner
+  if error
+    div.alert.alert-danger.dismissible.fade.show(role="alert")
+      button.btn-close(type="button" data-bs-dismiss="alert" aria-label="Cerrar")
+      = error
 
 
   // Header con navegación contextual
@@ -74,6 +78,21 @@ block content
                 a.btn.btn-sm.btn-outline-secondary(href=`/pedidos/${pedido.id}/editar`)
                   i.fa-solid.fa-pen.me-1
                   | Editar
+                if pedido.estado === 'pendiente'
+                  form(method='post' action=`/pedidos/${pedido.id}/estado/confirmar` style='display:inline; margin-left:0.5rem;')
+                    button.btn.btn-sm.btn-success(type='submit')
+                      i.fa-solid.fa-check.me-1
+                      | Confirmar
+                if pedido.estado === 'confirmado'
+                  form(method='post' action=`/pedidos/${pedido.id}/estado/preparacion` style='display:inline; margin-left:0.5rem;')
+                    button.btn.btn-sm.btn-info(type='submit')
+                      i.fa-solid.fa-box-open.me-1
+                      | Enviar a Preparación
+                if pedido.estado === 'pendiente' || pedido.estado === 'confirmado' || pedido.estado === 'en_preparacion'
+                  form(method='post' action=`/pedidos/${pedido.id}/estado/rechazar` style='display:inline; margin-left:0.5rem;' onsubmit="return confirm('¿Estás seguro de que deseas rechazar/cancelar este pedido?')")
+                    button.btn.btn-sm.btn-danger(type='submit')
+                      i.fa-solid.fa-ban.me-1
+                      | Rechazar
 
     .col-12.col-md-4
       .card.border-0.shadow-sm.h-100
